@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lucas Delfino · Business Intelligence</title>
+<meta name="description" content="Portfólio de Lucas Delfino — Analista de Business Intelligence em Crédito & Cobrança. Power BI, SQL, Python e Databricks.">
+<meta property="og:title" content="Lucas Delfino · Business Intelligence">
+<meta property="og:description" content="Dez anos cobrando dívidas. Hoje, cobro respostas dos dados.">
+<meta property="og:image" content="assets/img/lucas.webp">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#191328">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,650;12..96,750&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<div class="wrap">
+  <!-- ================= NAV ================= -->
+  <header class="nav">
+    <div class="nav-in">
+      <a class="brand" href="#top" aria-label="Lucas Delfino, início">
+        <span class="mark"><span>LD</span></span>
+        <span>Lucas Delfino<small>data · crédito · cobrança</small></span>
+      </a>
+      <nav class="links" id="links" aria-label="Principal">
+        <a href="#projetos" data-nav="projetos">Projetos</a>
+        <a href="#trajetoria" data-nav="trajetoria">Trajetória</a>
+        <a href="#stack" data-nav="stack">Stack</a>
+        <a href="#contato" data-nav="contato">Contato</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="Alternar tema claro/escuro">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+        <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="links">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <a class="btn btn-accent" href="#contato">Vamos conversar</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= HOME ================= -->
+  <main id="home">
+    <section class="hero" id="top">
+      <div class="reveal">
+        <span class="status"><i class="dot"></i> Aberto a novas oportunidades · São Paulo, SP</span><br><br>
+        <span class="eyebrow">Business Intelligence Analyst</span>
+        <h1>Dez anos cobrando dívidas. Hoje, <span class="grad">cobro respostas dos dados.</span></h1>
+        <p class="lede">Sou Lucas Delfino. Comecei negociando na linha de frente de Crédito &amp; Cobrança e hoje construo dashboards, modelos e automações em Power BI, SQL e Python que respondem às perguntas que a operação realmente faz.</p>
+        <div class="ctas">
+          <a class="btn btn-dark" href="#projetos">Ver projetos <span class="arrow">↓</span></a>
+          <a class="btn btn-ghost" href="https://www.linkedin.com/in/lucasdelfino-/" target="_blank" rel="noopener">LinkedIn <span class="arrow">↗</span></a>
+          <a class="btn btn-ghost" href="https://github.com/luudelfino91-lgtm" target="_blank" rel="noopener">GitHub <span class="arrow">↗</span></a>
+        </div>
+      </div>
+      <aside class="id-card reveal" aria-label="Cartão de apresentação">
+        <div class="portrait"><img src="assets/img/lucas.webp" alt="Retrato de Lucas Delfino"></div>
+        <div class="id-meta">
+          <div><strong>Lucas Delfino</strong><span>BI Analyst · Funchal Negócios</span></div>
+          <div class="cert" title="Microsoft Certified: Power BI Data Analyst Associate"><b>PL-300</b>Microsoft<br>certified</div>
+        </div>
+      </aside>
+    </section>
+
+    <div class="stats" aria-label="Números">
+      <div class="stat"><b>10+</b><span>anos em operações de crédito e cobrança</span></div>
+      <div class="stat"><b>13</b><span>processos manuais automatizados em Python</span></div>
+      <div class="stat"><b>96 h</b><span>por mês devolvidas ao time para análise</span></div>
+      <div class="stat"><b>26</b><span>desafios de dados concluídos na Xperiun</span></div>
+    </div>
+
+    <!-- ================= PROJETOS ================= -->
+    <section class="block" id="projetos">
+      <div class="sec-head">
+        <div>
+          <span class="eyebrow">Portfólio</span>
+          <h2>Relatórios que nasceram de <span class="grad">perguntas de negócio</span></h2>
+          <p>Um resumo visual de cada trabalho, com o problema e a solução em poucas linhas. Quem quiser o detalhe técnico encontra modelagem, DAX e decisões no case de cada projeto.</p>
+        </div>
+      </div>
+      <div class="portfolio">
+        <aside class="index" aria-label="Seções do portfólio">
+          <h4>Trilhas</h4>
+          <ol id="laneIndex"></ol>
+          <p class="note">Tudo em uma rolagem só. Pule direto para o tipo de trabalho que te interessa.</p>
+          <div class="filter" id="toolFilter" aria-label="Filtrar por ferramenta"></div>
+        </aside>
+        <div id="lanes"></div>
+      </div>
+    </section>
+
+    <!-- ================= TRAJETÓRIA ================= -->
+    <section class="block" id="trajetoria">
+      <div class="journey">
+        <div class="journey-intro">
+          <span class="eyebrow">Trajetória</span>
+          <h2 style="font-size:clamp(30px,4vw,46px);margin-top:16px">Do telefone de cobrança ao modelo de dados</h2>
+          <p>Passei por todas as cadeiras da operação antes de chegar ao BI. É por isso que meus indicadores começam pela pergunta de quem está na ponta, e não pelo visual.</p>
+          <div class="phase-key"><span><i style="background:var(--orchid)"></i>Operação</span><span><i style="background:var(--plum)"></i>Dados</span></div>
+        </div>
+        <ol class="timeline" id="timeline"></ol>
+      </div>
+    </section>
+
+    <!-- ================= STACK ================= -->
+    <section class="block" id="stack">
+      <div class="sec-head"><div>
+        <span class="eyebrow">Stack &amp; credenciais</span>
+        <h2>Ferramentas técnicas, repertório de negócio</h2>
+      </div></div>
+      <div class="bento">
+        <div class="tile t-stack">
+          <h3>Stack do dia a dia</h3>
+          <p class="sub">Do dado bruto ao relatório executivo.</p>
+          <div class="stack-list">
+            <span class="chip core">Power BI</span><span class="chip core">DAX</span><span class="chip core">SQL</span><span class="chip core">Python</span><span class="chip core">Databricks</span>
+            <span class="chip">Power Query</span><span class="chip">Pentaho</span><span class="chip">SQL Server</span><span class="chip">Excel &amp; VBA</span><span class="chip">Modelagem dimensional</span>
+          </div>
+          <p class="sub" style="margin-top:22px">Domínio de negócio</p>
+          <div class="domain-list">
+            <span class="chip">Crédito &amp; Cobrança</span><span class="chip">Recuperação de crédito</span><span class="chip">SLA &amp; filas</span><span class="chip">KPIs de performance</span><span class="chip">Executive reporting</span><span class="chip">Análise financeira</span>
+          </div>
+        </div>
+        <div class="tile t-cert">
+          <h3>Certificação Microsoft</h3>
+          <p class="sub">Power BI Data Analyst Associate</p>
+          <div class="pl300">PL-300</div>
+        </div>
+        <div class="tile t-edu">
+          <h3>Formação</h3>
+          <ul class="edu">
+            <li><div><b>MBA em BI &amp; Analytics</b><span>Xperiun · UNIFECAF</span></div><span class="mono">2025–2026</span></li>
+            <li><div><b>Análise e Desenvolvimento de Sistemas</b><span>Centro Universitário FAM</span></div><span class="mono">2023–2025</span></li>
+            <li><div><b>Formação em Análise de Dados</b><span>Xperiun | Data Analytics</span></div><span class="mono">2025</span></li>
+          </ul>
+        </div>
+        <div class="tile t-xp">
+          <h3>Na Xperiun</h3>
+          <p class="sub">Prática contínua em desafios com problemas reais.</p>
+          <div class="nums">
+            <div><b>26</b><span>desafios</span></div>
+            <div><b>56</b><span>certificados</span></div>
+            <div><b>45k</b><span>XP</span></div>
+          </div>
+          <div class="courses">
+            <span class="chip">SQL Server Avançado</span><span class="chip">Engenharia de Dados em Cloud</span><span class="chip">Macros e VBA</span><span class="chip">Comunicação Assertiva</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONTATO ================= -->
+    <section class="contact" id="contato">
+      <div>
+        <h2>Tem uma operação que precisa de respostas mais rápidas?</h2>
+        <p>Estou aberto a vagas em BI e Analytics, principalmente em crédito, cobrança e serviços financeiros. Me chama para uma conversa.</p>
+      </div>
+      <div class="c-list">
+        <a href="mailto:lucasdelfino91@hotmail.com"><div><b>E-mail</b><span>lucasdelfino91@hotmail.com</span></div><span class="arrow">→</span></a>
+        <a href="https://www.linkedin.com/in/lucasdelfino-/" target="_blank" rel="noopener"><div><b>LinkedIn</b><span>/in/lucasdelfino-</span></div><span class="arrow">↗</span></a>
+        <a href="https://github.com/luudelfino91-lgtm" target="_blank" rel="noopener"><div><b>GitHub</b><span>luudelfino91-lgtm</span></div><span class="arrow">↗</span></a>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= CASE TÉCNICO ================= -->
+  <main id="case" hidden></main>
+
+  <footer>
+    <span>© 2026 Lucas Delfino · Business Intelligence</span>
+    <span><a href="#projetos">Projetos</a> · <a href="https://app.xperiun.com/in/lucasdelfino" target="_blank" rel="noopener">Portfólio Xperiun ↗</a> · <a href="#top">Voltar ao topo ↑</a></span>
+  </footer>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
