@@ -98,13 +98,20 @@ const PROJECTS = [
      resultado:"Uma fila priorizada de intervenção: quem sair pesa mais, onde e quanto custa."}},
 
   {slug:"olist-store", lane:"negocio", domain:"E-commerce",
-   title:"Olist Store", file:"Dashboard + documentação", mock:"line",
-   lede:"Relatório da Olist Store, com o lema “entenda seus dados em poucos cliques”: dashboard, documentação, glossário e guia do usuário.",
-   side:"Além do painel, o projeto entrega a camada de apoio ao usuário: documentação do modelo, glossário de termos e um guia de uso dentro do próprio relatório.",
-   kpi:{v:"4", l:"seções de navegação"}, tools:["Power BI","DAX"], tags:["E-commerce","Documentação","Guia do usuário"],
+   title:"Olist Store", file:"E-commerce Analytics · Resumo", mock:"line",
+   lede:"Painel de e-commerce da Olist Store, com resumo de leads, vendas e pedidos, análise ao longo do tempo, mapa por região e ranking de cidades.",
+   side:"Na visão de 2018, o resumo mostra 54.011 pedidos, 8.000 leads e ticket médio de 164,93, com pedidos +19,76% acima do ano anterior. São Paulo lidera o ranking de cidades com 9,1 mil pedidos.",
+   kpi:{v:"54.011", l:"pedidos em 2018"}, tools:["Power BI","DAX"], tags:["E-commerce","Ticket médio","Mapa","Ranking"],
    report:PBI+"eyJrIjoiYWRjMzcwZmEtZTcyZC00YTk1LWIzOWMtYmQ2ZmU5MTk3MGQ1IiwidCI6Ijc4NzA1NDBkLTMzZTEtNDlhZC04OTFjLTY1ZjY5YzA4ZjNjYiJ9",
-   repo:"", cover:"", draft:true,
-   case:{pergunta:"Descreva a pergunta central do projeto.",dados:["Base pública da Olist (marketplace brasileiro)."],tecnicas:["Dashboard com navegação para Documentação, Glossário e Guia do usuário."],dax:"",resultado:"Descreva o principal achado."}},
+   repo:"", cover:IMG+"olist-resumo.webp", draft:true,
+   gallery:[
+     {src:IMG+"olist-resumo.webp", cap:"Resumo de 2018: leads, recorrência, vendas, ticket médio, pedidos e cancelamentos, com mapa por região e ranking de cidades"}],
+   case:{
+     pergunta:"Como estão as vendas e os pedidos de um e-commerce ao longo do tempo, e de onde vêm os pedidos?",
+     dados:["Base pública da Olist, marketplace brasileiro, com seletor de ano (2016, 2017 e 2018).","Pedidos, vendas, ticket médio, cancelamentos, leads e recorrência.","Localização dos pedidos por cidade e estado, para o mapa e o ranking."],
+     tecnicas:["Cartões de resumo em três faixas: leads e recorrência, vendas e ticket médio, pedidos e cancelamentos.","Linha diária de pedidos contra o mesmo período do ano anterior (Y-1), com a variação destacada (+19,76%).","Mapa com abas por região: Centro-Oeste, Nordeste, Norte, Sudeste e Sul.","Ranking de pedidos com alternância entre cidade, ID, estado e produto.","Menu lateral com ícones que leva às outras páginas do relatório."],
+     dax:"",
+     resultado:"Uma leitura rápida do ano: 54.011 pedidos, 334 cancelados, ticket médio de 164,93 e concentração em São Paulo, Rio de Janeiro e Belo Horizonte."}},
 
   {slug:"xperiun-metalurgica", lane:"negocio", domain:"Indústria · Metalurgia",
    title:"Xperiun Metalúrgica", file:"Data Partners · 2 páginas", mock:"pipeline",
