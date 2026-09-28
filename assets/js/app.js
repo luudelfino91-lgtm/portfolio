@@ -41,7 +41,7 @@ function mockSVG(p){
 
 function projectCard(p){
   const hasReport=!!p.report;
-  const preview = p.cover ? `<img src="${esc(p.cover)}" alt="Captura do relatório ${esc(p.title)}" loading="lazy">` : mockSVG(p);
+  const preview = p.cover ? `<img src="${esc(p.cover)}" data-slug="${p.slug}" alt="Captura do relatório ${esc(p.title)}" loading="lazy">` : mockSVG(p);
   const viewHref = hasReport ? p.report : `#/case/${p.slug}`;
   const ext = hasReport ? ' target="_blank" rel="noopener"' : '';
   return `<article class="proj" data-tools="${esc(p.tools.join('|'))}" id="p-${p.slug}">
@@ -90,7 +90,7 @@ function renderCase(slug){
     </div>
     ${SHOW_DRAFT_NOTES&&p.draft?`<div class="draft"><b>Rascunho.</b> Texto-base gerado a partir do resumo do projeto. Revise os detalhes técnicos e desligue este aviso em SHOW_DRAFT_NOTES.</div>`:""}
     <div class="frame" style="margin-top:28px"><div class="frame-bar"><div class="lights"><i></i><i></i><i></i><span class="mono">${esc(p.file)}</span></div><span class="live">${p.internal?"PROJETO INTERNO":(p.cover?"RELATÓRIO PUBLICADO":"PRÉVIA ILUSTRATIVA")}</span></div>
-      <div class="frame-view">${p.cover?`<img src="${esc(p.cover)}" alt="Captura do relatório ${esc(p.title)}">`:mockSVG(p)}</div></div>
+      <div class="frame-view">${p.cover?`<img src="${esc(p.cover)}" data-slug="${p.slug}" alt="Captura do relatório ${esc(p.title)}">`:mockSVG(p)}</div></div>
     <div class="case-grid">
       <aside class="meta"><dl style="margin:0;display:grid;gap:18px">
         <div><dt>Domínio</dt><dd>${esc(p.domain)}</dd></div>
@@ -143,3 +143,10 @@ try{const t=localStorage.getItem("ld-theme"); if(t) document.documentElement.dat
 
 /* Menu mobile */
 $("#menuBtn").addEventListener("click",e=>{const o=$("#links").classList.toggle("open");e.currentTarget.setAttribute("aria-expanded",o);});
+
+/* Se uma captura não carregar, mostra a prévia ilustrativa (ou esconde a figura da galeria) */
+document.addEventListener("error",e=>{
+  const im=e.target; if(!im||im.tagName!=="IMG") return;
+  if(im.dataset.slug){ const p=PROJECTS.find(x=>x.slug===im.dataset.slug); if(p) im.outerHTML=mockSVG(p); }
+  else if(im.closest(".gallery figure")) im.closest("figure").hidden=true;
+},true);
