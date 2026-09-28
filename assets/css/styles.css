@@ -284,3 +284,9 @@ pre.code .k{color:#E7A9F0}pre.code .c{color:#9C92A8}pre.code .s{color:#B8E3C8}
 
 .reveal{animation:rise .6s ease both}
 @keyframes rise{from{transform:translateY(10px)}to{transform:none}}
+
+.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:8px}
+.gallery figure{margin:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+.gallery img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+.gallery figcaption{padding:12px 14px;font-size:13.5px;color:var(--ink-2);line-height:1.5}
+@media (max-width:700px){.gallery{grid-template-columns:1fr}}
