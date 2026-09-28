@@ -1,10 +1,13 @@
 # Roadmap
 
 ## v1.1 — Conteúdo
-- [ ] Capas reais dos 6 relatórios
-- [ ] Links completos do Power BI (Lets Cola, Panorama, PharmaVantage, Olist)
-- [ ] Revisar cases de Seguradora, Logística, PharmaVantage e Olist
-- [ ] Desligar `SHOW_DRAFT_NOTES`
+- [x] Links públicos do Power BI dos 7 relatórios
+- [x] Capas reais: Lets Cola (4 páginas), Seguradora, PharmaVantage, VELA e Metalúrgica
+- [ ] Capas reais: Panorama Consórcios e Olist Store (hoje com prévia ilustrativa)
+- [ ] Trocar a capa da Seguradora e da Metalúrgica por uma página de dashboard
+- [ ] Completar textos e cases de Olist e Metalúrgica
+- [ ] Revisar os demais cases e desligar `SHOW_DRAFT_NOTES`
+- [ ] Projeto de Logística: aguardando relatório
 
 ## v1.2 — Presença
 - [ ] Domínio próprio (ex.: lucasdelfino.com.br)
