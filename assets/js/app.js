@@ -58,7 +58,7 @@ function projectCard(p){
       </div>
     </div>
     <div class="frame">
-      <div class="frame-bar"><div class="lights"><i></i><i></i><i></i><span class="mono">${esc(p.file)}</span></div><span class="live">${p.internal?"PROJETO INTERNO":"RELATÓRIO PUBLICADO"}</span></div>
+      <div class="frame-bar"><div class="lights"><i></i><i></i><i></i><span class="mono">${esc(p.file)}</span></div><span class="live">${p.internal?"PROJETO INTERNO":(p.cover?"RELATÓRIO PUBLICADO":"PRÉVIA ILUSTRATIVA")}</span></div>
       <a class="frame-view" href="${esc(viewHref)}"${ext} aria-label="${hasReport?"Abrir relatório":"Ver case"} ${esc(p.title)}">${preview}<span class="play"><span>${hasReport?"Abrir relatório interativo ↗":"Ver como foi feito →"}</span></span></a>
     </div>
   </article>`;
@@ -89,7 +89,7 @@ function renderCase(slug){
       <div class="kpi"><b style="font-size:40px">${esc(p.kpi.v)}</b><span>${esc(p.kpi.l)}</span></div>
     </div>
     ${SHOW_DRAFT_NOTES&&p.draft?`<div class="draft"><b>Rascunho.</b> Texto-base gerado a partir do resumo do projeto. Revise os detalhes técnicos e desligue este aviso em SHOW_DRAFT_NOTES.</div>`:""}
-    <div class="frame" style="margin-top:28px"><div class="frame-bar"><div class="lights"><i></i><i></i><i></i><span class="mono">${esc(p.file)}</span></div><span class="live">${p.internal?"PROJETO INTERNO":"PRÉVIA"}</span></div>
+    <div class="frame" style="margin-top:28px"><div class="frame-bar"><div class="lights"><i></i><i></i><i></i><span class="mono">${esc(p.file)}</span></div><span class="live">${p.internal?"PROJETO INTERNO":(p.cover?"RELATÓRIO PUBLICADO":"PRÉVIA ILUSTRATIVA")}</span></div>
       <div class="frame-view">${p.cover?`<img src="${esc(p.cover)}" alt="Captura do relatório ${esc(p.title)}">`:mockSVG(p)}</div></div>
     <div class="case-grid">
       <aside class="meta"><dl style="margin:0;display:grid;gap:18px">
@@ -105,6 +105,7 @@ function renderCase(slug){
         <section><h2>A pergunta de negócio</h2><p>${esc(c.pergunta)}</p></section>
         <section><h2>Dados e modelagem</h2><ul>${c.dados.map(d=>`<li>${esc(d)}</li>`).join("")}</ul></section>
         <section><h2>Como foi construído</h2><ul>${c.tecnicas.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>${dax}</section>
+        ${p.gallery?`<section><h2>Páginas do relatório</h2><div class="gallery">${p.gallery.map(g=>`<figure><img src="${esc(g.src)}" alt="${esc(g.cap)}" loading="lazy"><figcaption>${esc(g.cap)}</figcaption></figure>`).join("")}</div></section>`:""}
         <section><h2>Resultado</h2><p>${esc(c.resultado)}</p></section>
         <section><a class="btn btn-ghost" href="#/case/${next.slug}">Próximo case: ${esc(next.title)} <span class="arrow">→</span></a></section>
       </div>
