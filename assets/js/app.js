@@ -2,12 +2,20 @@
 const $ = (s,el=document)=>el.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
+/* Idioma: o texto em inglês vem de data-en.js (EN); sem tradução, cai no português de data.js */
+const LP = p => { if(LANG!=="en"||typeof EN==="undefined") return p; const e=EN.projects[p.slug]; if(!e) return p;
+  return {...p,...e, kpi:e.kpi||p.kpi, tags:e.tags||p.tags,
+    gallery:p.gallery&&p.gallery.map((g,i)=>({...g,cap:(e.gallery&&e.gallery[i])||g.cap})),
+    case:{...p.case,...(e.case||{})}}; };
+const LL = l => (LANG==="en"&&typeof EN!=="undefined"&&EN.lanes[l.id])?{...l,...EN.lanes[l.id]}:l;
+const LJ = (j,i) => (LANG==="en"&&typeof EN!=="undefined"&&EN.journey[i])?{...j,...EN.journey[i]}:j;
+
 function rng(seed){let h=0;for(const c of seed)h=(h*31+c.charCodeAt(0))>>>0;return()=>((h=(h*1664525+1013904223)>>>0)/4294967296);}
 
 /* Prévia ilustrativa de dashboard (usada quando não há imagem real) */
 function mockSVG(p){
   const r=rng(p.slug), W=640,H=360;
-  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Prévia ilustrativa do relatório ${esc(p.title)}" xmlns="http://www.w3.org/2000/svg">`;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("altMock",{t:p.title}))}" xmlns="http://www.w3.org/2000/svg">`;
   s+=`<rect width="${W}" height="${H}" style="fill:var(--mock-bg)"/>`;
   s+=`<rect x="0" y="0" width="54" height="${H}" style="fill:var(--mock-c)" opacity=".92"/>`;
   for(let i=0;i<5;i++) s+=`<rect x="17" y="${58+i*34}" width="20" height="20" rx="5" style="fill:${i==1?'var(--mock-a)':'var(--mock-bg)'}" opacity="${i==1?1:.18}"/>`;
@@ -25,8 +33,8 @@ function mockSVG(p){
   if(p.mock==="bars"){const n=12,bw=cw/n*.62;for(let i=0;i<n;i++){const v=.25+r()*.7,h=v*ch;s+=`<rect x="${cx0+i*cw/n+(cw/n-bw)/2}" y="${cy0-h}" width="${bw}" height="${h}" rx="3" style="fill:${i>=7?'var(--mock-a)':'var(--mock-b)'}"/>`;}}
   else if(p.mock==="donut"){const cx=mx+mw/2,cy=my+mh/2+10,R=62;let a=-Math.PI/2;const parts=[.46,.27,.17,.10],cols=['var(--mock-a)','var(--mock-b)','var(--mock-d)','var(--mock-line)'];
     parts.forEach((f,i)=>{const a2=a+f*Math.PI*2,x1=cx+R*Math.cos(a),y1=cy+R*Math.sin(a),x2=cx+R*Math.cos(a2),y2=cy+R*Math.sin(a2);s+=`<path d="M${x1} ${y1} A${R} ${R} 0 ${f>.5?1:0} 1 ${x2} ${y2}" style="fill:none;stroke:${cols[i]};stroke-width:26"/>`;a=a2;});}
-  else if(p.mock==="pipeline"){const steps=["extrair","tratar","validar","enviar"];steps.forEach((t,i)=>{const x=cx0+i*(cw/4)+6,y=my+80,w=cw/4-18;s+=`<rect x="${x}" y="${y}" width="${w}" height="54" rx="10" style="fill:${i==3?'var(--mock-a)':'var(--mock-bg)'};stroke:var(--mock-line)"/><text x="${x+w/2}" y="${y+32}" text-anchor="middle" style="fill:${i==3?'var(--mock-panel)':'var(--mock-c)'};font:500 12px var(--f-mono)">${t}.py</text>`;if(i<3)s+=`<path d="M${x+w+2} ${y+27} l10 0" style="stroke:var(--mock-a);stroke-width:2"/>`;});
-    s+=`<text x="${cx0}" y="${cy0-8}" style="fill:var(--mock-c);font:500 11px var(--f-mono)" opacity=".6">13 rotinas · agendadas · 0 cliques</text>`;}
+  else if(p.mock==="pipeline"){const steps=t("mockSteps");steps.forEach((t,i)=>{const x=cx0+i*(cw/4)+6,y=my+80,w=cw/4-18;s+=`<rect x="${x}" y="${y}" width="${w}" height="54" rx="10" style="fill:${i==3?'var(--mock-a)':'var(--mock-bg)'};stroke:var(--mock-line)"/><text x="${x+w/2}" y="${y+32}" text-anchor="middle" style="fill:${i==3?'var(--mock-panel)':'var(--mock-c)'};font:500 12px var(--f-mono)">${t}.py</text>`;if(i<3)s+=`<path d="M${x+w+2} ${y+27} l10 0" style="stroke:var(--mock-a);stroke-width:2"/>`;});
+    s+=`<text x="${cx0}" y="${cy0-8}" style="fill:var(--mock-c);font:500 11px var(--f-mono)" opacity=".6">${t("mockNote")}</text>`;}
   else{const n=24;let pts=[],v=.35;for(let i=0;i<n;i++){v=Math.min(.95,Math.max(.1,v+(r()-.42)*.18));pts.push([cx0+i*cw/(n-1),cy0-v*ch]);}
     const d=pts.map((q,i)=>(i?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1)).join(" ");
     if(p.mock==="area") s+=`<path d="${d} L${cx0+cw} ${cy0} L${cx0} ${cy0}Z" style="fill:var(--mock-b)" opacity=".45"/>`;
@@ -41,7 +49,7 @@ function mockSVG(p){
 
 function projectCard(p){
   const hasReport=!!p.report;
-  const preview = p.cover ? `<img src="${esc(p.cover)}" data-slug="${p.slug}" alt="Captura do relatório ${esc(p.title)}" loading="lazy">` : mockSVG(p);
+  const preview = p.cover ? `<img src="${esc(p.cover)}" data-slug="${p.slug}" alt="${esc(t("altShot",{t:p.title}))}" loading="lazy">` : mockSVG(p);
   const viewHref = hasReport ? p.report : `#/case/${p.slug}`;
   const ext = hasReport ? ' target="_blank" rel="noopener"' : '';
   return `<article class="proj" data-tools="${esc(p.tools.join('|'))}" id="p-${p.slug}">
@@ -53,61 +61,66 @@ function projectCard(p){
     <div class="proj-foot">
       <div class="tags">${[...p.tools,...p.tags].map(t=>`<span class="chip">${esc(t)}</span>`).join("")}</div>
       <div class="actions">
-        <a class="btn btn-dark" href="#/case/${p.slug}">Ver case técnico <span class="arrow">→</span></a>
-        ${hasReport?`<a class="btn btn-ghost" href="${esc(p.report)}" target="_blank" rel="noopener">Abrir relatório <span class="arrow">↗</span></a>`:""}
+        <a class="btn btn-dark" href="#/case/${p.slug}">${t("viewCase")} <span class="arrow">→</span></a>
+        ${hasReport?`<a class="btn btn-ghost" href="${esc(p.report)}" target="_blank" rel="noopener">${t("openReport")} <span class="arrow">↗</span></a>`:""}
       </div>
     </div>
     <div class="frame">
-      <div class="frame-bar"><div class="lights"><i></i><i></i><i></i><span class="mono">${esc(p.file)}</span></div><span class="live">${p.internal?"PROJETO INTERNO":(p.cover?"RELATÓRIO PUBLICADO":"PRÉVIA ILUSTRATIVA")}</span></div>
-      <a class="frame-view" href="${esc(viewHref)}"${ext} aria-label="${hasReport?"Abrir relatório":"Ver case"} ${esc(p.title)}">${preview}<span class="play"><span>${hasReport?"Abrir relatório interativo ↗":"Ver como foi feito →"}</span></span></a>
+      <div class="frame-bar"><div class="lights"><i></i><i></i><i></i><span class="mono">${esc(p.file)}</span></div><span class="live">${p.internal?t("internal"):(p.cover?t("published"):t("preview"))}</span></div>
+      <a class="frame-view" href="${esc(viewHref)}"${ext} aria-label="${hasReport?t("ariaOpen"):t("ariaCase")} ${esc(p.title)}">${preview}<span class="play"><span>${hasReport?t("openInteractive"):t("seeHow")}</span></span></a>
     </div>
   </article>`;
 }
 
+let curTool="__all";
 function renderHome(){
-  $("#laneIndex").innerHTML = LANES.map((l,i)=>{const n=PROJECTS.filter(p=>p.lane===l.id).length;return `<li><a href="#lane-${l.id}" data-lane="${l.id}" class="${i?'':'on'}"><span>${esc(l.name)}</span><span class="count">${n}</span></a></li>`}).join("");
-  $("#lanes").innerHTML = LANES.map(l=>{const ps=PROJECTS.filter(p=>p.lane===l.id);
-    return `<div class="lane" id="lane-${l.id}"><div class="lane-head"><div><h3>${esc(l.name)}</h3><p>${esc(l.desc)}</p></div><span class="count">${ps.length} ${ps.length>1?"projetos":"projeto"}</span></div>${ps.map(projectCard).join("")}</div>`}).join("");
-  const tools=[...new Set(PROJECTS.flatMap(p=>p.tools))];
-  $("#toolFilter").innerHTML = ["Todos",...tools].map((t,i)=>`<button type="button" aria-pressed="${i?'false':'true'}" data-tool="${esc(t)}">${esc(t)}</button>`).join("");
-  $("#toolFilter").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
-    document.querySelectorAll("#toolFilter button").forEach(x=>x.setAttribute("aria-pressed",x===b));
-    const t=b.dataset.tool;document.querySelectorAll(".proj").forEach(c=>c.classList.toggle("hidden",t!=="Todos"&&!c.dataset.tools.split("|").includes(t)));
-    document.querySelectorAll(".lane").forEach(l=>l.hidden=!l.querySelector(".proj:not(.hidden)"));});
-  $("#timeline").innerHTML = JOURNEY.map(j=>`<li class="${j.ph}${j.now?' now':''}"><div class="t-when">${esc(j.when)}</div><div class="t-role">${esc(j.role)}</div><div class="t-org">${esc(j.org)}</div><p class="t-desc">${esc(j.desc)}</p></li>`).join("");
+  const LS=LANES.map(LL), PS=PROJECTS.map(LP);
+  $("#laneIndex").innerHTML = LS.map((l,i)=>{const n=PS.filter(p=>p.lane===l.id).length;return `<li><a href="#lane-${l.id}" data-lane="${l.id}" class="${i?'':'on'}"><span>${esc(l.name)}</span><span class="count">${n}</span></a></li>`}).join("");
+  $("#lanes").innerHTML = LS.map(l=>{const ps=PS.filter(p=>p.lane===l.id);
+    return `<div class="lane" id="lane-${l.id}"><div class="lane-head"><div><h3>${esc(l.name)}</h3><p>${esc(l.desc)}</p></div><span class="count">${ps.length} ${ps.length>1?t("projects"):t("project")}</span></div>${ps.map(projectCard).join("")}</div>`}).join("");
+  const tools=[...new Set(PS.flatMap(p=>p.tools))];
+  $("#toolFilter").innerHTML = [["__all",t("all")],...tools.map(x=>[x,x])].map(([v,lab])=>`<button type="button" aria-pressed="${v===curTool}" data-tool="${esc(v)}">${esc(lab)}</button>`).join("");
+  applyFilter();
+  $("#timeline").innerHTML = JOURNEY.map(LJ).map(j=>`<li class="${j.ph}${j.now?' now':''}"><div class="t-when">${esc(j.when)}</div><div class="t-role">${esc(j.role)}</div><div class="t-org">${esc(j.org)}</div><p class="t-desc">${esc(j.desc)}</p></li>`).join("");
 }
+function applyFilter(){
+  document.querySelectorAll("#toolFilter button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.tool===curTool));
+  document.querySelectorAll(".proj").forEach(c=>c.classList.toggle("hidden",curTool!=="__all"&&!c.dataset.tools.split("|").includes(curTool)));
+  document.querySelectorAll(".lane").forEach(l=>l.hidden=!l.querySelector(".proj:not(.hidden)"));
+}
+$("#toolFilter").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return; curTool=b.dataset.tool; applyFilter();});
 
 function renderCase(slug){
-  const p=PROJECTS.find(x=>x.slug===slug); if(!p) return false;
-  const c=p.case, lane=LANES.find(l=>l.id===p.lane);
-  const i=PROJECTS.indexOf(p), next=PROJECTS[(i+1)%PROJECTS.length];
+  const p0=PROJECTS.find(x=>x.slug===slug); if(!p0) return false;
+  const p=LP(p0), c=p.case, lane=LL(LANES.find(l=>l.id===p.lane));
+  const i=PROJECTS.indexOf(p0), next=LP(PROJECTS[(i+1)%PROJECTS.length]);
   const dax=c.dax?`<pre class="code">${esc(c.dax).replace(/^(.*?=)/,'<span class="k">$1</span>').replace(/\b(VAR|RETURN|CALCULATE|DIVIDE|SAMEPERIODLASTYEAR)\b/g,'<span class="k">$1</span>')}</pre>`:"";
   $("#case").innerHTML = `
-    <a class="back" href="#p-${p.slug}">← Voltar ao portfólio</a>
+    <a class="back" href="#p-${p.slug}">${t("back")}</a>
     <div class="case-head">
       <div><span class="eyebrow">${esc(lane.name)} · ${esc(p.domain)}</span><h1>${esc(p.title)}</h1><p class="lede">${esc(p.lede)} ${esc(p.side)}</p></div>
       <div class="kpi"><b style="font-size:40px">${esc(p.kpi.v)}</b><span>${esc(p.kpi.l)}</span></div>
     </div>
     ${SHOW_DRAFT_NOTES&&p.draft?`<div class="draft"><b>Rascunho.</b> Texto-base gerado a partir do resumo do projeto. Revise os detalhes técnicos e desligue este aviso em SHOW_DRAFT_NOTES.</div>`:""}
-    <div class="frame" style="margin-top:28px"><div class="frame-bar"><div class="lights"><i></i><i></i><i></i><span class="mono">${esc(p.file)}</span></div><span class="live">${p.internal?"PROJETO INTERNO":(p.cover?"RELATÓRIO PUBLICADO":"PRÉVIA ILUSTRATIVA")}</span></div>
-      <div class="frame-view">${p.cover?`<img src="${esc(p.cover)}" data-slug="${p.slug}" alt="Captura do relatório ${esc(p.title)}">`:mockSVG(p)}</div></div>
+    <div class="frame" style="margin-top:28px"><div class="frame-bar"><div class="lights"><i></i><i></i><i></i><span class="mono">${esc(p.file)}</span></div><span class="live">${p.internal?t("internal"):(p.cover?t("published"):t("preview"))}</span></div>
+      <div class="frame-view">${p.cover?`<img src="${esc(p.cover)}" data-slug="${p.slug}" alt="${esc(t("altShot",{t:p.title}))}">`:mockSVG(p)}</div></div>
     <div class="case-grid">
       <aside class="meta"><dl style="margin:0;display:grid;gap:18px">
-        <div><dt>Domínio</dt><dd>${esc(p.domain)}</dd></div>
-        <div><dt>Ferramentas</dt><dd>${esc(p.tools.join(" · "))}</dd></div>
-        <div><dt>Temas</dt><dd>${esc(p.tags.join(" · "))}</dd></div></dl>
+        <div><dt>${t("domain")}</dt><dd>${esc(p.domain)}</dd></div>
+        <div><dt>${t("tools")}</dt><dd>${esc(p.tools.join(" · "))}</dd></div>
+        <div><dt>${t("topics")}</dt><dd>${esc(p.tags.join(" · "))}</dd></div></dl>
         <div class="actions">
-          ${p.report?`<a class="btn btn-accent" href="${esc(p.report)}" target="_blank" rel="noopener">Abrir relatório ↗</a>`:""}
-          ${p.repo?`<a class="btn btn-ghost" href="${esc(p.repo)}" target="_blank" rel="noopener">Ver no GitHub ↗</a>`:""}
+          ${p.report?`<a class="btn btn-accent" href="${esc(p.report)}" target="_blank" rel="noopener">${t("openReport")} ↗</a>`:""}
+          ${p.repo?`<a class="btn btn-ghost" href="${esc(p.repo)}" target="_blank" rel="noopener">${t("github")}</a>`:""}
         </div>
       </aside>
       <div class="case-body">
-        <section><h2>A pergunta de negócio</h2><p>${esc(c.pergunta)}</p></section>
-        <section><h2>Dados e modelagem</h2><ul>${c.dados.map(d=>`<li>${esc(d)}</li>`).join("")}</ul></section>
-        <section><h2>Como foi construído</h2><ul>${c.tecnicas.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>${dax}</section>
-        ${p.gallery?`<section><h2>Páginas do relatório</h2><div class="gallery">${p.gallery.map(g=>`<figure><img src="${esc(g.src)}" alt="${esc(g.cap)}" loading="lazy"><figcaption>${esc(g.cap)}</figcaption></figure>`).join("")}</div></section>`:""}
-        <section><h2>Resultado</h2><p>${esc(c.resultado)}</p></section>
-        <section><a class="btn btn-ghost" href="#/case/${next.slug}">Próximo case: ${esc(next.title)} <span class="arrow">→</span></a></section>
+        <section><h2>${t("hQuestion")}</h2><p>${esc(c.pergunta)}</p></section>
+        <section><h2>${t("hData")}</h2><ul>${c.dados.map(d=>`<li>${esc(d)}</li>`).join("")}</ul></section>
+        <section><h2>${t("hBuilt")}</h2><ul>${c.tecnicas.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>${dax}</section>
+        ${p.gallery?`<section><h2>${t("hPages")}</h2><div class="gallery">${p.gallery.map(g=>`<figure><img src="${esc(g.src)}" alt="${esc(g.cap)}" loading="lazy"><figcaption>${esc(g.cap)}</figcaption></figure>`).join("")}</div></section>`:""}
+        <section><h2>${t("hResult")}</h2><p>${esc(c.resultado)}</p></section>
+        <section><a class="btn btn-ghost" href="#/case/${next.slug}">${esc(t("next",{t:next.title}))} <span class="arrow">→</span></a></section>
       </div>
     </div>`;
   return true;
@@ -147,6 +160,13 @@ $("#menuBtn").addEventListener("click",e=>{const o=$("#links").classList.toggle(
 /* Se uma captura não carregar, mostra a prévia ilustrativa (ou esconde a figura da galeria) */
 document.addEventListener("error",e=>{
   const im=e.target; if(!im||im.tagName!=="IMG") return;
-  if(im.dataset.slug){ const p=PROJECTS.find(x=>x.slug===im.dataset.slug); if(p) im.outerHTML=mockSVG(p); }
+  if(im.dataset.slug){ const p=PROJECTS.find(x=>x.slug===im.dataset.slug); if(p) im.outerHTML=mockSVG(LP(p)); }
   else if(im.closest(".gallery figure")) im.closest("figure").hidden=true;
 },true);
+
+/* Troca de idioma: refaz cards, trilhas, trajetória e o case aberto */
+onLang.push(()=>{
+  renderHome();
+  document.querySelectorAll(".lane").forEach(el=>spy.observe(el));
+  route();
+});
