@@ -6,7 +6,7 @@
    - report:  link público do Power BI.   repo: link do GitHub (opcional).
    - draft:   true mostra um aviso no case técnico lembrando de revisar o texto.
    ===================================================================== */
-const SHOW_DRAFT_NOTES = true;
+const SHOW_DRAFT_NOTES = false;
 const XPERIUN = "https://app.xperiun.com/in/lucasdelfino";
 const GITHUB  = "https://github.com/luudelfino91-lgtm";
 const IMG = "assets/img/projetos/";
