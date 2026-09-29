@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Lucas Delfino · Portfolio">
 <meta property="og:url" content="https://luudelfino91-lgtm.github.io/portfolio/certificacoes.html">
 <meta property="og:title" content="Certifications · Lucas Delfino">
-<meta property="og:description" content="PL-300, MBA in BI &amp; Analytics, Databricks, AWS and advanced DAX, ordered by relevance to the market.">
+<meta property="og:description" content="57 certificates: PL-300, MBA in BI &amp; Analytics, Databricks, AWS, Microsoft Fabric and advanced DAX.">
 <meta property="og:image" content="https://luudelfino91-lgtm.github.io/portfolio/assets/img/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -47,6 +47,29 @@
 .co{color:var(--ink-2);font-size:14.5px;margin:0 0 10px}
 .cx{color:var(--ok);font-weight:600;margin-left:6px}
 .cw{color:var(--ink-2);font-size:14.5px;margin:0 0 10px}
+.fbar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
+.fchip{font:600 13.5px/1 var(--f-body);padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer}
+.fchip em{font-style:normal;font:500 11.5px/1 var(--f-mono);color:var(--ink-3);margin-left:4px}
+.fchip.on{background:var(--plum);border-color:var(--plum);color:#fff}.fchip.on em{color:#F1DDF6}
+.cgrid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.cc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;display:flex;flex-direction:column}
+.cc.top{border-color:var(--plum)}
+.cc[hidden]{display:none}
+.cthumb{display:block;width:100%;aspect-ratio:16/11;background:var(--surface-2);border:0;padding:0;cursor:zoom-in;border-bottom:1px solid var(--line);overflow:hidden}
+.cthumb img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.cthumb.ph{cursor:default;display:grid;place-items:center;background:linear-gradient(135deg,var(--orchid-soft),var(--surface-2))}
+.cthumb.ph span{font:650 15px/1.2 var(--f-display);color:var(--plum);padding:0 16px;text-align:center}
+.cc .cb{padding:16px 18px 18px;display:flex;flex-direction:column;flex:1}
+.cc h3{font:650 16.5px/1.3 var(--f-display);margin:0 0 6px}
+.cc .co{color:var(--ink-3);font-size:13.5px;margin:0 0 12px}
+.cc .cx{color:var(--ok);font-weight:600}
+.clink{margin-top:auto;font-weight:650;font-size:14px;color:var(--plum)}
+.clink:hover{text-decoration:underline}
+dialog.lb{border:0;padding:0;background:transparent;max-width:min(92vw,900px)}
+dialog.lb::backdrop{background:rgba(25,19,40,.78)}
+dialog.lb img{display:block;width:100%;height:auto;border-radius:14px;background:#fff}
+dialog.lb p{color:#fff;text-align:center;margin:10px 0 0;font-size:14px}
+dialog.lb button{position:absolute;top:-14px;right:-6px;width:34px;height:34px;border-radius:50%;border:0;background:#fff;color:#191328;font-size:20px;cursor:pointer}
 .edu-block{margin-top:48px}
 .edu-block .edu{margin-top:14px}
 .cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:40px}
@@ -88,7 +111,7 @@
       <div>
         <span class="eyebrow"><span data-i="k.eb2">Certifications</span></span>
         <h2><span data-i="k.h2c">What I have studied and proven</span></h2>
-        <p><span data-i="k.intro">Certificates and courses in Power BI, DAX, Databricks and cloud, ordered by the weight they carry in today's data market. The official Microsoft certification comes first and the complementary courses come last.</span></p>
+        <p><span data-i="k.intro">All 57 certificates and courses listed on my LinkedIn, grouped by topic and ordered by the weight they carry in today's data market. Where the issuer publishes a public page I link to it, and where I could capture the certificate you can open a preview.</span></p>
       </div>
     </div>
 
@@ -108,102 +131,468 @@
     </section>
 
     <section aria-labelledby="listaH">
-      <h2 class="list-h" id="listaH"><span data-i="k.lh">Certificates and courses, by relevance</span></h2>
-      <p class="list-sub"><span data-i="k.ls">Criteria: recognition in the market, direct link to the tools in job descriptions (Power BI, DAX, Databricks, cloud) and completion date.</span></p>
-      <ol class="clist">
-      <li class="ci top">
-        <span class="cn" aria-hidden="true">01</span>
+      <h2 class="list-h" id="listaH"><span data-i="k.lh">All certificates and courses</span></h2>
+      <p class="list-sub"><span data-i="k.ls">The official Microsoft certification comes first, then cloud and data engineering, Power BI and DAX, SQL and Python, and the complementary courses. Use the filters to narrow by topic.</span></p>
+      <div class="fbar" role="group" aria-label="Filter"><button type="button" class="fchip on" data-f="all" aria-pressed="true"><span data-i="cat.all">All</span> <em>57</em></button><button type="button" class="fchip" data-f="pbi" aria-pressed="false"><span data-i="cat.pbi">Power BI &amp; DAX</span> <em>18</em></button><button type="button" class="fchip" data-f="cloud" aria-pressed="false"><span data-i="cat.cloud">Cloud &amp; data engineering</span> <em>8</em></button><button type="button" class="fchip" data-f="sql" aria-pressed="false"><span data-i="cat.sql">SQL &amp; Python</span> <em>7</em></button><button type="button" class="fchip" data-f="biz" aria-pressed="false"><span data-i="cat.biz">Analytics, finance &amp; automation</span> <em>12</em></button><button type="button" class="fchip" data-f="excel" aria-pressed="false"><span data-i="cat.excel">Excel</span> <em>4</em></button><button type="button" class="fchip" data-f="soft" aria-pressed="false"><span data-i="cat.soft">Business &amp; communication</span> <em>8</em></button></div>
+      <ol class="cgrid" id="cgrid">
+      <li class="cc top" data-cat="pbi">
+        <button type="button" class="cthumb" data-full="assets/img/certs/pl-300.webp" data-cap="Microsoft Certified: Power BI Data Analyst Associate (PL-300)" data-cap-pt="Microsoft Certified: Power BI Data Analyst Associate (PL-300)" aria-label="Enlarge certificate"><img src="assets/img/certs/pl-300.webp" loading="lazy" decoding="async" alt="Certificate: Microsoft Certified: Power BI Data Analyst Associate (PL-300)" data-ia="alt:c1a"></button>
         <div class="cb">
-          <div class="cm"><span class="ct"><span data-i="c1t">Official certification</span></span><span class="ty"><span data-i="c1y">Certification</span></span></div>
           <h3><span data-i="c1h">Microsoft Certified: Power BI Data Analyst Associate (PL-300)</span></h3>
-          <p class="co">Microsoft · <span class="mono" data-fmt-date="2026-08">Aug 2026</span> <span class="cx"><span data-i="c1x">Valid until Aug 2027</span></span></p>
-          <p class="cw"><span data-i="c1w">The most recognised certification in the market for Power BI professionals.</span></p>
-          <div class="tags"><span class="chip"><span data-i="c1s0">Power BI</span></span><span class="chip"><span data-i="c1s1">Data modelling</span></span><span class="chip"><span data-i="c1s2">DAX</span></span><span class="chip"><span data-i="c1s3">Visualisation</span></span></div>
+          <p class="co">Microsoft · <span class="mono" data-fmt-date="2026-08">Aug 2026</span> <span class="cx"><span data-i="kx">Valid until Aug 2027</span></span></p>
+          <a class="clink" href="https://learn.microsoft.com/api/credentials/share/pt-br/LucasDelfino-1887/46BF9C81B93BC746" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
         </div>
       </li>
-      <li class="ci">
-        <span class="cn" aria-hidden="true">02</span>
+      <li class="cc" data-cat="cloud">
+        <div class="cthumb ph" aria-hidden="true"><span>Udemy Brasil</span></div>
         <div class="cb">
-          <div class="cm"><span class="ct"><span data-i="c2t">Cloud &amp; data engineering</span></span><span class="ty"><span data-i="c2y">Course</span></span></div>
           <h3><span data-i="c2h">Complete Databricks Training: Basic to Advanced 2026</span></h3>
           <p class="co">Udemy Brasil · <span class="mono" data-fmt-date="2026-08">Aug 2026</span></p>
-          <div class="tags"><span class="chip"><span data-i="c2s0">Databricks</span></span><span class="chip"><span data-i="c2s1">Data engineering</span></span></div>
+          <a class="clink" href="https://udemy-certificate.s3.amazonaws.com/pdf/UC-66911053-7c84-46e6-a4b6-122b0ab5f9d3.pdf" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
         </div>
       </li>
-      <li class="ci">
-        <span class="cn" aria-hidden="true">03</span>
+      <li class="cc" data-cat="cloud">
+        <div class="cthumb ph" aria-hidden="true"><span>AWS Training and Certification</span></div>
         <div class="cb">
-          <div class="cm"><span class="ct"><span data-i="c3t">Cloud &amp; data engineering</span></span><span class="ty"><span data-i="c3y">Certificate</span></span></div>
-          <h3><span data-i="c3h">Cloud Data Engineering</span></h3>
-          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2026-01">Jan 2026</span></p>
-          <div class="tags"><span class="chip"><span data-i="c3s0">Data engineering</span></span><span class="chip"><span data-i="c3s1">Cloud</span></span></div>
-        </div>
-      </li>
-      <li class="ci">
-        <span class="cn" aria-hidden="true">04</span>
-        <div class="cb">
-          <div class="cm"><span class="ct"><span data-i="c4t">Cloud &amp; data engineering</span></span><span class="ty"><span data-i="c4y">Course</span></span></div>
-          <h3><span data-i="c4h">AWS Cloud Practitioner Essentials</span></h3>
+          <h3><span data-i="c3h">AWS Cloud Practitioner Essentials</span></h3>
           <p class="co">AWS Training and Certification · <span class="mono" data-fmt-date="2026-09">Sep 2026</span></p>
-          <div class="tags"><span class="chip"><span data-i="c4s0">AWS</span></span><span class="chip"><span data-i="c4s1">Cloud fundamentals</span></span></div>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
         </div>
       </li>
-      <li class="ci">
-        <span class="cn" aria-hidden="true">05</span>
+      <li class="cc" data-cat="cloud">
+        <div class="cthumb ph" aria-hidden="true"><span>Amazon Web Services</span></div>
         <div class="cb">
-          <div class="cm"><span class="ct"><span data-i="c5t">Power BI &amp; DAX</span></span><span class="ty"><span data-i="c5y">Certificate</span></span></div>
-          <h3><span data-i="c5h">Advanced Analytics with DAX</span></h3>
-          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2026-07">Jul 2026</span></p>
-          <div class="tags"><span class="chip"><span data-i="c5s0">DAX</span></span><span class="chip"><span data-i="c5s1">DAX language</span></span></div>
-        </div>
-      </li>
-      <li class="ci">
-        <span class="cn" aria-hidden="true">06</span>
-        <div class="cb">
-          <div class="cm"><span class="ct"><span data-i="c6t">Power BI &amp; DAX</span></span><span class="ty"><span data-i="c6y">Certificate</span></span></div>
-          <h3><span data-i="c6h">DAX Booster | Acceleration Programme</span></h3>
-          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2026-06">Jun 2026</span></p>
-          <div class="tags"><span class="chip"><span data-i="c6s0">DAX</span></span></div>
-        </div>
-      </li>
-      <li class="ci">
-        <span class="cn" aria-hidden="true">07</span>
-        <div class="cb">
-          <div class="cm"><span class="ct"><span data-i="c7t">Power BI &amp; DAX</span></span><span class="ty"><span data-i="c7y">Certificate</span></span></div>
-          <h3><span data-i="c7h">Power BI Service Essentials 2.0</span></h3>
-          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2026-05">May 2026</span></p>
-          <div class="tags"><span class="chip"><span data-i="c7s0">Power BI Service</span></span></div>
-        </div>
-      </li>
-      <li class="ci">
-        <span class="cn" aria-hidden="true">08</span>
-        <div class="cb">
-          <div class="cm"><span class="ct"><span data-i="c8t">Cloud &amp; data engineering</span></span><span class="ty"><span data-i="c8y">Course</span></span></div>
-          <h3><span data-i="c8h">Introduction to Amazon Virtual Private Cloud (VPC)</span></h3>
+          <h3><span data-i="c4h">Introduction to Amazon Virtual Private Cloud (VPC)</span></h3>
           <p class="co">Amazon Web Services (AWS) · <span class="mono" data-fmt-date="2026-08">Aug 2026</span></p>
-          <div class="tags"><span class="chip"><span data-i="c8s0">AWS</span></span><span class="chip"><span data-i="c8s1">Cloud networking</span></span></div>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
         </div>
       </li>
-      <li class="ci">
-        <span class="cn" aria-hidden="true">09</span>
+      <li class="cc" data-cat="cloud">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
         <div class="cb">
-          <div class="cm"><span class="ct"><span data-i="c9t">Complementary</span></span><span class="ty"><span data-i="c9y">Certificate</span></span></div>
-          <h3><span data-i="c9h">Negotiation and Persuasion</span></h3>
-          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2026-02">Feb 2026</span></p>
-          <div class="tags"><span class="chip"><span data-i="c9s0">Negotiation</span></span><span class="chip"><span data-i="c9s1">Communication</span></span></div>
+          <h3><span data-i="c5h">Cloud Data Engineering</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2026-01">Jan 2026</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
         </div>
       </li>
-      <li class="ci">
-        <span class="cn" aria-hidden="true">10</span>
+      <li class="cc" data-cat="cloud">
+        <button type="button" class="cthumb" data-full="assets/img/certs/fabric-solucoes.webp" data-cap="Complete Solutions in Microsoft Fabric" data-cap-pt="Soluções Completas no Microsoft Fabric" aria-label="Enlarge certificate"><img src="assets/img/certs/fabric-solucoes.webp" loading="lazy" decoding="async" alt="Certificate: Complete Solutions in Microsoft Fabric" data-ia="alt:c6a"></button>
         <div class="cb">
-          <div class="cm"><span class="ct"><span data-i="c10t">Complementary</span></span><span class="ty"><span data-i="c10y">Certificate</span></span></div>
-          <h3><span data-i="c10h">Entrepreneurship and Business Strategy</span></h3>
+          <h3><span data-i="c6h">Complete Solutions in Microsoft Fabric</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2025-12">Dec 2025</span></p>
+          <a class="clink" href="https://app.xperiun.com/certificado/8i91vfc048pvmyb5ba61" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="cloud">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c7h">Databricks with Spark</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2025-12">Dec 2025</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="cloud">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c8h">Transformations with Microsoft Fabric</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2025-09">Sep 2025</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="cloud">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c9h">Microsoft Fabric Fundamentals</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2025-04">Apr 2025</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <button type="button" class="cthumb" data-full="assets/img/certs/dax-avancadas.webp" data-cap="Advanced Analytics with DAX" data-cap-pt="Análises Avançadas com DAX" aria-label="Enlarge certificate"><img src="assets/img/certs/dax-avancadas.webp" loading="lazy" decoding="async" alt="Certificate: Advanced Analytics with DAX" data-ia="alt:c10a"></button>
+        <div class="cb">
+          <h3><span data-i="c10h">Advanced Analytics with DAX</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2026-07">Jul 2026</span></p>
+          <a class="clink" href="https://app.xperiun.com/certificado/XP-33C2AB9F3BD8" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <button type="button" class="cthumb" data-full="assets/img/certs/dax-booster.webp" data-cap="DAX Booster | Acceleration Programme" data-cap-pt="DAX Booster | Programa de Aceleração" aria-label="Enlarge certificate"><img src="assets/img/certs/dax-booster.webp" loading="lazy" decoding="async" alt="Certificate: DAX Booster | Acceleration Programme" data-ia="alt:c11a"></button>
+        <div class="cb">
+          <h3><span data-i="c11h">DAX Booster | Acceleration Programme</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2026-06">Jun 2026</span></p>
+          <a class="clink" href="https://app.xperiun.com/certificado/sig3wy8a72pyrtdgm6dh" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c12h">Advanced DAX Language</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-01">Jan 2024</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <button type="button" class="cthumb" data-full="assets/img/certs/pbi-servico-essencial.webp" data-cap="Power BI Service Essentials 2.0" data-cap-pt="Power BI Serviço Essencial 2.0" aria-label="Enlarge certificate"><img src="assets/img/certs/pbi-servico-essencial.webp" loading="lazy" decoding="async" alt="Certificate: Power BI Service Essentials 2.0" data-ia="alt:c13a"></button>
+        <div class="cb">
+          <h3><span data-i="c13h">Power BI Service Essentials 2.0</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2026-05">May 2026</span></p>
+          <a class="clink" href="https://app.xperiun.com/certificado/qk7rnlvm860dz9xuetpt" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <button type="button" class="cthumb" data-full="assets/img/certs/pbi-implantacao.webp" data-cap="Power BI Service Deployment 2.0" data-cap-pt="Power BI Serviço Implantação 2.0" aria-label="Enlarge certificate"><img src="assets/img/certs/pbi-implantacao.webp" loading="lazy" decoding="async" alt="Certificate: Power BI Service Deployment 2.0" data-ia="alt:c14a"></button>
+        <div class="cb">
+          <h3><span data-i="c14h">Power BI Service Deployment 2.0</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-08">Aug 2024</span></p>
+          <a class="clink" href="https://app.xperiun.com/certificado/8qbfa5x0ye3s18r8cllav7z9n" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c15h">Advanced Data Modelling</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2023-12">Dec 2023</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <button type="button" class="cthumb" data-full="assets/img/certs/modelagem-powerbi.webp" data-cap="Data Modelling in Power BI" data-cap-pt="Modelagem de Dados no Power BI" aria-label="Enlarge certificate"><img src="assets/img/certs/modelagem-powerbi.webp" loading="lazy" decoding="async" alt="Certificate: Data Modelling in Power BI" data-ia="alt:c16a"></button>
+        <div class="cb">
+          <h3><span data-i="c16h">Data Modelling in Power BI</span></h3>
+          <p class="co">Black Eagle Treinamentos (Joviano) · <span class="mono" data-fmt-date="2024-12">Dec 2024</span></p>
+          <a class="clink" href="https://cursos.joviano.com/verify/Y2VydGlmaWNhdGVfMTA3NjBfMTY5" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <button type="button" class="cthumb" data-full="assets/img/certs/guia-power-query.webp" data-cap="The Definitive Power Query Guide" data-cap-pt="Guia Definitivo de Power Query" aria-label="Enlarge certificate"><img src="assets/img/certs/guia-power-query.webp" loading="lazy" decoding="async" alt="Certificate: The Definitive Power Query Guide" data-ia="alt:c17a"></button>
+        <div class="cb">
+          <h3><span data-i="c17h">The Definitive Power Query Guide</span></h3>
+          <p class="co">Black Eagle Treinamentos (Joviano) · <span class="mono" data-fmt-date="2024-10">Oct 2024</span></p>
+          <a class="clink" href="https://cursos.joviano.com/verify/Y2VydGlmaWNhdGVfMTA3NjBfMTY3" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c18h">Advanced Power Query</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2023-11">Nov 2023</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c19h">APIs and Advanced M Language</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-02">Feb 2024</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c20h">Complete Power BI Course</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-01">Jan 2024</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c21h">Power BI Fundamentals</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2023-11">Nov 2023</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <div class="cthumb ph" aria-hidden="true"><span>Udemy</span></div>
+        <div class="cb">
+          <h3><span data-i="c22h">Complete Power BI: Basic to Advanced</span></h3>
+          <p class="co">Udemy · <span class="mono" data-fmt-date="2021-08">Aug 2021</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <div class="cthumb ph" aria-hidden="true"><span>Udemy</span></div>
+        <div class="cb">
+          <h3><span data-i="c23h">Master DAX: Project-Based Power BI</span></h3>
+          <p class="co">Udemy · <span class="mono" data-fmt-date="2022-08">Aug 2022</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c24h">Advanced Data Visualisation</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-01">Jan 2024</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <button type="button" class="cthumb" data-full="assets/img/certs/storytelling.webp" data-cap="Data Storytelling and Visualisation 2.0" data-cap-pt="Storytelling e Visualização de Dados 2.0" aria-label="Enlarge certificate"><img src="assets/img/certs/storytelling.webp" loading="lazy" decoding="async" alt="Certificate: Data Storytelling and Visualisation 2.0" data-ia="alt:c25a"></button>
+        <div class="cb">
+          <h3><span data-i="c25h">Data Storytelling and Visualisation 2.0</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-07">Jul 2024</span></p>
+          <a class="clink" href="https://app.xperiun.com/certificado/j1p2y6r30kvtg1hoj3sktvdwr" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="pbi">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c26h">Dashboard Design with Figma 2.0</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-07">Jul 2024</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="sql">
+        <button type="button" class="cthumb" data-full="assets/img/certs/sql-server-avancado.webp" data-cap="Advanced SQL Server" data-cap-pt="SQL Server Avançado" aria-label="Enlarge certificate"><img src="assets/img/certs/sql-server-avancado.webp" loading="lazy" decoding="async" alt="Certificate: Advanced SQL Server" data-ia="alt:c27a"></button>
+        <div class="cb">
+          <h3><span data-i="c27h">Advanced SQL Server</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-07">Jul 2024</span></p>
+          <a class="clink" href="https://app.xperiun.com/certificado/rt3vffbjejogbl7xyn39ok5lb" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="sql">
+        <div class="cthumb ph" aria-hidden="true"><span>Udemy</span></div>
+        <div class="cb">
+          <h3><span data-i="c28h">SQL for Data Analysis: Basic to Advanced</span></h3>
+          <p class="co">Udemy · <span class="mono" data-fmt-date="2023-05">May 2023</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="sql">
+        <div class="cthumb ph" aria-hidden="true"><span>LinkedIn Learning</span></div>
+        <div class="cb">
+          <h3><span data-i="c29h">Discover SQL</span></h3>
+          <p class="co">LinkedIn Learning · <span class="mono" data-fmt-date="2022-04">Apr 2022</span></p>
+          <a class="clink" href="https://www.linkedin.com/learning/certificates/d962351ce6eb53d81ba551d7c2aba51634802bbb3571ef55149c53b22c9b4224/" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="sql">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c30h">Working with Large Corporate Databases</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-06">Jun 2024</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="sql">
+        <button type="button" class="cthumb" data-full="assets/img/certs/python-analise.webp" data-cap="Python for Data Analysis" data-cap-pt="Python para Análise de Dados" aria-label="Enlarge certificate"><img src="assets/img/certs/python-analise.webp" loading="lazy" decoding="async" alt="Certificate: Python for Data Analysis" data-ia="alt:c31a"></button>
+        <div class="cb">
+          <h3><span data-i="c31h">Python for Data Analysis</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-09">Sep 2024</span></p>
+          <a class="clink" href="https://app.xperiun.com/certificado/ihh74a6vi37nneimk4jaxcqz9" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="sql">
+        <button type="button" class="cthumb" data-full="assets/img/certs/pandas.webp" data-cap="Pandas for Advanced Analysis with Python" data-cap-pt="Pandas para Análises Avançadas com Python" aria-label="Enlarge certificate"><img src="assets/img/certs/pandas.webp" loading="lazy" decoding="async" alt="Certificate: Pandas for Advanced Analysis with Python" data-ia="alt:c32a"></button>
+        <div class="cb">
+          <h3><span data-i="c32h">Pandas for Advanced Analysis with Python</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-10">Oct 2024</span></p>
+          <a class="clink" href="https://app.xperiun.com/certificado/fhh4bhoswsxy2o2wqdhwskd2p" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="sql">
+        <button type="button" class="cthumb" data-full="assets/img/certs/intro-ml.webp" data-cap="Introduction to Machine Learning" data-cap-pt="Introdução à Machine Learning" aria-label="Enlarge certificate"><img src="assets/img/certs/intro-ml.webp" loading="lazy" decoding="async" alt="Certificate: Introduction to Machine Learning" data-ia="alt:c33a"></button>
+        <div class="cb">
+          <h3><span data-i="c33h">Introduction to Machine Learning</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-10">Oct 2024</span></p>
+          <a class="clink" href="https://app.xperiun.com/certificado/4w6hqlan68h6ba8ym0hqgneza" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="biz">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c34h">Statistics for Data Analysis</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-01">Jan 2024</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="biz">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c35h">Data Analyst Professional</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-01">Jan 2024</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="biz">
+        <button type="button" class="cthumb" data-full="assets/img/certs/business-analytics.webp" data-cap="Business Analytics: Indicators and KPIs" data-cap-pt="Business Analytics: Indicadores e KPIs" aria-label="Enlarge certificate"><img src="assets/img/certs/business-analytics.webp" loading="lazy" decoding="async" alt="Certificate: Business Analytics: Indicators and KPIs" data-ia="alt:c36a"></button>
+        <div class="cb">
+          <h3><span data-i="c36h">Business Analytics: Indicators and KPIs</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-09">Sep 2024</span></p>
+          <a class="clink" href="https://app.xperiun.com/certificado/fa23h3vk0oardvdxile6tqznb" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="biz">
+        <button type="button" class="cthumb" data-full="assets/img/certs/fpa.webp" data-cap="Certified Corporate Financial Planning and Analysis Professional (FP&amp;A)" data-cap-pt="Certified Corporate FP&amp;A Professional (Planejamento e Análise Financeira)" aria-label="Enlarge certificate"><img src="assets/img/certs/fpa.webp" loading="lazy" decoding="async" alt="Certificate: Certified Corporate Financial Planning and Analysis Professional (FP&A)" data-ia="alt:c37a"></button>
+        <div class="cb">
+          <h3><span data-i="c37h">Certified Corporate Financial Planning and Analysis Professional (FP&amp;A)</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2026-01">Jan 2026</span></p>
+          <a class="clink" href="https://app.xperiun.com/certificado/w945zrsj4nzw63css1ny" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="biz">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c38h">Dynamic Comparisons: Budget, Forecast and Actual</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2025-09">Sep 2025</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="biz">
+        <button type="button" class="cthumb" data-full="assets/img/certs/n8n.webp" data-cap="N8N: Intelligent Task and Process Automation" data-cap-pt="N8N: Automação Inteligente de Tarefas e Processos" aria-label="Enlarge certificate"><img src="assets/img/certs/n8n.webp" loading="lazy" decoding="async" alt="Certificate: N8N: Intelligent Task and Process Automation" data-ia="alt:c39a"></button>
+        <div class="cb">
+          <h3><span data-i="c39h">N8N: Intelligent Task and Process Automation</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2025-12">Dec 2025</span></p>
+          <a class="clink" href="https://app.xperiun.com/certificado/eb1lmatvn4tadqaowmbn" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="biz">
+        <button type="button" class="cthumb" data-full="assets/img/certs/power-automate.webp" data-cap="Power Automate Essentials" data-cap-pt="Power Automate Essencial" aria-label="Enlarge certificate"><img src="assets/img/certs/power-automate.webp" loading="lazy" decoding="async" alt="Certificate: Power Automate Essentials" data-ia="alt:c40a"></button>
+        <div class="cb">
+          <h3><span data-i="c40h">Power Automate Essentials</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2025-06">Jun 2025</span></p>
+          <a class="clink" href="https://app.xperiun.com/certificado/42nmgiqlw89bpc3agthx" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="biz">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c41h">Power GPT</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-06">Jun 2024</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="biz">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c42h">Data Warehouse with Apache HOP</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2025-08">Aug 2025</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="biz">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c43h">Logical Reasoning and Programming Logic</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2024-01">Jan 2024</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="excel">
+        <div class="cthumb ph" aria-hidden="true"><span>LinkedIn Learning</span></div>
+        <div class="cb">
+          <h3><span data-i="c44h">Excel 2019: Advanced Formulas and Functions</span></h3>
+          <p class="co">LinkedIn Learning · <span class="mono" data-fmt-date="2022-06">Jun 2022</span></p>
+          <a class="clink" href="https://www.linkedin.com/learning/certificates/a76bbc971e5ffe5095c92ffeae937b9f925fcbf58999c69677bb57bcf94ba202/" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="excel">
+        <div class="cthumb ph" aria-hidden="true"><span>LinkedIn Learning</span></div>
+        <div class="cb">
+          <h3><span data-i="c45h">Excel: Power Query</span></h3>
+          <p class="co">LinkedIn Learning · <span class="mono" data-fmt-date="2022-06">Jun 2022</span></p>
+          <a class="clink" href="https://www.linkedin.com/learning/certificates/9d92be22d83e6f353791c63198b6dbafe3fef67eb9c20375cbea1df4bd7f0634/" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="excel">
+        <div class="cthumb ph" aria-hidden="true"><span>Udemy</span></div>
+        <div class="cb">
+          <h3><span data-i="c46h">Excel Macros and VBA: 67 lessons</span></h3>
+          <p class="co">Udemy · <span class="mono" data-fmt-date="2022-03">Mar 2022</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="excel">
+        <div class="cthumb ph" aria-hidden="true"><span>Udemy</span></div>
+        <div class="cb">
+          <h3><span data-i="c47h">Excel 2016 Dashboard Course</span></h3>
+          <p class="co">Udemy · <span class="mono" data-fmt-date="2021-12">Dec 2021</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="biz">
+        <div class="cthumb ph" aria-hidden="true"><span>LinkedIn Learning</span></div>
+        <div class="cb">
+          <h3><span data-i="c48h">Statistics Foundations: Part 1</span></h3>
+          <p class="co">LinkedIn Learning · <span class="mono" data-fmt-date="2022-06">Jun 2022</span></p>
+          <a class="clink" href="https://www.linkedin.com/learning/certificates/0f4560664c61b293e9c5eb83799d25fa65789c482bd0ffbce2540365868081d3/" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="biz">
+        <div class="cthumb ph" aria-hidden="true"><span>LinkedIn Learning</span></div>
+        <div class="cb">
+          <h3><span data-i="c49h">Introduction to Data Science: Basic Concepts</span></h3>
+          <p class="co">LinkedIn Learning · <span class="mono" data-fmt-date="2022-05">May 2022</span></p>
+          <a class="clink" href="https://www.linkedin.com/learning/certificates/813db6cebf6b9f4ac5ec384aef98f1ff32c43ee519028082ba919476a1eb3b82/" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="soft">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c50h">Entrepreneurship and Business Strategy</span></h3>
           <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2026-02">Feb 2026</span></p>
-          <div class="tags"><span class="chip"><span data-i="c10s0">Strategy</span></span><span class="chip"><span data-i="c10s1">Business</span></span></div>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="soft">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c51h">Strategic Positioning</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2025-11">Nov 2025</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="soft">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c52h">Leadership and Strategic Management</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2025-10">Oct 2025</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="soft">
+        <div class="cthumb ph" aria-hidden="true"><span>LinkedIn Learning</span></div>
+        <div class="cb">
+          <h3><span data-i="c53h">Strategic Planning Foundations</span></h3>
+          <p class="co">LinkedIn Learning · <span class="mono" data-fmt-date="2022-05">May 2022</span></p>
+          <a class="clink" href="https://www.linkedin.com/learning/certificates/e01188e5daf1add02941032a83db0337132c599f29f3307de05d80e3a0d9af80/" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="soft">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c54h">Negotiation and Persuasion</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2026-02">Feb 2026</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="soft">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c55h">Assertive Communication</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2025-08">Aug 2025</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="soft">
+        <div class="cthumb ph" aria-hidden="true"><span>Xperiun</span></div>
+        <div class="cb">
+          <h3><span data-i="c56h">Emotional Intelligence</span></h3>
+          <p class="co">Xperiun | Data Analytics · <span class="mono" data-fmt-date="2025-07">Jul 2025</span></p>
+          <a class="clink" href="https://www.linkedin.com/in/lucasdelfino-/details/certifications/" target="_blank" rel="noopener"><span data-i="kl">View on LinkedIn</span> <span class="arrow">↗</span></a>
+        </div>
+      </li>
+      <li class="cc" data-cat="soft">
+        <div class="cthumb ph" aria-hidden="true"><span>LinkedIn Learning</span></div>
+        <div class="cb">
+          <h3><span data-i="c57h">10 Listening Techniques to Improve Interpersonal Communication</span></h3>
+          <p class="co">LinkedIn Learning · <span class="mono" data-fmt-date="2022-05">May 2022</span></p>
+          <a class="clink" href="https://www.linkedin.com/learning/certificates/5840013817520a2302f36f01b56bbfe1e7325ae8f128ff2be08d233ef0f80345/" target="_blank" rel="noopener"><span data-i="kv">Verify credential</span> <span class="arrow">↗</span></a>
         </div>
       </li>
       </ol>
-      <p class="note"><span data-i="k.note">AWS Cloud Practitioner Essentials and the VPC course are AWS training courses, not the official AWS Certified Cloud Practitioner exam. The full, up-to-date list is on LinkedIn, and Xperiun holds more certificates from practical challenges.</span></p>
+      <p class="note"><span data-i="k.note">AWS Cloud Practitioner Essentials and the VPC course are AWS training courses, not the official AWS Certified Cloud Practitioner exam. Cards without a verification page link to my LinkedIn certifications, which hold the original files.</span></p>
     </section>
 
     <section class="edu-block" aria-labelledby="eduH">
@@ -226,8 +615,24 @@
     <span><a href="index.html#projetos"><span data-i="f.1">Projects</span></a> · <a href="index.html#stack">Stack</a> · <a href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false"><span data-i="f.3">Back to top ↑</span></a></span>
   </footer>
 </div>
+<dialog class="lb" id="lb"><button type="button" aria-label="Close" id="lbx">×</button><img alt="" id="lbi"><p id="lbc"></p></dialog>
 <script>
-window.PT_EXTRA={"c1x":"Válida até ago/2027","c1w":"A certificação mais reconhecida do mercado para quem trabalha com Power BI.","c1s0":"Power BI","c1s1":"Modelagem de dados","c1s2":"DAX","c1s3":"Visualização","c1t":"Certificação oficial","c1y":"Certificação","c1h":"Microsoft Certified: Power BI Data Analyst Associate (PL-300)","c2s0":"Databricks","c2s1":"Engenharia de dados","c2t":"Nuvem e engenharia de dados","c2y":"Curso","c2h":"Formação Completa DataBricks: do Básico ao Avançado 2026","c3s0":"Engenharia de dados","c3s1":"Cloud","c3t":"Nuvem e engenharia de dados","c3y":"Certificado","c3h":"Engenharia de Dados em Cloud","c4s0":"AWS","c4s1":"Fundamentos de nuvem","c4t":"Nuvem e engenharia de dados","c4y":"Curso","c4h":"AWS Cloud Practitioner Essentials","c5s0":"DAX","c5s1":"Linguagem DAX","c5t":"Power BI e DAX","c5y":"Certificado","c5h":"Análises Avançadas com DAX","c6s0":"DAX","c6t":"Power BI e DAX","c6y":"Certificado","c6h":"DAX Booster | Programa de Aceleração","c7s0":"Power BI Service","c7t":"Power BI e DAX","c7y":"Certificado","c7h":"Power BI Serviço Essencial 2.0","c8s0":"AWS","c8s1":"Redes em nuvem","c8t":"Nuvem e engenharia de dados","c8y":"Curso","c8h":"Introduction to Amazon Virtual Private Cloud (VPC)","c9s0":"Negociação","c9s1":"Comunicação","c9t":"Complementar","c9y":"Certificado","c9h":"Negociação e Persuasão","c10s0":"Estratégia","c10s1":"Negócios","c10t":"Complementar","c10y":"Certificado","c10h":"Empreendedorismo e Estratégias Empresariais","n.proj":"Projetos","n.jour":"Trajetória","n.cert":"Certificações","n.cont":"Contato","n.talk":"Vamos conversar","b.small":"data · crédito · cobrança","k.eb2":"Certificações","k.h2c":"O que estudei e comprovei","k.intro":"Certificados e cursos de Power BI, DAX, Databricks e cloud, ordenados pelo peso que têm hoje no mercado de dados. A certificação oficial da Microsoft vem primeiro, e os cursos complementares ficam no fim.","k.back":"Voltar ao portfólio","k.f1a":"Certificação oficial · Microsoft","k.f1b":"Power BI Data Analyst Associate","k.f1c":"Válida até ago/2027. Cobre preparação, modelagem, visualização e implantação de relatórios no Power BI.","k.f2a":"Formação · Xperiun | Data Analytics","k.f2b":"MBA em BI &amp; Analytics","k.f2c":"Concluído em março de 2026, depois de cerca de um ano de curso, com projetos práticos sobre problemas reais.","k.lh":"Certificados e cursos, por relevância","k.ls":"Critério: reconhecimento no mercado, ligação direta com as ferramentas da vaga (Power BI, DAX, Databricks, cloud) e data de conclusão.","k.note":"O AWS Cloud Practitioner Essentials e o curso de VPC são treinamentos da AWS, e não o exame oficial AWS Certified Cloud Practitioner. A lista completa e atualizada está no LinkedIn, e a Xperiun reúne mais certificados de desafios práticos.","k.eh":"Formação acadêmica","k.e1":"MBA em BI &amp; Analytics","k.e2":"Análise e Desenvolvimento de Sistemas","k.e3":"Curso de Formação em Análise de Dados","k.cta1":"Ver no LinkedIn","k.cta2":"Portfólio Xperiun","f.1":"Projetos","f.3":"Voltar ao topo ↑","k.hl":"Destaques","a.home":"Lucas Delfino, início","a.main":"Principal","a.theme":"Alternar tema claro/escuro","a.menu":"Abrir menu"};
+(function(){
+  var g=document.getElementById("cgrid"),chips=document.querySelectorAll(".fchip");
+  chips.forEach(function(b){b.addEventListener("click",function(){
+    chips.forEach(function(x){var on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-pressed",on)});
+    var f=b.dataset.f;g.querySelectorAll(".cc").forEach(function(li){li.hidden=!(f==="all"||li.dataset.cat===f)});
+  })});
+  var d=document.getElementById("lb"),i=document.getElementById("lbi"),c=document.getElementById("lbc");
+  g.addEventListener("click",function(e){var t=e.target.closest(".cthumb[data-full]");if(!t)return;
+    i.src=t.dataset.full;i.alt=t.dataset.cap;c.textContent=(window.LANG==="pt"?t.dataset.capPt:t.dataset.cap);
+    if(d.showModal)d.showModal();else window.open(t.dataset.full)});
+  document.getElementById("lbx").addEventListener("click",function(){d.close()});
+  d.addEventListener("click",function(e){if(e.target===d)d.close()});
+})();
+</script>
+<script>
+window.PT_EXTRA={"kv":"Verificar credencial","cat.all":"Todas","cat.pbi":"Power BI e DAX","cat.cloud":"Nuvem e engenharia de dados","cat.sql":"SQL e Python","cat.biz":"Analytics, finanças e automação","cat.excel":"Excel","cat.soft":"Negócios e comunicação","c1h":"Microsoft Certified: Power BI Data Analyst Associate (PL-300)","c1a":"Certificado: Microsoft Certified: Power BI Data Analyst Associate (PL-300)","kx":"Válida até ago/2027","c2h":"Formação Completa DataBricks: do Básico ao Avançado 2026","c3h":"AWS Cloud Practitioner Essentials","kl":"Ver no LinkedIn","c4h":"Introduction to Amazon Virtual Private Cloud (VPC)","c5h":"Engenharia de Dados em Cloud","c6h":"Soluções Completas no Microsoft Fabric","c6a":"Certificado: Soluções Completas no Microsoft Fabric","c7h":"Databricks com Spark","c8h":"Transformações com Microsoft Fabric","c9h":"Fundamentos do Microsoft Fabric","c10h":"Análises Avançadas com DAX","c10a":"Certificado: Análises Avançadas com DAX","c11h":"DAX Booster | Programa de Aceleração","c11a":"Certificado: DAX Booster | Programa de Aceleração","c12h":"Linguagem DAX Avançado","c13h":"Power BI Serviço Essencial 2.0","c13a":"Certificado: Power BI Serviço Essencial 2.0","c14h":"Power BI Serviço Implantação 2.0","c14a":"Certificado: Power BI Serviço Implantação 2.0","c15h":"Modelagem de Dados Avançado","c16h":"Modelagem de Dados no Power BI","c16a":"Certificado: Modelagem de Dados no Power BI","c17h":"Guia Definitivo de Power Query","c17a":"Certificado: Guia Definitivo de Power Query","c18h":"Power Query Avançado","c19h":"APIs e Linguagem M Avançado","c20h":"Curso Completo de Power BI","c21h":"Power BI Fundamentals","c22h":"Power Bi Completo - Do Básico ao Avançado","c23h":"Master DAX - Power BI orientado a projeto","c24h":"Visualização de Dados Avançado","c25h":"Storytelling e Visualização de Dados 2.0","c25a":"Certificado: Storytelling e Visualização de Dados 2.0","c26h":"Design de Dashboards com o Figma 2.0","c27h":"SQL Server Avançado","c27a":"Certificado: SQL Server Avançado","c28h":"SQL para Análise de Dados: do básico ao avançado","c29h":"Descubra o SQL","c30h":"Trabalhando com Grandes Bases Corporativas","c31h":"Python para Análise de Dados","c31a":"Certificado: Python para Análise de Dados","c32h":"Pandas para Análises Avançadas com Python","c32a":"Certificado: Pandas para Análises Avançadas com Python","c33h":"Introdução à Machine Learning","c33a":"Certificado: Introdução à Machine Learning","c34h":"Estatística para Análise de Dados","c35h":"Data Analyst Professional","c36h":"Business Analytics: Indicadores e KPIs","c36a":"Certificado: Business Analytics: Indicadores e KPIs","c37h":"Certified Corporate FP&amp;A Professional (Planejamento e Análise Financeira)","c37a":"Certificado: Certified Corporate FP&A Professional (Planejamento e Análise Financeira)","c38h":"Comparativos Dinâmicos entre Budget, Forecast e Actual","c39h":"N8N: Automação Inteligente de Tarefas e Processos","c39a":"Certificado: N8N: Automação Inteligente de Tarefas e Processos","c40h":"Power Automate Essencial","c40a":"Certificado: Power Automate Essencial","c41h":"Power GPT","c42h":"Data Warehouse com Apache HOP","c43h":"Raciocínio Lógico e Lógica de Programação","c44h":"Excel 2019: Fórmulas e Funções Avançadas","c45h":"Excel: Power Query","c46h":"Macros e VBA Excel - 67 aulas","c47h":"Curso de Dashboard em Excel 2016","c48h":"Fundamentos de Estatística: Parte 1","c49h":"Introdução à Ciência de Dados: Conceitos Básicos","c50h":"Empreendedorismo e Estratégias Empresariais","c51h":"Posicionamento Estratégico","c52h":"Liderança e Gestão Estratégica","c53h":"Fundamentos do Planejamento Estratégico","c54h":"Negociação e Persuasão","c55h":"Comunicação Assertiva","c56h":"Inteligência Emocional","c57h":"10 Técnicas de Escuta para Melhorar a Comunicação Interpessoal","n.proj":"Projetos","n.jour":"Trajetória","n.cert":"Certificações","n.cont":"Contato","n.talk":"Vamos conversar","b.small":"data · crédito · cobrança","k.eb2":"Certificações","k.h2c":"O que estudei e comprovei","k.intro":"As 57 certificações e cursos que estão no meu LinkedIn, agrupados por tema e ordenados pelo peso que têm hoje no mercado de dados. Quando o emissor publica uma página pública, coloco o link, e quando consegui capturar o certificado dá para abrir uma prévia.","k.back":"Voltar ao portfólio","k.f1a":"Certificação oficial · Microsoft","k.f1b":"Power BI Data Analyst Associate","k.f1c":"Válida até ago/2027. Cobre preparação, modelagem, visualização e implantação de relatórios no Power BI.","k.f2a":"Formação · Xperiun | Data Analytics","k.f2b":"MBA em BI &amp; Analytics","k.f2c":"Concluído em março de 2026, depois de cerca de um ano de curso, com projetos práticos sobre problemas reais.","k.lh":"Todos os certificados e cursos","k.ls":"A certificação oficial da Microsoft vem primeiro, depois nuvem e engenharia de dados, Power BI e DAX, SQL e Python e os cursos complementares. Use os filtros para ver por tema.","k.note":"O AWS Cloud Practitioner Essentials e o curso de VPC são treinamentos da AWS, e não o exame oficial AWS Certified Cloud Practitioner. Os cartões sem página de verificação levam para as minhas certificações no LinkedIn, onde estão os arquivos originais.","k.eh":"Formação acadêmica","k.e1":"MBA em BI &amp; Analytics","k.e2":"Análise e Desenvolvimento de Sistemas","k.e3":"Curso de Formação em Análise de Dados","k.cta1":"Ver no LinkedIn","k.cta2":"Portfólio Xperiun","f.1":"Projetos","f.3":"Voltar ao topo ↑","k.hl":"Destaques","a.home":"Lucas Delfino, início","a.main":"Principal","a.theme":"Alternar tema claro/escuro","a.menu":"Abrir menu"};
 window.PAGE_META={pt:{title:"Certificações · Lucas Delfino",desc:"Certificações e formação de Lucas Delfino em Power BI, DAX, Databricks, cloud e engenharia de dados, em ordem de relevância para o mercado."}};
 </script>
 <script src="assets/js/i18n.js"></script>
