@@ -308,3 +308,5 @@ pre.code .k{color:#E7A9F0}pre.code .c{color:#9C92A8}pre.code .s{color:#B8E3C8}
 .r-facts li{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:16px;font-size:14px;color:var(--ink-2);line-height:1.5}
 .r-facts b{display:block;font:650 17px/1.2 var(--f-display);color:var(--ink);margin-bottom:6px}
 @media (max-width:900px){.recog{grid-template-columns:1fr}.r-trophy{max-width:340px}.r-facts{grid-template-columns:1fr}}
+
+.permit{margin:22px 0 0;max-width:54ch;font-size:14.5px;line-height:1.55;color:var(--ink-2);padding-left:14px;border-left:3px solid var(--orchid)}
