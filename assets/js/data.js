@@ -136,6 +136,20 @@ const PROJECTS = [
      dax:"",
      resultado:"Uma leitura da fábrica em uma tela: o desvio aparece setor a setor, os pedidos travados ficam concentrados em Preparação, e qualquer pedido pode ser aberto para ver exatamente onde perdeu dias."}},
 
+  {slug:"agent-performance-report", lane:"negocio", domain:"Cobrança · Operação de crédito",
+   title:"Agent Performance Report", file:"Operacional · 3 páginas", mock:"bars",
+   lede:"Acompanhamento de produtividade de operadores de cobrança: o ritmo de cada agente em relação à meta do mês, em uma operação de recuperação de crédito.",
+   side:"A pergunta do gestor é quem está no ritmo para bater a meta e quem precisa de apoio. O ranking projeta o resultado de cada operador, e o gráfico de concentração cruza o quanto cada um depende de um mesmo tipo de desfecho com a sua taxa de RPC (contato com a pessoa certa).",
+   kpi:{v:"3 páginas", l:"visão geral, ritmo e guia de métricas"}, tools:["Power BI","DAX"], tags:["Produtividade","Meta e projeção","Concentração de desfechos"],
+   report:PBI+"eyJrIjoiOWIwMTFiYmQtOTgyNC00MGU5LWJlNjctYjkyZWNmMjVhNmVmIiwidCI6Ijc4NzA1NDBkLTMzZTEtNDlhZC04OTFjLTY1ZjY5YzA4ZjNjYiJ9",
+   repo:"", cover:"", draft:true,
+   case:{
+     pergunta:"Quais operadores estão no ritmo da meta do mês, quem precisa de apoio e o que diferencia o resultado de cada um?",
+     dados:["Registros de contatos de cobrança por operador, com data, hora, carteira e desfecho.","Tabela de desfechos classificada em PTP (promessa de pagamento), RPC (contato com a pessoa certa) e Alô (atendimento sem contato efetivo).","Meta mensal por operador e calendário de dias úteis para a projeção do mês."],
+     tecnicas:["Página Visão Geral com os principais indicadores do mês e a meta da equipe.","Página Agent Pace: ranking de operadores com projeção contra a meta, ritmo (Excellent, Great, Near Target e Below Target), média diária e desvio em relação à equipe.","Índice de concentração de desfechos (HHI) por operador, para medir se o resultado depende de um único tipo de desfecho.","Gráfico de dispersão concentração × RPC, com o desfecho dominante no tooltip e cruzamento de filtros para ver os operadores de cada faixa.","Quartil por projeção, com cores na mesma escala do ritmo.","Seleção de indicador (registros, contratos ou clientes) por parâmetro dinâmico."],
+     dax:"",
+     resultado:"Uma leitura de ritmo que vai além da média: o gestor identifica quem está abaixo da meta, se o desempenho depende de um tipo de desfecho e onde concentrar o apoio."}},
+
   {slug:"automacao-python", lane:"automacao", domain:"Crédito & Cobrança · Funchal Negócios",
    title:"13 rotinas manuais que viraram Python", file:"automacoes/", mock:"pipeline",
    lede:"Mapeei e automatizei 13 processos manuais da operação de crédito e cobrança em Python.",

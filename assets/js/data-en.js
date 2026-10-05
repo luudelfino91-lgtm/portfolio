@@ -93,6 +93,17 @@ const EN = {
         tecnicas:["Period filter and navigation across Cover, KPI and Summary at the top.","Bars of standard vs actual time per sector, with an average-deviation line.","Cards for profit (1.31 bn), total, completed, blocked and late orders (328), % late (6.54%) and lead time (24.71).","Order table with icon alerts, status, SLA and profit, and a blocked-orders-by-sector chart that toggles to availability.","Order detail page: sheet with segment, priority, SLA and financial status, a process flowchart and a table of days per step, with colour highlighting on delays."],
         resultado:"A read of the factory on one screen: the deviation shows up sector by sector, blocked orders concentrate in Preparation, and any order can be opened to see exactly where it lost days."}
     },
+    "agent-performance-report": {
+      domain:"Collections · Credit operations", file:"Operational · 3 pages",
+      lede:"Productivity tracking report for collections agents: each agent's pace against the monthly target, in a credit recovery operation.",
+      side:"The manager's question is who is on pace to hit the target and who needs support. The ranking projects each agent's result, and the concentration chart crosses how much each agent relies on one outcome type with their RPC rate (right-party contact, meaning the agent reached the right person).",
+      kpi:{v:"3 pages", l:"overview, pace and metrics guide"}, tags:["Productivity","Target and projection","Outcome concentration"],
+      case:{
+        pergunta:"Which agents are on pace for this month's target, who needs support, and what sets each one's result apart?",
+        dados:["Collection contact records by agent, with date, time, portfolio and outcome.","Outcome table grouped into PTP (promise to pay), RPC (right-party contact) and Answered (contact without an effective result).","Monthly target per agent and a business-day calendar for the month projection."],
+        tecnicas:["Overview page with the main indicators for the month and the team target.","Agent Pace page: agent ranking with projection against target, pace (Excellent, Great, Near Target and Below Target), daily average and deviation from the team.","Outcome concentration index (HHI) per agent, to measure whether results depend on a single outcome type.","Concentration × RPC scatter chart, with the dominant outcome in the tooltip and cross-filtering to see the agents in each band.","Quartile by projection, coloured on the same scale as the pace.","Dynamic parameter to switch the indicator (records, contracts or clients)."],
+        resultado:"A pace read that goes beyond the average: the manager sees who is below target, whether performance depends on one outcome type, and where to focus support."}
+    },
     "automacao-python": {
       title:"13 manual routines turned into Python", domain:"Credit & Collections · Funchal Negócios", file:"automacoes/",
       lede:"I mapped and automated 13 manual processes in the credit and collections operation using Python.",
