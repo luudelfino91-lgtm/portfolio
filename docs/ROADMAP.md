@@ -8,6 +8,8 @@
 - [ ] Completar textos e cases de Olist e Metalúrgica
 - [ ] Revisar os demais cases e desligar `SHOW_DRAFT_NOTES`
 - [ ] Projeto de Logística: aguardando relatório
+- [ ] Capa real do Agent Performance Report (captura da página Visão Geral, sem dados identificáveis)
+- [ ] Revisar os textos do Agent Performance Report e desligar `SHOW_DRAFT_NOTES`
 
 ## v1.2 — Presença
 - [ ] Domínio próprio (ex.: lucasdelfino.com.br)
