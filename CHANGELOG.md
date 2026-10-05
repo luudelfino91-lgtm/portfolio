@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.0] — 2026-10-05
+### Adicionado
+- Projeto Agent Performance Report (trilha Relatórios de negócio), com link público do Power BI e case técnico em português e inglês.
+### Pendente
+- Capa real do relatório e revisão final dos textos antes de desligar o aviso de rascunho.
+
 ## [1.1.0] — 2026-09-28
 ### Adicionado
 - Links públicos do Power BI de todos os projetos e novos projetos: VELA (People Analytics) e Xperiun Metalúrgica.
