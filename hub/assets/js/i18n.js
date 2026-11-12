@@ -17,7 +17,7 @@
     en: {
  "hub.skip": "Skip to content",
  "hub.brand.small": "data & ai hub",
- "hub.brand.aria": "Data & AI Hub, home",
+ "hub.brand.aria": "Lucas Delfino data & ai hub",
  "hub.nav.main": "Main",
  "hub.nav.tools": "Tools",
  "hub.nav.privacy": "Privacy",
@@ -80,7 +80,7 @@
     pt: {
  "hub.skip": "Pular para o conteúdo",
  "hub.brand.small": "hub de dados & ia",
- "hub.brand.aria": "Hub de dados e IA, início",
+ "hub.brand.aria": "Lucas Delfino hub de dados & ia",
  "hub.nav.main": "Principal",
  "hub.nav.tools": "Ferramentas",
  "hub.nav.privacy": "Privacidade",

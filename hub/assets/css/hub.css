@@ -101,6 +101,9 @@
 .hub-foot-nav a{display:inline-flex;align-items:center;min-height:var(--tap);padding-inline:8px;text-decoration:none}
 .hub footer a:hover{color:var(--ink);text-decoration:underline}
 
+/* Monograma via CSS: o texto "LD" decorativo fica fora do DOM (WCAG 2.5.3) */
+.hub .mark>span::before{content:"LD"}
+
 /* ---- Compacto (<= 640px) ---- */
 @media (max-width:640px){
   .hub-grid{grid-template-columns:minmax(0,1fr)}
