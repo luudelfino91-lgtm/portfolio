@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-i="hub.title.home">Data &amp; AI Community Hub · Lucas Delfino</title>
+<meta name="description" content="Free, browser-based tools for people who work with data and AI: a CSV viewer and an SQL playground, with no tracking." data-ia="content:hub.desc.home">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/styles.css">
+<link rel="stylesheet" href="./assets/css/hub.css">
+<script src="./assets/js/theme.js"></script>
+</head>
+<body class="hub" id="top">
+<a class="hub-skip btn btn-dark" href="#main" data-i="hub.skip">Skip to content</a>
+<div class="wrap">
+  <header class="nav">
+    <div class="nav-in">
+      <a class="brand" href="./" aria-label="Data &amp; AI Hub, home" data-ia="aria-label:hub.brand.aria">
+        <span class="mark" aria-hidden="true"><span>LD</span></span>
+        <span class="brand-text">Lucas Delfino<small data-i="hub.brand.small">data &amp; ai hub</small></span>
+      </a>
+      <nav class="links" id="links" aria-label="Main" data-ia="aria-label:hub.nav.main">
+        <a href="ferramentas/"><span data-i="hub.nav.tools">Tools</span></a><a href="privacidade/"><span data-i="hub.nav.privacy">Privacy</span></a><a href="../"><span data-i="hub.nav.portfolio">Portfolio</span><span class="arrow" aria-hidden="true"> ↗</span></a>
+      </nav>
+      <div class="nav-actions">
+        <div class="lang" role="group" aria-label="Language" data-ia="aria-label:hub.lang.group"><button type="button" data-lang="en" lang="en" aria-pressed="true">EN</button><button type="button" data-lang="pt" lang="pt-BR" aria-pressed="false">PT</button></div>
+        <button class="icon-btn" id="themeBtn" type="button" aria-pressed="false" aria-label="Dark theme" data-ia="aria-label:hub.theme.dark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+        <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="links" aria-label="Menu" data-ia="aria-label:hub.menu.label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <section class="hub-hero" aria-labelledby="h1">
+      <span class="eyebrow" data-i="hub.home.eyebrow">Data &amp; AI hub</span>
+      <h1 id="h1"><span data-i="hub.home.h1a">Practise data skills</span> <span class="grad" data-i="hub.home.h1b">right in your browser</span></h1>
+      <p class="lede" data-i="hub.home.lede">Free tools for people who work with data and AI. They are being built so that your files never leave your browser, with no sign-up and no tracking.</p>
+      <div class="ctas">
+        <a class="btn btn-dark" href="ferramentas/"><span data-i="hub.home.cta1">See tools</span> <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="btn btn-ghost" href="privacidade/"><span data-i="hub.home.cta2">How your data is handled</span></a>
+      </div>
+    </section>
+    <section class="hub-sec" aria-labelledby="tools-h">
+      <h2 id="tools-h" data-i="hub.home.tools.h2">Tools</h2>
+      <p class="hub-sec-p" data-i="hub.home.tools.p">Two tools are on the way. Open one to see where it stands.</p>
+    <ul class="hub-grid" role="list">
+      <li class="hub-card">
+        <span class="chip hub-state" data-i="hub.state.wip">Under construction</span>
+        <h3><a href="ferramentas/csv/" aria-describedby="csv-d"><span data-i="hub.tool.csv.name">CSV viewer</span></a></h3>
+        <p id="csv-d" data-i="hub.tool.csv.desc">Open a CSV file and see its columns, types and first rows. Everything is meant to run in your browser.</p>
+        <span class="arrow hub-go" aria-hidden="true">→</span>
+      </li>
+      <li class="hub-card">
+        <span class="chip hub-state" data-i="hub.state.wip">Under construction</span>
+        <h3><a href="ferramentas/sql/" aria-describedby="sql-d"><span data-i="hub.tool.sql.name">SQL playground</span></a></h3>
+        <p id="sql-d" data-i="hub.tool.sql.desc">Practise SQL queries on tables built from your own CSV files, right in the page.</p>
+        <span class="arrow hub-go" aria-hidden="true">→</span>
+      </li>
+    </ul>
+    </section>
+    <p class="notice"><span data-i="hub.home.notice">Pages in this Hub set no tracking cookies and make no requests to third parties.</span> <a href="privacidade/"><span data-i="hub.home.notice.link">Read the privacy page</span></a></p>
+  </main>
+
+  <footer>
+    <p><span data-i="hub.foot.note">Data &amp; AI Community Hub · by Lucas Delfino</span></p>
+    <nav class="hub-foot-nav" aria-label="Footer" data-ia="aria-label:hub.foot.nav">
+      <a href="ferramentas/"><span data-i="hub.nav.tools">Tools</span></a>
+      <a href="privacidade/"><span data-i="hub.nav.privacy">Privacy</span></a>
+      <a href="../"><span data-i="hub.nav.portfolio">Portfolio</span><span class="arrow" aria-hidden="true"> ↗</span></a>
+      <a href="#top"><span data-i="hub.foot.top">Back to top</span></a>
+    </nav>
+  </footer>
+</div>
+<script src="./assets/js/i18n.js"></script>
+<script src="./assets/js/nav.js"></script>
+</body>
+</html>

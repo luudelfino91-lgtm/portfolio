@@ -1,6 +1,6 @@
 # Roadmap de produto: Data & AI Community Hub
 
-Versão 0.3 (Fase 1, reconciliação, adendo C10). Data: 2026-11-12. Não há datas; o roadmap é por fases e portões. Vale `docs/decisions/phase-1-reconciliation.md` (C1 a C10). As recomendações para D2, D3, D5 e D8 estão em `prd.md`; nenhuma está decidida.
+Versão 0.3 (Fase 1, reconciliação, adendo C10). Data: 2026-11-12. Não há datas; o roadmap é por fases e portões. Vale `docs/decisions/phase-1-reconciliation.md` (C1 a C10). D2 (GitHub Pages), D3a (fontes locais) e C10 estão aprovados (`decision-log.md`); D3b, D5 e D8 seguem pendentes, com recomendações em `prd.md`. RNF-03 é suposição não confirmada (pergunta 14).
 
 ## Escopo do MVP
 
@@ -70,4 +70,5 @@ Regras gerais: merge na `main` só por PR e com aprovação do Lucas (D6); nenhu
 10. Pendências v1.1: quais capturas e textos (T-801 a T-805) você consegue entregar e quando? O projeto de Logística segue aguardando relatório?
 11. Posso substituir o `docs/ROADMAP.md` legado (ou apontá-lo para este roadmap)? Hoje ele lista OG e EN como pendentes, mas já existem.
 12. Você testa o Safari real (best effort) ou prefere que fique sem verificação?
+14. RNF-03 (suposição, aberta): confirma que o Hub fica sem cookies de rastreamento e sem analytics de terceiros? PRV-06 e PRV-08 só viram P0 definitivos após esta confirmação. (Substitui a pergunta 7 no que ela tem de confirmação; a opção de contador sem cookies segue na 7.)
 13. (G1, C10.2) A home da Fase 2 terá só 2 cartões ativos (CSV, SQL), sem Apoie/PIX. Você aprova também cartões "Em breve" (Python, Cursos, Recursos, IA)? Se sim, ficam desabilitados e fora do critério de aceite; se não, não existem na casca.

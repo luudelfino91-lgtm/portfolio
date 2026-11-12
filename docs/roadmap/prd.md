@@ -4,9 +4,9 @@ Versão 0.3 (Fase 1, reconciliação, adendo C10). Data: 2026-11-12. Status: agu
 
 ## 1. Premissas e decisões
 
-Aprovadas (fatos): D1 (JS/HTML/CSS puros, sem build), D4 (Hub em `hub/` no mesmo repositório, sem alterar as páginas atuais), D6 (trabalho via branch e PR).
+Aprovadas (fatos, fonte: `decision-log.md`): D1 (JS/HTML/CSS puros, sem build), D4 (Hub em `hub/` no mesmo repositório, sem alterar as páginas atuais), D6 (trabalho via branch e PR), D2 (hospedagem em GitHub Pages; custo US$ 0 segue condicionado aos termos do Pages, não verificados), D3a (fontes locais no Hub) e o adendo C10. As linhas D2 e D3 da tabela abaixo ficam como histórico da recomendação: D2 e a parte de fontes de D3 estão aprovadas; só D3b (sql.js, Papa Parse, Pyodide) segue pendente.
 
-Pendentes. Nenhuma é tratada como decidida; o planejamento usa uma recomendação e as tarefas ligadas a elas dizem "se D-n aprovado":
+Pendentes (D3b, D5, D8). Nenhuma é tratada como decidida; o planejamento usa uma recomendação e as tarefas ligadas a elas dizem "se D-n aprovado":
 
 | ID | Recomendação usada no planejamento | Bloqueia (C2) | Se mudar |
 |---|---|---|---|
@@ -74,7 +74,7 @@ Fora do MVP (P2), **sem RF nem tarefa até serem formalizados** (C6): página `s
 |---|---|---|
 | RNF-01 | Sem build, sem backend, sem API paga, sem dependência de npm no deploy | Inspeção do repositório; site abre via servidor estático |
 | RNF-02 | Processamento 100% no navegador; nenhum dado do usuário enviado. "Externa" = outra origem; "saída" = dado do usuário em qualquer requisição | Teste automatizado com canário (método 5.2); aba Network sem requisição para outra origem |
-| RNF-03 | Sem cookies de rastreamento e sem analytics de terceiros (suposição; confirmar com Lucas) | PRV-06 e PRV-08 |
+| RNF-03 | Sem cookies de rastreamento e sem analytics de terceiros. **SUPOSIÇÃO ainda não confirmada pelo Lucas** (pergunta 14 do roadmap). PRV-06 e PRV-08 só viram P0 definitivos após a confirmação dele; até lá são P0 provisórios (T-209) | PRV-06 e PRV-08 |
 | RNF-04 | **REVOGADO** (era 300 KB de peso inicial). Substituído por RNF-13 e RNF-14 conforme C3 | n/a |
 | RNF-05 | CSV de até **10 MB** carrega sem long task > 1 s (critério do MVP). 50 MB é meta a validar por medição, sem ser critério | Fixture `limit-10mb.csv` (critério) e `big-50mb.csv` (medição) com `PerformanceObserver`, Chrome headless, sem throttling |
 | RNF-06 | Acessibilidade: navegação por teclado, `lang` correto, contraste AA verificado por cálculo com os pares de cor listados e axe. Lighthouse acessibilidade >= 90 é indicador complementar, não prova de AA | A11-02, A11-04 a A11-08, A11-10; `lighthouse@13.6.0`, mobile, mediana de 3 |
