@@ -25,3 +25,8 @@ Fonte única de verdade para decisões do projeto. Novas decisões entram no fim
 - G1-c: link do portfólio para o Hub em `index.html` (altera o portfólio).
 - G1-d: correção global de `--ink-3` no tema claro (altera o portfólio).
 - Cartões "Em breve" na casca (G1-b): fora do escopo da Fase 2 até decisão.
+
+## Desvios da Fase 2 aguardando o Lucas
+- **Chip "Em construção" nos 2 cartões ativos (CSV, SQL):** C10.2 pede 2 cartões ativos; a home os mostra navegáveis, mas com o chip "Em construção", e as páginas de destino dizem que a ferramenta ainda não está disponível. Não é o chip "Em breve" dos cartões proibidos. Precisa de aceite do Lucas ou o chip sai.
+- **i18n próprio do Hub** (mesma chave `ld-lang`, 4 KB) em vez de reusar o `i18n.js` do portfólio.
+- **Bricolage Grotesque sem o eixo `opsz`** (com ele só a fonte pesaria 77 KB e estouraria o orçamento de 120 KB). Falta checagem visual dos títulos grandes.
