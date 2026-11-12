@@ -7,16 +7,16 @@ const L = require('./lib'); const zlib = require('zlib'); const fs = require('fs
     if (!fs.existsSync(p) || fs.statSync(p).isDirectory()) { res.statusCode = 404; return res.end(); }
     const b = fs.readFileSync(p); const ext = p.split('.').pop(); const type = { html: 'text/html', css: 'text/css', js: 'text/javascript', woff2: 'font/woff2', svg: 'image/svg+xml' }[ext] || 'application/octet-stream';
     if (['html', 'css', 'js', 'svg'].includes(ext)) { res.setHeader('content-encoding', 'gzip'); res.setHeader('content-type', type + '; charset=utf-8'); return res.end(zlib.gzipSync(b, { level: 9 })); }
-    res.setHeader('content-type', type); res.end(b); }).listen(8083, '127.0.0.1');
+    res.setHeader('content-type', type); res.end(b); }).listen(Number(L.PORT_GZ), '127.0.0.1');
   const br = await L.launch(); const out = []; let max = 0, fontsMax = 0;
   for (const p of L.PAGES) {
     const c = await br.newContext({ viewport: { width: 1280, height: 900 } }); const pg = await c.newPage(); const cdp = await c.newCDPSession(pg);
     await cdp.send('Network.enable'); await cdp.send('Network.setCacheDisabled', { cacheDisabled: true });
     const items = {}; cdp.on('Network.requestWillBeSent', e => items[e.requestId] = { url: e.request.url, type: e.type, bytes: 0 });
     cdp.on('Network.loadingFinished', e => { if (items[e.requestId]) items[e.requestId].bytes = e.encodedDataLength; });
-    await pg.goto(`http://127.0.0.1:8083/${p}`, { waitUntil: 'networkidle' }); await pg.waitForTimeout(300);
+    await pg.goto(`http://127.0.0.1:${L.PORT_GZ}/${p}`, { waitUntil: 'networkidle' }); await pg.waitForTimeout(300);
     let shell = 0, fonts = 0, imgs = 0; const rows = [];
-    for (const i of Object.values(items)) { const k = /\.woff2$/.test(i.url) ? 'fonte' : (i.type === 'Image' || /favicon|\.(png|jpe?g|webp|svg)$/.test(i.url) && i.type !== 'Document' && i.type !== 'Stylesheet') ? 'imagem' : 'shell'; if (k === 'shell') shell += i.bytes; else if (k === 'fonte') fonts += i.bytes; else imgs += i.bytes; rows.push(`${k} ${i.bytes}B ${i.url.replace('http://127.0.0.1:8083', '')}`); }
+    for (const i of Object.values(items)) { const k = /\.woff2$/.test(i.url) ? 'fonte' : (i.type === 'Image' || /favicon|\.(png|jpe?g|webp|svg)$/.test(i.url) && i.type !== 'Document' && i.type !== 'Stylesheet') ? 'imagem' : 'shell'; if (k === 'shell') shell += i.bytes; else if (k === 'fonte') fonts += i.bytes; else imgs += i.bytes; rows.push(`${k} ${i.bytes}B ${i.url.replace(`http://127.0.0.1:${L.PORT_GZ}`, '')}`); }
     max = Math.max(max, shell); fontsMax = Math.max(fontsMax, fonts);
     out.push(`${p}: shell(sem fontes/imagens, gzip)=${(shell / 1024).toFixed(1)} KB; fontes carregadas=${(fonts / 1024).toFixed(1)} KB; imagens=${(imgs / 1024).toFixed(2)} KB\n    ` + rows.join('\n    '));
     await c.close();
@@ -30,7 +30,7 @@ const L = require('./lib'); const zlib = require('zlib'); const fs = require('fs
   await pg.waitForTimeout(400); const st = await pg.evaluate(() => ({ h1: (document.querySelector('h1') || {}).textContent, lang: document.documentElement.lang, theme: document.documentElement.dataset.theme, bodyLen: document.body.innerText.length, csss: [...document.styleSheets].length, fontsOk: [...document.fonts].filter(f => f.status === 'loaded').length }));
   await pg.click('[data-lang=pt]'); const pt = await pg.evaluate(() => document.documentElement.lang); await pg.click('#themeBtn'); const th = await pg.evaluate(() => document.documentElement.dataset.theme);
   await pg.click('a[href="privacidade/"] >> nth=0'); await pg.waitForLoadState('load'); const nav = pg.url();
-  L.rec('HUB-42 file:// (P2, registro): hub/index.html abre, i18n, tema e navegacao relativa funcionam', log.pageerrors.length === 0 && !!st.h1 && pt === 'pt-BR' && nav.endsWith('privacidade/') || nav.endsWith('privacidade/index.html'), JSON.stringify({ status: String(r.status && r.status()), st, pt, th, nav, pageerrors: log.pageerrors, consoleErrors: log.consoleErrors, falhas: log.failed }));
+  L.rec('HUB-42 file:// (P2, registro): hub/index.html abre, i18n, tema e navegacao relativa funcionam', log.pageerrors.length === 0 && !!st.h1 && pt === 'pt-BR' && (nav.endsWith('privacidade/') || nav.endsWith('privacidade/index.html')), JSON.stringify({ status: String(r.status && r.status()), st, pt, th, nav, pageerrors: log.pageerrors, consoleErrors: log.consoleErrors, falhas: log.failed }));
   { const p2 = await c.newPage(); const l2 = L.newLog(); L.watch(p2, l2); await p2.goto('file://' + L.REPO + '/index.html'); await p2.waitForTimeout(500); L.rec('REG-10 index.html via file:// sem pageerror', l2.pageerrors.length === 0, 'pageerrors=' + JSON.stringify(l2.pageerrors) + ' h1=' + (await p2.evaluate(() => (document.querySelector('h1') || {}).textContent || '').then(s => s.slice(0, 40)))); 
     const p3 = await c.newPage(); const l3 = L.newLog(); L.watch(p3, l3); await p3.goto('file://' + L.REPO + '/certificacoes.html'); await p3.waitForTimeout(500); L.rec('REG-11 certificacoes.html via file:// sem pageerror', l3.pageerrors.length === 0, 'pageerrors=' + JSON.stringify(l3.pageerrors)); }
   await br.close(); gz.close(); srv.stop();

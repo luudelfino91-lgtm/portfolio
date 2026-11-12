@@ -25,7 +25,6 @@
 /* ---- Base ---- */
 .hub main{padding-block:28px 8px}
 .hub main:focus{outline:0}
-.hub .on-dark :focus-visible{outline-color:var(--focus-dark)} /* anel sobre fundo meia-noite */
 
 /* Link de pular */
 .hub-skip{position:fixed;top:12px;left:20px;z-index:100;transform:translateY(-200%)}

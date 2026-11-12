@@ -1,7 +1,7 @@
 // Acessibilidade real: axe-core, teclado, contraste computado (WCAG), menu movel, alvos de toque, movimento reduzido.
 // Requer axe-core em /tmp/axe/package/axe.min.js  (npm pack axe-core; tar xzf).
 const L = require('./lib'); const fs = require('fs');
-const AXE = process.env.AXE || '/tmp/axe/package/axe.min.js';
+const AXE = L.AXE_PATH;
 const url = p => `${L.BASE}/${p}`;
 
 // executado na pagina: devolve pares texto/fundo renderizados e componentes

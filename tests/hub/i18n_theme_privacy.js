@@ -27,15 +27,21 @@ const L = require('./lib'); const fs = require('fs');
   const keysByPage = {}; const html = L.PAGES.map(p => fs.readFileSync(`${L.REPO}/${p}index.html`, 'utf8')).join('\n');
   const used = new Set([...html.matchAll(/data-i="([^"]+)"/g)].map(m => m[1]));
   [...html.matchAll(/data-ia="([^"]+)"/g)].forEach(m => m[1].split(',').forEach(x => used.add(x.slice(x.indexOf(':') + 1))));
-  const dictEval = (() => { const s = fs.readFileSync(`${L.REPO}/hub/assets/js/i18n.js`, 'utf8'); const m = s.match(/var DICT = (\{[\s\S]*?\n  \});\n\n  function valid/); return eval('(' + m[1] + ')'); })();
-  const miss = { en: [...used].filter(k => !(k in dictEval.en)), pt: [...used].filter(k => !(k in dictEval.pt)),
-    ptSoNoDict: Object.keys(dictEval.pt).filter(k => !(k in dictEval.en)), enSemPt: Object.keys(dictEval.en).filter(k => !(k in dictEval.pt)), orfas: Object.keys(dictEval.en).filter(k => !used.has(k)) };
-  L.rec('HUB-15/T-205 chaves usadas no HTML existem em EN e PT; EN e PT com mesmo conjunto', miss.en.length + miss.pt.length + miss.ptSoNoDict.length + miss.enSemPt.length === 0,
-    `chaves usadas=${used.size}, EN=${Object.keys(dictEval.en).length}, PT=${Object.keys(dictEval.pt).length}; faltam EN=${JSON.stringify(miss.en)} PT=${JSON.stringify(miss.pt)}; EN sem PT=${JSON.stringify(miss.enSemPt)}; PT sem EN=${JSON.stringify(miss.ptSoNoDict)}; chaves nao usadas pelo HTML (informativo)=${JSON.stringify(miss.orfas)}`);
-  // verificador detecta remocao (fixture): remover uma chave PT e checar que a logica acusa
-  const fx = JSON.parse(JSON.stringify(dictEval)); delete fx.pt['hub.nav.tools'];
-  const detected = [...used].filter(k => !(k in fx.pt));
-  L.rec('HUB-15 verificador detecta chave PT removida (fixture em memoria)', detected.includes('hub.nav.tools'), 'detectado: ' + JSON.stringify(detected) + ' (nota: o script e este arquivo; nao ha CLI com codigo de saida dedicado)');
+  const { spawnSync } = require('child_process'); const CHK = `${L.REPO}/docs/testing/check-i18n-keys.js`;
+  const chk = (...args) => spawnSync('node', [CHK, ...args], { encoding: 'utf8' });
+  const real = chk(); const dictEval = require(CHK).loadDict(`${L.REPO}/hub/assets/js/i18n.js`);
+  L.rec('HUB-15/T-205 verificador CLI (docs/testing/check-i18n-keys.js) no Hub real sai com 0', real.status === 0, 'exit=' + real.status + ' ' + real.stdout.replace(/\n/g, ' | '));
+  const fxd = `${L.REPO}/docs/testing/fixtures-i18n`;
+  const fxBad = chk('--i18n', `${fxd}/i18n-missing-pt.js`, '--html', `${fxd}/page.html`); const fxOk = chk('--i18n', `${fxd}/i18n-ok.js`, '--html', `${fxd}/page.html`);
+  L.rec('HUB-15 verificador CLI sai != 0 com chave PT removida (fixture em arquivo) e 0 no controle', fxBad.status === 1 && fxOk.status === 0, `fixture sem PT: exit=${fxBad.status} (${fxBad.stdout.split('\n')[1]}); controle: exit=${fxOk.status}`);
+  // HUB-10 (asserção real): em PT, todo [data-i] tem exatamente o texto do dicionario PT; todo data-ia o atributo PT
+  { const c = await L.ctx(br, { lang: 'pt', theme: 'light' }); const diffs = []; let n = 0;
+    for (const p of L.PAGES) { const pg = await c.newPage(); await pg.goto(url(p));
+      const rows = await pg.evaluate(() => [...document.querySelectorAll('[data-i]')].map(e => ['t', e.getAttribute('data-i'), e.textContent]).concat(
+        [...document.querySelectorAll('[data-ia]')].flatMap(e => e.getAttribute('data-ia').split(',').map(x => [x.slice(0, x.indexOf(':')), x.slice(x.indexOf(':') + 1), null]).map(([a, k]) => ['a', k, e.getAttribute(a)]))));
+      for (const [, k, v] of rows) { n++; if (v !== dictEval.pt[k]) diffs.push(`${p} ${k}: obtido=${JSON.stringify(v)} esperado=${JSON.stringify(dictEval.pt[k])}`); }
+      await pg.close(); }
+    L.rec('HUB-10 em PT cada [data-i] e [data-ia] tem exatamente o texto do dicionario PT', n > 0 && diffs.length === 0, `${n} elementos/atributos comparados em 5 paginas; divergencias=${JSON.stringify(diffs)}`); await c.close(); }
 
   // persistencia, invalido, ?lang, aria-label/title
   { const c = await L.ctx(br, { seed: false }); const pg = await c.newPage(); await pg.goto(url('hub/'));
@@ -56,15 +62,19 @@ const L = require('./lib'); const fs = require('fs');
     const stored = await pg.evaluate(() => localStorage.getItem('ld-lang'));
     L.rec(`HUB-13/50 ${name}`, lang === exp && !dialog && log.pageerrors.length === 0, `lang=${lang} (esperado ${exp}); ld-lang armazenado=${stored}; dialog=${dialog}`); await c.close(); }
   { const c = await L.ctx(br, { seed: false }); const pg = await c.newPage(); await pg.goto(url('hub/?lang=pt#<img src=x onerror=alert(1)>'));
-    const n = await pg.evaluate(() => document.querySelectorAll('img[src=x]').length); L.rec('HUB-50 hash com <img onerror> nao injeta', n === 0, 'img[src=x] no DOM=' + n); await c.close(); }
+    const n = await pg.evaluate(() => document.querySelectorAll('img[src=x]').length); await c.close();
+    L.na('HUB-50 hash: injecao via location.hash', 'Nao aplicavel na Fase 2: a casca nao le location.hash (nenhuma rota/estado por hash). Observacao: sem injecao, img[src=x] no DOM=' + n + ' (informativo, nao conta como PASS). Reavaliar quando houver estado por hash.'); }
 
   // --- tema
   for (const [scheme, exp] of [['dark', 'dark'], ['light', 'light']]) {
     const c = await L.ctx(br, { seed: false, scheme }); const pg = await c.newPage();
-    // data-theme antes do primeiro paint: observar no DOMContentLoaded-pre via init script
-    await pg.addInitScript(() => { window.__t = []; new MutationObserver(() => window.__t.push(document.documentElement.getAttribute('data-theme'))).observe(document.documentElement, { attributes: true }); });
-    await pg.goto(url('hub/')); const r = await pg.evaluate(() => ({ t: document.documentElement.dataset.theme, hist: window.__t }));
-    L.rec(`HUB-20 sem preferencia segue prefers-color-scheme=${scheme}`, r.t === exp, JSON.stringify(r)); await c.close(); }
+    // registra data-theme no primeiro requestAnimationFrame (antes do primeiro paint ser observavel), no DOMContentLoaded e em todo atributo mudado
+    await pg.addInitScript(() => { const T = () => document.documentElement.getAttribute('data-theme'); window.__t = { raf: 'n/a', dcl: 'n/a', muts: [] };
+      requestAnimationFrame(() => { window.__t.raf = T(); }); document.addEventListener('DOMContentLoaded', () => { window.__t.dcl = T(); });
+      new MutationObserver(() => window.__t.muts.push(T())).observe(document.documentElement, { attributes: true }); });
+    await pg.goto(url('hub/')); const r = await pg.evaluate(() => ({ final: document.documentElement.dataset.theme, ...window.__t }));
+    const onlyExp = r.muts.every(v => v === exp);
+    L.rec(`HUB-20 prefers-color-scheme=${scheme}: data-theme correto no 1o requestAnimationFrame e no DOMContentLoaded, sem flash de tema oposto`, r.raf === exp && r.dcl === exp && r.final === exp && onlyExp, JSON.stringify(r)); await c.close(); }
   { const c = await L.ctx(br, { seed: false, scheme: 'light' }); const pg = await c.newPage(); await pg.goto(url('hub/'));
     await pg.click('#themeBtn'); const s1 = await pg.evaluate(() => [localStorage.getItem('ld-theme'), document.documentElement.dataset.theme, themeBtn.getAttribute('aria-pressed')]);
     await pg.reload(); const s2 = await pg.evaluate(() => document.documentElement.dataset.theme);

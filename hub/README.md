@@ -12,3 +12,9 @@ Classes: `.wrap .nav .nav-in .brand .mark .links .nav-actions .icon-btn .menu-bt
 - `assets/fonts/`: ver `README.md` e `LICENSE.md` da pasta.
 - Ao mudar um texto: alterar o HTML (inglês) e as duas entradas em `i18n.js`.
 - Limitação: via `file://` os links para pastas (`ferramentas/`) abrem a listagem da pasta, não o `index.html`; use servidor estático.
+
+## Convenções
+- `aria-current`: `"page"` = página atual; `"true"` = ancestral da página atual (ex.: "Ferramentas" em `ferramentas/csv/` e `ferramentas/sql/`).
+- Armazenamento: a Fase 2 não cria chaves `hub-*` em `localStorage`; só `ld-lang` e `ld-theme`.
+- `Hub.t` e `Hub.onLang` são API futura, ainda sem uso na Fase 2; mantidas de propósito.
+- `i18n.js` e `nav.js` carregam no `<head>` com `defer` (nesta ordem), para o texto já sair traduzido na primeira pintura.
