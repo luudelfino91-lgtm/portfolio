@@ -102,19 +102,30 @@ function contrastProbe() {
     await c.close(); await c3.close(); }
   // alvos de toque 360 (RSP-03) e fonte de campos
   { const c = await L.ctx(br, { vp: 360 }); const pg = await c.newPage(); const small = [];
-    for (const p of L.PAGES) { await pg.goto(url(p)); await pg.click('#menuBtn'); const s = await pg.evaluate(() => [...document.querySelectorAll('a,button')].filter(e => e.getBoundingClientRect().width > 0).map(e => { const r = e.getBoundingClientRect(); return { d: e.tagName + (e.id ? '#' + e.id : '') + '.' + e.className + ' "' + e.textContent.trim().slice(0, 16) + '"', w: Math.round(r.width), h: Math.round(r.height), inline: getComputedStyle(e).display === 'inline' && !!e.closest('p,li:not(.hub-card)') }; }).filter(x => (x.w < 44 || x.h < 44)));
-      s.forEach(x => small.push(`${p}: ${x.d} ${x.w}x${x.h}${x.inline ? ' (link em texto corrido, exceção WCAG 2.5.8)' : ''}`)); }
+    for (const p of L.PAGES) { await pg.goto(url(p)); await pg.click('#menuBtn'); const s = await pg.evaluate(() => [...document.querySelectorAll('a,button')].filter(e => e.getBoundingClientRect().width > 0).map(e => { const r = e.getBoundingClientRect(); return { d: e.tagName + (e.id ? '#' + e.id : '') + '.' + e.className + ' "' + e.textContent.trim().slice(0, 16) + '"', w: Math.round(r.width), h: Math.round(r.height), inline: getComputedStyle(e).display === 'inline' && !!e.closest('p,li:not(.hub-card)'), card: !!e.closest('.hub-card') }; }).filter(x => (x.w < 44 || x.h < 44)));
+      s.forEach(x => small.push(`${p}: ${x.d} ${x.w}x${x.h}${x.inline ? ' (link em texto corrido, exceção WCAG 2.5.8)' : ''}${x.card ? ' [link de cartao]' : ''}`)); }
     // links dentro de .hub-card sao esticados por ::after (cartao inteiro e o alvo): confirma por clique no canto do cartao
-    await pg.goto(url('hub/')); await pg.setViewportSize({ width: 360, height: 1400 }); await pg.waitForTimeout(300); const card = await pg.locator('.hub-card').first().boundingBox(); await pg.mouse.click(card.x + card.width - 10, card.y + card.height - 10); await pg.waitForTimeout(500);
-    const stretched = pg.url().endsWith('/hub/ferramentas/csv/'); const eff = small.filter(s => !/exceção/.test(s) && !(stretched && /CSV viewer|SQL playground/.test(s)));
-    small.push('clique no canto inferior direito do cartao navega=' + stretched + ' (cartao ' + Math.round(card.width) + 'x' + Math.round(card.height) + ')');
+    // para CADA cartao (qualquer numero, qualquer nome): clicar no canto inferior direito do cartao navega para o href do proprio link
+    let stretched = true; const cardRes = [];
+    let nCards = 0;
+    for (const cp of ['hub/', 'hub/ferramentas/']) {
+      await pg.goto(url(cp)); const n = await pg.locator('.hub-card').count(); nCards += n;
+      for (let k = 0; k < n; k++) {
+        await pg.goto(url(cp)); await pg.setViewportSize({ width: 360, height: 1400 }); await pg.waitForTimeout(300);
+        const href = await pg.locator('.hub-card').nth(k).locator('a').first().evaluate(a => a.href); await pg.locator('.hub-card').nth(k).scrollIntoViewIfNeeded(); const card = await pg.locator('.hub-card').nth(k).boundingBox();
+        await pg.mouse.click(card.x + card.width - 10, card.y + card.height - 10); await pg.waitForTimeout(500);
+        const ok = pg.url() === href; cardRes.push(cp + ':' + ok); stretched = stretched && ok;
+      }
+    }
+    const eff = small.filter(s => !/exceção/.test(s) && !(stretched && nCards > 0 && /\[link de cartao\]/.test(s)));
+    small.push('clique no canto inferior direito de cada um dos ' + nCards + ' cartoes navega para o proprio href=' + JSON.stringify(cardRes));
     L.rec('RSP-03 alvos de toque >= 44x44 em 360px (P1; links de cartao contam pelo cartao esticado; links em texto corrido isentos)', eff.length === 0, `abaixo de 44px (dedup): ${JSON.stringify([...new Set(small)])}`); await c.close(); }
   // reduced motion
   { const c = await L.ctx(br, { extra: { reducedMotion: 'reduce' } }); const pg = await c.newPage(); await pg.goto(url('hub/'));
     const an = await pg.evaluate(() => document.getAnimations().filter(a => a.playState === 'running' && a.effect.getTiming().iterations === Infinity).length); L.rec('A11-12 reduced-motion: sem animacao infinita rodando', an === 0, 'animacoes infinitas=' + an); await c.close(); }
   // estrutura: 2 cartoes, nav igual entre paginas (HUB-45), headings, landmarks
   { const c = await L.ctx(br, {}); const pg = await c.newPage(); await pg.goto(url('hub/'));
-    const cards = await pg.evaluate(() => [...document.querySelectorAll('.hub-card a')].map(a => a.getAttribute('href'))); L.rec('HUB-02 exatamente 2 cartoes ativos (csv e sql)', cards.join() === 'ferramentas/csv/,ferramentas/sql/', JSON.stringify(cards));
+    const cards = await pg.evaluate(() => [...document.querySelectorAll('.hub-card a')].map(a => a.getAttribute('href'))); L.rec('HUB-02 exatamente 3 cartoes ativos na home (csv, sql e python; Fase 4/T-402 ativou o de Python)', cards.join() === 'ferramentas/csv/,ferramentas/sql/,ferramentas/python/', JSON.stringify(cards));
     for (const p of ['hub/', 'hub/ferramentas/']) { await pg.goto(url(p)); const cd = await pg.evaluate(() => [...document.querySelectorAll('.hub-card')].map(c => ({ href: c.querySelector('a').getAttribute('href'), chip: !!c.querySelector('.chip') })));
       const csv = cd.find(x => /csv\/$/.test(x.href)), sql = cd.find(x => /sql\/$/.test(x.href));
       await pg.click('.hub-card a[href$="csv/"]'); await pg.waitForLoadState('load'); const opensCsv = await pg.evaluate(() => !!document.getElementById('csvFile'));

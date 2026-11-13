@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'; worker-src data:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta charset="utf-8">
+<title>Python runner</title>
+<!-- Documento interno da ferramenta de Python (T-402, D10). So e aberto dentro de
+     <iframe sandbox="allow-scripts"> (sem allow-same-origin: origem opaca). Nao tem UI.
+     Cria o Worker modulo a partir de data: com a fonte vinda de python-worker-src.js. -->
+<script src="../../assets/js/python-worker-src.js"></script>
+<script src="../../assets/js/python-runner.js"></script>
+</head>
+<body></body>
+</html>

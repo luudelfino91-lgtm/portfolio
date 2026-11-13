@@ -1,0 +1,18 @@
+/* =====================================================================
+   Playground de Python (T-402). Reaproveita csv.css e sql.css (editor,
+   acoes, avisos); so tokens do portfolio/hub.css, sem cores novas.
+   ===================================================================== */
+.py-num{min-height:var(--tap);width:9ch;font:inherit;font-size:16px;color:var(--ink);background:var(--surface);border:1px solid var(--ink-3);border-radius:var(--r-md);padding:0 12px}
+.py-num:focus-visible{outline:3px solid var(--plum);outline-offset:2px}
+:root[data-theme="dark"] .py-num:focus-visible{outline-color:var(--focus-dark)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .py-num:focus-visible{outline-color:var(--focus-dark)}}
+
+/* Saida: texto puro (textContent); stderr com borda e negrito, nao so cor */
+.py-out{margin:0;max-height:60vh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font:400 14px/1.55 var(--f-mono);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px}
+.py-out:focus-visible{outline:3px solid var(--plum);outline-offset:2px}
+:root[data-theme="dark"] .py-out:focus-visible{outline-color:var(--focus-dark)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .py-out:focus-visible{outline-color:var(--focus-dark)}}
+.py-out .py-err{display:block;font-weight:600;border-left:3px solid var(--err);padding-left:10px;margin:2px 0}
+.py-out .py-std{display:block}
+.py-frame{position:absolute;width:0;height:0;border:0;visibility:hidden}
+@media (prefers-reduced-motion:reduce){.py-tool *{animation:none!important;transition:none!important}}

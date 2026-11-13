@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-i="hub.title.python">Python playground · Data &amp; AI Community Hub</title>
+<meta name="description" content="Run Python in your browser, in an isolated frame. Your code and files never leave your device." data-ia="content:hub.desc.python">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../assets/css/styles.css">
+<link rel="stylesheet" href="../../assets/css/hub.css">
+<link rel="stylesheet" href="../../assets/css/csv.css">
+<link rel="stylesheet" href="../../assets/css/sql.css">
+<link rel="stylesheet" href="../../assets/css/python.css">
+<script src="../../assets/js/theme.js"></script>
+<script src="../../assets/js/i18n.js" defer></script>
+</head>
+<body class="hub" id="top">
+<a class="hub-skip btn btn-dark" href="#main" data-i="hub.skip">Skip to content</a>
+<div class="wrap">
+  <header class="nav">
+    <div class="nav-in">
+      <a class="brand" href="../../" aria-label="Lucas Delfino data &amp; ai hub" data-ia="aria-label:hub.brand.aria">
+        <span class="mark" aria-hidden="true"><span></span></span>
+        <span class="brand-text">Lucas Delfino <small data-i="hub.brand.small">data &amp; ai hub</small></span>
+      </a>
+      <nav class="links" id="links" aria-label="Main" data-ia="aria-label:hub.nav.main">
+        <a href="../" class="on" aria-current="true"><span data-i="hub.nav.tools">Tools</span></a><a href="../../privacidade/"><span data-i="hub.nav.privacy">Privacy</span></a><a href="../../../"><span data-i="hub.nav.portfolio">Portfolio</span><span class="arrow" aria-hidden="true"> ↗</span></a>
+      </nav>
+      <div class="nav-actions">
+        <div class="lang" role="group" aria-label="Language" data-ia="aria-label:hub.lang.group"><button type="button" data-lang="en" lang="en" aria-pressed="true">EN</button><button type="button" data-lang="pt" lang="pt-BR" aria-pressed="false">PT</button></div>
+        <button class="icon-btn" id="themeBtn" type="button" aria-pressed="false" aria-label="Dark theme" data-ia="aria-label:hub.theme.dark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+        <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="links" aria-label="Menu" data-ia="aria-label:hub.menu.label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <nav class="crumb" aria-label="You are here" data-ia="aria-label:hub.crumb.label"><ol><li><a href="../../"><span data-i="hub.crumb.home">Home</span></a></li><li><a href="../"><span data-i="hub.nav.tools">Tools</span></a></li><li aria-current="page"><span data-i="hub.tool.python.name">Python playground</span></li></ol></nav>
+    <section class="hub-hero hub-hero--sub" aria-labelledby="h1">
+      <h1 id="h1" data-i="hub.tool.python.name">Python playground</h1>
+    </section>
+    <p class="lede csv-lede" data-i="hub.py.lede">Write Python and run it in this browser tab. The code runs in an isolated frame that cannot reach the internet, this page or your other data.</p>
+    <p class="notice" id="pyPrivacy"><span data-i="hub.py.priv">Privacy: your code, your files and the output never leave this browser. Nothing is sent to any server, and nothing is saved.</span></p>
+
+    <div class="csv-tool py-tool" id="pyTool" data-state="idle" data-engine="none">
+      <section class="sql-sec" aria-labelledby="pyEdH">
+        <h2 id="pyEdH" data-i="hub.py.ed.h">Code</h2>
+        <label class="sql-label" for="pyEditor" data-i="hub.py.ed.label">Python editor</label>
+        <textarea class="sql-editor" id="pyEditor" rows="10" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-describedby="pyEdHint pyLoadNote">print(1 + 1)</textarea>
+        <p class="csv-note" id="pyEdHint" data-i="hub.py.ed.hint">Press Ctrl+Enter (Cmd+Enter on a Mac) to run. The Tab key moves focus out of the editor.</p>
+        <p class="csv-note" id="pyLoadNote" data-i="hub.py.load.note">Python is not downloaded until you press Run. The first run downloads about 6 MB (again each time you open this page, because the isolated frame cannot reuse the browser cache) and takes a few seconds.</p>
+        <div class="sql-actions">
+          <button class="btn btn-accent" id="pyRun" type="button"><span data-i="hub.py.run">Run</span></button>
+          <button class="btn btn-ghost" id="pyStop" type="button" disabled><span data-i="hub.py.stop">Stop</span></button>
+          <button class="btn btn-ghost" id="pyClear" type="button"><span data-i="hub.py.clear">Clear output</span></button>
+          <div class="csv-field sql-timeout">
+            <label for="pyTimeout" data-i="hub.py.timeout">Time limit (seconds, 5 to 120)</label>
+            <input class="py-num" id="pyTimeout" type="number" inputmode="numeric" min="5" max="120" step="1" value="30" aria-describedby="pyLimits">
+          </div>
+        </div>
+        <p class="csv-note" id="pyLimits" data-i="hub.py.limits">Limits: code up to 200 KB; output up to 2,000 lines or 256 KiB (the rest is discarded); memory up to 4 GiB (on phones the browser may close the tab sooner). Variables do not persist between runs; Stop and the time limit end the session and Python reloads on the next Run.</p>
+      </section>
+
+      <section class="sql-sec" aria-labelledby="pyFileH">
+        <h2 id="pyFileH" data-i="hub.py.file.h">CSV file (optional)</h2>
+        <div class="csv-opts">
+          <div class="sql-load">
+            <input class="csv-file" id="pyFile" type="file" accept=".csv,.tsv,.txt,text/csv,text/plain,text/tab-separated-values">
+            <label class="btn btn-dark csv-pick" for="pyFile"><span data-i="hub.py.file.btn">Choose a CSV file</span></label>
+          </div>
+          <button class="btn btn-ghost" id="pyFileRm" type="button" hidden><span data-i="hub.py.file.remove">Remove file</span></button>
+          <p class="csv-note" id="pyFileNote" data-i="hub.py.file.note">Limit: 10 MB. The file appears inside Python as /data/ followed by its name; read it with open() or the csv module. pandas is not included.</p>
+        </div>
+        <p class="csv-status" id="pyFileInfo" role="status" aria-live="polite"></p>
+      </section>
+
+      <p class="csv-status" id="pyStatus" role="status" aria-live="polite"></p>
+
+      <div class="notice csv-err" id="pyErr" role="alert" hidden>
+        <strong id="pyErrT"></strong>
+        <p id="pyErrM"></p>
+      </div>
+      <div class="notice csv-warn" id="pyWarn" role="status" hidden></div>
+
+      <section class="sql-sec csv-result">
+        <h2 id="pyOutH" data-i="hub.py.out.h">Output</h2>
+        <p class="csv-note" id="pyOutEmpty" data-i="hub.py.out.empty">Run code to see the output here.</p>
+        <p class="csv-note" id="pyOutNone" data-i="hub.py.out.none" hidden>The program ran and printed nothing.</p>
+        <pre class="py-out" id="pyOut" role="region" tabindex="0" aria-labelledby="pyOutH" hidden></pre>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p><span data-i="hub.foot.note">Data &amp; AI Community Hub · by Lucas Delfino</span></p>
+    <nav class="hub-foot-nav" aria-label="Footer" data-ia="aria-label:hub.foot.nav">
+      <a href="../"><span data-i="hub.nav.tools">Tools</span></a>
+      <a href="../../privacidade/"><span data-i="hub.nav.privacy">Privacy</span></a>
+      <a href="../../../"><span data-i="hub.nav.portfolio">Portfolio</span><span class="arrow" aria-hidden="true"> ↗</span></a>
+      <a href="#top"><span data-i="hub.foot.top">Back to top</span></a>
+    </nav>
+  </footer>
+</div>
+<script src="../../assets/js/nav.js" defer></script>
+<script src="../../assets/js/python.js" defer></script>
+</body>
+</html>
