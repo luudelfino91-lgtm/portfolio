@@ -1,15 +1,17 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title data-i="hub.title.sql">SQL playground · Data &amp; AI Community Hub</title>
-<meta name="description" content="The SQL playground of the Data &amp; AI Community Hub is under construction." data-ia="content:hub.desc.sql">
+<meta name="description" content="Run SQL in your browser on tables made from your own CSV files. Nothing is uploaded." data-ia="content:hub.desc.sql">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../../assets/css/styles.css">
 <link rel="stylesheet" href="../../assets/css/hub.css">
+<link rel="stylesheet" href="../../assets/css/csv.css">
+<link rel="stylesheet" href="../../assets/css/sql.css">
 <script src="../../assets/js/theme.js"></script>
 <script src="../../assets/js/i18n.js" defer></script>
 </head>
@@ -42,11 +44,94 @@
     <section class="hub-hero hub-hero--sub" aria-labelledby="h1">
       <h1 id="h1" data-i="hub.tool.sql.name">SQL playground</h1>
     </section>
-    <div class="empty">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8 6.2 21l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg>
-      <h2 data-i="hub.wip.title">This tool is not available yet</h2>
-      <p data-i="hub.wip.sql">The SQL playground builds on the CSV viewer, so it comes after it. Nothing is loaded or sent anywhere on this page.</p>
-      <a class="btn btn-dark" href="../"><span data-i="hub.wip.back">Back to tools</span></a>
+    <p class="lede csv-lede" data-i="hub.sql.lede">Write SQL and run it on a database that lives in this browser tab. You can load your own CSV files as tables. Nothing is uploaded: the files and the queries stay on this device.</p>
+
+    <div class="csv-tool sql-tool" id="sqlTool" data-state="preparing">
+      <section class="sql-sec" aria-labelledby="sqlDataH">
+        <h2 id="sqlDataH" data-i="hub.sql.data.h">Your tables</h2>
+        <div class="csv-opts">
+          <div class="sql-load">
+            <input class="csv-file" id="sqlFile" type="file" accept=".csv,.tsv,.txt,text/csv,text/plain,text/tab-separated-values">
+            <label class="btn btn-dark csv-pick" for="sqlFile"><span data-i="hub.sql.load.btn">Load a CSV file as a table</span></label>
+          </div>
+          <div class="csv-field">
+            <label for="sqlDelim" data-i="hub.csv.opt.delim">Delimiter</label>
+            <select id="sqlDelim">
+              <option value="auto" data-i="hub.csv.opt.auto">Automatic</option>
+              <option value="," data-i="hub.csv.opt.comma">Comma (,)</option>
+              <option value=";" data-i="hub.csv.opt.semicolon">Semicolon (;)</option>
+              <option value="&#9;" data-i="hub.csv.opt.tab">Tab</option>
+              <option value="|" data-i="hub.csv.opt.pipe">Pipe (|)</option>
+            </select>
+          </div>
+          <div class="csv-field">
+            <label for="sqlEnc" data-i="hub.csv.opt.enc">Encoding</label>
+            <select id="sqlEnc">
+              <option value="auto" data-i="hub.csv.opt.auto">Automatic</option>
+              <option value="utf-8" data-i="hub.csv.opt.utf8">UTF-8</option>
+              <option value="windows-1252" data-i="hub.csv.opt.w1252">Windows-1252 / ISO-8859-1 (Latin-1)</option>
+            </select>
+          </div>
+          <p class="csv-note" data-i="hub.sql.load.note">Limit: 10 MB per file. The table is named after the file, and names with spaces, accents or symbols are cleaned up so you can type them. The options above apply to the next file you load.</p>
+        </div>
+
+        <div class="csv-run" id="sqlLoadRun" hidden>
+          <progress id="sqlProg" max="100" value="0" aria-label="Loading progress" data-ia="aria-label:hub.sql.progress"></progress>
+          <span class="csv-pct" id="sqlPct" aria-hidden="true">0%</span>
+          <button class="btn btn-ghost" id="sqlLoadCancel" type="button"><span data-i="hub.sql.load.cancel">Cancel loading</span></button>
+        </div>
+
+        <p class="csv-note" id="sqlSchemaEmpty" data-i="hub.sql.schema.empty">No tables yet. Load a CSV file or create a table with CREATE TABLE.</p>
+        <div class="csv-scroll sql-schema" id="sqlSchemaBox" role="region" tabindex="0" aria-label="Tables and columns" data-ia="aria-label:hub.sql.schema.label" hidden>
+          <div id="sqlSchema"></div>
+        </div>
+        <p class="csv-note" id="sqlTypeNote" data-i="hub.sql.schema.note" hidden>Types from CSV: whole numbers become INTEGER and decimals (with a point or a comma) become REAL. Dates, booleans and codes with leading zeros stay TEXT. Empty cells (or only spaces) become NULL.</p>
+      </section>
+
+      <section class="sql-sec" aria-labelledby="sqlEdH">
+        <h2 id="sqlEdH" data-i="hub.sql.ed.h">Query</h2>
+        <label class="sql-label" for="sqlEditor" data-i="hub.sql.ed.label">SQL editor</label>
+        <textarea class="sql-editor" id="sqlEditor" rows="8" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-describedby="sqlEdHint">SELECT 1 + 1 AS result;</textarea>
+        <p class="csv-note" id="sqlEdHint" data-i="hub.sql.ed.hint">Press Ctrl+Enter (Cmd+Enter on a Mac) to run. The Tab key moves focus out of the editor.</p>
+        <div class="sql-actions">
+          <button class="btn btn-accent" id="sqlRun" type="button" disabled><span id="sqlRunT">Please wait</span></button>
+          <button class="btn btn-ghost" id="sqlStop" type="button" hidden><span data-i="hub.sql.stop">Stop</span></button>
+          <button class="btn btn-ghost" id="sqlReset" type="button"><span data-i="hub.sql.reset">Reset database</span></button>
+          <div class="csv-field sql-timeout">
+            <label for="sqlTimeout" data-i="hub.sql.timeout">Time limit</label>
+            <select id="sqlTimeout">
+              <option value="5" data-i="hub.sql.timeout.5">5 seconds</option>
+              <option value="10" data-i="hub.sql.timeout.10" selected>10 seconds</option>
+              <option value="30" data-i="hub.sql.timeout.30">30 seconds</option>
+              <option value="60" data-i="hub.sql.timeout.60">60 seconds</option>
+            </select>
+          </div>
+        </div>
+        <p class="csv-note" id="sqlLimits"></p>
+      </section>
+
+      <p class="csv-status" id="sqlStatus" role="status" aria-live="polite"></p>
+
+      <div class="notice csv-err" id="sqlErr" role="alert" hidden>
+        <strong id="sqlErrT"></strong>
+        <p id="sqlErrM" class="sql-engine"></p>
+        <p id="sqlErrH"></p>
+        <button class="btn btn-ghost" id="sqlRetry" type="button" hidden><span data-i="hub.sql.retry">Try again</span></button>
+      </div>
+      <div class="notice csv-warn" id="sqlWarn" role="status" hidden></div>
+
+      <div class="sql-sec csv-result" id="sqlResult" aria-busy="false">
+        <h2 id="sqlResH" data-i="hub.sql.res.h">Result</h2>
+        <p class="csv-note sql-resmsg" id="sqlResMsg"></p>
+        <div class="csv-scroll" id="sqlResBox" role="region" tabindex="0" aria-labelledby="sqlResH" hidden>
+          <table class="csv-table" id="sqlResTable">
+            <caption id="sqlResCap"></caption>
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="csv-note" id="sqlResNote" hidden></p>
+      </div>
     </div>
   </main>
 
@@ -61,5 +146,6 @@
   </footer>
 </div>
 <script src="../../assets/js/nav.js" defer></script>
+<script src="../../assets/js/sql.js" defer></script>
 </body>
 </html>

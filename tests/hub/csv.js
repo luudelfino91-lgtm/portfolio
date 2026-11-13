@@ -114,15 +114,20 @@ const nf = (n, lang) => new Intl.NumberFormat(lang === 'pt' ? 'pt-BR' : 'en-US')
       L.rec('CSV-51 limit-10mb.csv previa de 100 linhas e tipos conferem com expected.json', r.body.length === 100 && JSON.stringify(r.types) === JSON.stringify(EXP['limit-10mb.csv'].columns_stats.map(s => s.type)), `previa=${r.body.length} tipos=${r.types}`);
       await load(pg, over); const o = await grab(pg);
       L.rec('CSV-52 over-limit.csv (10.485.761 bytes) recusado com "10 MB"; arquivo anterior mantido', sz[1] === 10485761 && o.errVisible && /10 MB/.test(o.err) && o.resultVisible && o.rows.startsWith('111.875'), `bytes=${sz[1]} msg="${o.err}" resultado anterior visivel=${o.resultVisible}`);
-      // cancelar a 40%
-      await pg.goto(`${L.BASE}/${PAGE}`); await load(pg, 'basic.csv');
-      await pg.setInputFiles('#csvFile', lim);
+      // cancelar a 40%: a leitura de 10 MB e rapida, entao a amostragem pode perder a corrida contra o fim da leitura;
+      // ate 5 tentativas (a asserção abaixo continua exigindo cancelamento efetivo a >=40%)
       let seen = [], cancelled = null;
-      for (let i = 0; i < 4000; i++) {
-        const v = await pg.evaluate(() => ({ p: document.getElementById('csvProg').value, s: document.getElementById('csvTool').dataset.state }));
-        seen.push(v.p); if (v.s !== 'loading' && i > 0) break;
-        if (v.p >= 40) { await pg.click('#csvCancel'); cancelled = v.p; break; }
-        await pg.waitForTimeout(5);
+      for (let attempt = 0; attempt < 5 && cancelled === null; attempt++) {
+        await pg.goto(`${L.BASE}/${PAGE}`); await load(pg, 'basic.csv');
+        await pg.setInputFiles('#csvFile', lim);
+        for (let i = 0; i < 4000; i++) {
+          const v = await pg.evaluate(() => ({ p: document.getElementById('csvProg').value, s: document.getElementById('csvTool').dataset.state }));
+          seen.push(v.p); if (v.s !== 'loading' && i > 0) break;
+          if (v.p >= 40) {
+            try { await pg.click('#csvCancel', { timeout: 1000 }); cancelled = v.p; } catch (e) { /* leitura terminou antes do clique: nova tentativa */ }
+            break; }
+          await pg.waitForTimeout(5);
+        }
       }
       await pg.waitForTimeout(1500); const k = await grab(pg);
       const info = await pg.evaluate(() => ({ focus: document.activeElement.id, runHidden: document.getElementById('csvRun').hidden }));
