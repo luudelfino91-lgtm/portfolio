@@ -3,7 +3,7 @@
    ========================================================= */
 :root{
   --bg:#FBFAFD; --surface:#FFFFFF; --surface-2:#F5F0F8; --line:#E7DFEC; --line-strong:#D6C9DE;
-  --ink:#191328; --ink-2:#4A4458; --ink-3:#7A7389;
+  --ink:#191328; --ink-2:#4A4458; --ink-3:#6E677D;
   --plum:#8A3D86; --plum-ink:#6E2D6B; --orchid:#CD9CDA; --orchid-soft:#F3E7F7; --midnight:#191328;
   --on-dark:#FFFFFF;
   --grad:linear-gradient(100deg,#8A3D86 0%,#B06AC0 55%,#8C7BE0 100%);
