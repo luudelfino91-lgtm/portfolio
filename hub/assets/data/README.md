@@ -37,3 +37,7 @@ clientes(id PK, nome, email, cidade, data_cadastro)
 pedidos(id PK, cliente_id FK -> clientes.id, data_pedido, data_entrega, status)
 itens_pedido(id PK, pedido_id FK -> pedidos.id, produto_id FK -> produtos.id, quantidade, preco_unitario)
 ```
+
+## exercicios.md
+
+Regra de comparação (colunas, tipos, ordem), mensagens de falha, isolamento da verificação e os 5 exercícios guiados do SQL playground (T-307). O oráculo independente dos resultados esperados é `docs/testing/fixtures/compute_exercises_expected.py` (sqlite3 do Python, cálculo em Python puro sobre `loja-exemplo.sql`); os testes estão em `tests/hub/exercises.js`. Se o `loja-exemplo.sql` for regerado, confira as linhas esperadas (4/9/5/9/10) no oráculo e em `exercicios.md`.

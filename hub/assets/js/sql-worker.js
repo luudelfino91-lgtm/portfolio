@@ -10,8 +10,10 @@
      o banco em memória e perdido e recriado.
    Entradas: {type:'run', id, sql, limit, cellBudget} | {type:'load', id, file, delimiter, encoding}
              | {type:'drop', id, name} | {type:'sample', id, sql}   (sql = texto de loja-exemplo.sql, buscado pela pagina)
+             | {type:'verify', id, sample, ref, user, ordered}      (exercicios guiados, T-307; ver sqVerify)
    Saidas:   {type:'ready', version} | {type:'initerror', detail}
-             | {type:'result', id, ...} | {type:'loaded', id, ...} | {type:'sample', id, ...} | {type:'error', id, ...}
+             | {type:'result', id, ...} | {type:'loaded', id, ...} | {type:'sample', id, ...} | {type:'verified', id, ok, code, vars}
+             | {type:'error', id, ...}
    ===================================================================== */
 'use strict';
 importScripts('csv-worker.js');                  // define decode, detectDelimiter, kindOf, typeOf, Papa (relativo a este arquivo)
@@ -22,7 +24,7 @@ importScripts('../vendor/sqljs/sql-wasm.js');    // define initSqlJs
 self.onerror = function () { return true; };
 self.addEventListener('unhandledrejection', function (e) { e.preventDefault(); });
 
-var sqDb = null, sqVersion = '';
+var sqDb = null, sqSQL = null, sqVersion = '';
 var SQ_MAX_COUNT = 1000000;      // conta linhas ate aqui; acima, informa "mais de"
 var SQ_MAX_CELL = 2000;          // texto maior que isto e cortado na exibição
 
@@ -246,6 +248,110 @@ function sqSample(m) {
   return { type: 'sample', id: m.id, tables: SQ_SAMPLE.slice(), replaced: replaced, counts: counts, rows: rows, schema: sqSafeSchema() };
 }
 
+// ---------- exercicios guiados: verificacao automatica (T-307) ----------
+/* REGRA DE COMPARACAO (a mesma de hub/assets/data/exercicios.md; escrita ANTES do codigo):
+   Compara o resultado da consulta DO USUARIO (ultima instrucao que devolve colunas) com o resultado da consulta de referencia.
+   1. Colunas: mesmo numero; comparadas por POSICAO e por NOME (nome sem diferenciar maiusculas de minusculas).
+   2. Valores: NULL so e igual a NULL. Numeros: inteiro e real sao iguais se numericamente iguais (3 == 3.0);
+      dois inteiros comparam exatamente; se algum e REAL, |a-b| <= 1e-9 * max(1, |a|, |b|). Texto compara exatamente
+      (com maiusculas/minusculas); texto nunca e igual a numero ('3' != 3). BLOB compara byte a byte.
+   3. Linhas: mesmo numero. Ordem significativa SO quando o exercicio pede ORDER BY (ordered = true); senao as linhas
+      sao comparadas como MULTICONJUNTO (ordem ignorada, repeticoes contam).
+   Isolamento: a verificacao roda num banco NOVO e descartavel (new SQL.Database()), criado so para esta verificacao a partir do
+   texto do banco de exemplo; a referencia roda ali ANTES do SQL do usuario. O banco do usuario (o do playground) nunca e tocado,
+   entao INSERT/UPDATE/DROP/COMMIT/ROLLBACK do usuario nao corrompem nada, nem a proxima verificacao. (Escolha documentada:
+   banco novo em vez de SAVEPOINT/ROLLBACK, porque o SQL do usuario pode conter COMMIT/ROLLBACK/RELEASE e desfazer o ponto de retorno.)
+   A mensagem de falha diz O QUE difere, nunca o valor esperado. */
+var VF_MAX_ROWS = 20000;     // linhas lidas por consulta; acima disso o resultado e "grande demais" (conta como diferente)
+
+function vfRunLast(db, sql) {
+  var it = db.iterateStatements(sql), stmt = null, idx = 0, last = null;
+  try {
+    for (stmt of it) {
+      idx++;
+      var cols = stmt.getColumnNames();
+      if (cols.length) {
+        var rows = [], total = 0;
+        while (stmt.step()) { total++; if (rows.length < VF_MAX_ROWS) rows.push(stmt.get()); else break; }
+        last = { columns: cols, rows: rows, capped: total > VF_MAX_ROWS };
+      } else { while (stmt.step()) { /* DDL/DML */ } }
+      stmt.free(); stmt = null;
+    }
+  } catch (e) {
+    if (stmt) { try { stmt.free(); } catch (e2) {} }
+    e.vfStatement = idx; throw e;
+  }
+  return { set: last, statements: idx };
+}
+
+function vfKind(v) { return v === null || v === undefined ? 0 : typeof v === 'number' || typeof v === 'bigint' ? 1 : typeof v === 'string' ? 2 : 3; }
+function vfCellCmp(a, b) {      // -1/0/1; numeros com a tolerancia da regra
+  var ka = vfKind(a), kb = vfKind(b);
+  if (ka !== kb) return ka < kb ? -1 : 1;
+  if (ka === 0) return 0;
+  if (ka === 1) {
+    if (typeof a === 'bigint' || typeof b === 'bigint') { a = Number(a); b = Number(b); }
+    if (a === b) return 0;
+    if (!(Number.isInteger(a) && Number.isInteger(b)) && Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a), Math.abs(b))) return 0;
+    return a < b ? -1 : 1;
+  }
+  if (ka === 2) return a === b ? 0 : a < b ? -1 : 1;
+  var n = Math.min(a.length, b.length);
+  for (var i = 0; i < n; i++) if (a[i] !== b[i]) return a[i] < b[i] ? -1 : 1;
+  return a.length === b.length ? 0 : a.length < b.length ? -1 : 1;
+}
+function vfRowCmp(x, y) { for (var i = 0; i < x.length; i++) { var c = vfCellCmp(x[i], y[i]); if (c) return c; } return 0; }
+
+// devolve {ok:true} ou {ok:false, code, vars}; codes: cols, names, rows, value, order, set
+function vfCompare(got, want, ordered) {
+  if (got.columns.length !== want.columns.length) return { ok: false, code: 'cols', vars: { got: got.columns.length, want: want.columns.length } };
+  for (var i = 0; i < want.columns.length; i++) {
+    if (String(got.columns[i]).toLowerCase() !== String(want.columns[i]).toLowerCase()) return { ok: false, code: 'names', vars: { pos: i + 1, got: got.columns[i] } };
+  }
+  if (got.capped || got.rows.length !== want.rows.length) return { ok: false, code: 'rows', vars: { got: got.capped ? VF_MAX_ROWS + '+' : got.rows.length, want: want.rows.length } };
+  var n = want.rows.length, k;
+  if (ordered) {
+    for (k = 0; k < n; k++) {
+      var r = vfRowCmp(got.rows[k], want.rows[k]);
+      if (r !== 0) {
+        // mesmas linhas em outra ordem? (multiconjunto igual) -> mensagem de ordem; senao valor diferente
+        var a = got.rows.slice().sort(vfRowCmp), b = want.rows.slice().sort(vfRowCmp), same = true;
+        for (var j = 0; j < n; j++) if (vfRowCmp(a[j], b[j]) !== 0) { same = false; break; }
+        if (same) return { ok: false, code: 'order', vars: { row: k + 1 } };
+        for (var c = 0; c < want.columns.length; c++) if (vfCellCmp(got.rows[k][c], want.rows[k][c]) !== 0) return { ok: false, code: 'value', vars: { row: k + 1, col: c + 1, name: want.columns[c] } };
+      }
+    }
+    return { ok: true };
+  }
+  var ga = got.rows.slice().sort(vfRowCmp), wa = want.rows.slice().sort(vfRowCmp);
+  for (k = 0; k < n; k++) if (vfRowCmp(ga[k], wa[k]) !== 0) return { ok: false, code: 'set', vars: {} };
+  return { ok: true };
+}
+
+function sqVerify(m) {
+  var db = null, want, got;
+  try {
+    db = new sqSQL.Database();
+    db.run(String(m.sample));
+    var ref = vfRunLast(db, String(m.ref));
+    if (!ref.set) return { type: 'verified', id: m.id, ok: false, code: 'internal', vars: {} };
+    want = ref.set;
+    var res;
+    try { res = vfRunLast(db, String(m.user)); }
+    catch (e) {
+      if (sqIsFatal(e)) throw e;
+      return { type: 'verified', id: m.id, ok: false, code: 'sql', vars: { message: String(e && e.message || e), statement: (e.vfStatement || 0) + 1 } };
+    }
+    if (res.statements === 0) return { type: 'verified', id: m.id, ok: false, code: 'empty', vars: {} };
+    if (!res.set) return { type: 'verified', id: m.id, ok: false, code: 'noresult', vars: {} };
+    got = res.set;
+    var v = vfCompare(got, want, !!m.ordered);
+    return { type: 'verified', id: m.id, ok: v.ok, code: v.ok ? 'pass' : v.code, vars: v.vars || {} };
+  } finally {
+    if (db) { try { db.close(); } catch (e3) {} }
+  }
+}
+
 function sqDrop(m) {
   try { sqDb.run('DROP TABLE IF EXISTS ' + sqQuote(m.name)); return { type: 'dropped', id: m.id, schema: sqSafeSchema() }; }
   catch (e) { return { type: 'error', id: m.id, code: 'sql', message: String(e && e.message || e) }; }
@@ -259,6 +365,7 @@ self.onmessage = function (e) {
     else if (m.type === 'load') sqLoad(m).then(function (r) { self.postMessage(r); });
     else if (m.type === 'drop') self.postMessage(sqDrop(m));
     else if (m.type === 'sample') self.postMessage(sqSample(m));
+    else if (m.type === 'verify') self.postMessage(sqVerify(m));
   } catch (err) {
     self.postMessage({ type: 'error', id: m.id, code: sqIsFatal(err) ? 'crash' : (m.type === 'sample' ? 'sample' : 'worker'), message: String(err && err.message || err), schema: sqSafeSchema() });
   }
@@ -266,7 +373,7 @@ self.onmessage = function (e) {
 
 initSqlJs({ locateFile: function (f) { return new URL('../vendor/sqljs/' + f, self.location.href).href; } })
   .then(function (SQL) {
-    sqDb = new SQL.Database();
+    sqSQL = SQL; sqDb = new SQL.Database();
     try { sqVersion = sqDb.exec('select sqlite_version()')[0].values[0][0]; } catch (e) {}
     self.postMessage({ type: 'ready', version: sqVersion });
   })

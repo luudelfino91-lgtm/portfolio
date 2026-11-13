@@ -46,6 +46,8 @@
     </section>
     <p class="lede csv-lede" data-i="hub.sql.lede">Write SQL and run it on a database that lives in this browser tab. You can load your own CSV files as tables. Nothing is uploaded: the files and the queries stay on this device.</p>
 
+    <p class="csv-note sql-exlink"><a href="#sqlExH" data-i="hub.sql.ex.link">Ready to practise? Go to the five guided exercises</a></p>
+
     <div class="csv-tool sql-tool" id="sqlTool" data-state="preparing">
       <section class="sql-sec" aria-labelledby="sqlSampleH">
         <h2 id="sqlSampleH" data-i="hub.sql.sample.h">Sample database</h2>
@@ -144,6 +146,15 @@
         </div>
         <p class="csv-note" id="sqlResNote" hidden></p>
       </div>
+
+      <section class="sql-sec" aria-labelledby="sqlExH">
+        <h2 id="sqlExH" data-i="hub.sql.ex.h">Exercises</h2>
+        <p data-i="hub.sql.ex.p">Five guided exercises on the sample database, from easy to harder. Write your query in the box, press Check, and the page tells you whether your result matches the expected one.</p>
+        <p class="csv-note" data-i="hub.sql.ex.rule">How it is checked: your result is compared with the expected result. Columns must match by position and name (upper or lower case does not matter). Numbers are equal when numerically equal (3 and 3.0 are the same; decimals allow a tiny tolerance) and NULL only equals NULL. Row order only matters when the exercise asks for ORDER BY. Your own tables are not touched: the check runs on a fresh private copy of the sample database. Progress lives only in this page and is lost when you reload.</p>
+        <p class="csv-status sql-ex-prog" id="sqlExProg" role="status" aria-live="polite"></p>
+        <div class="sql-actions"><button class="btn btn-ghost" id="sqlExStop" type="button" hidden><span data-i="hub.sql.stop">Stop</span></button></div>
+        <ol class="sql-ex" id="sqlExList"></ol>
+      </section>
     </div>
   </main>
 
