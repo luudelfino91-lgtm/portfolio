@@ -1,7 +1,7 @@
 # Project Status Report: Fase 3 (leitor de CSV e SQL playground)
 
-**Data:** 2026-11-13. **Branch:** `feat/phase-3-csv-sql` (PR #6). **Commit verificado:** a905171 (suíte reexecutada em 2026-11-13 por mim e pelo revisor independente, com as portas de teste livres; as alterações deste ajuste de documentação e de `tests/hub/lib.js` vêm depois e foram reverificadas na reexecução registrada na seção 3).
-**Status:** `IN REVIEW`, com **revisão independente REJEITADA** (correções feitas, aguardando nova verificação do revisor). **Não pronta para produção.** Itens MVP abertos: T-301 (parcial), T-306 (parcial), T-310 (parcial), T-312 (relatório de segurança em elaboração) e a verificação fora do Chrome.
+**Data:** 2026-11-13. **Branch:** `feat/phase-3-csv-sql` (PR #6). **Commit verificado:** e377ca0 (revisão independente final: APROVAR, sem achados críticos/altos/médios; a905171 foi o commit anterior (suíte reexecutada em 2026-11-13 por mim e pelo revisor independente, com as portas de teste livres; as alterações deste ajuste de documentação e de `tests/hub/lib.js` vêm depois e foram reverificadas na reexecução registrada na seção 3).
+**Status:** `IN REVIEW`, com **revisão independente: APROVADA** na reavaliação final (a primeira foi REJEITADA e as correções foram reverificadas). **Não pronta para produção.** Itens MVP abertos: T-301 (parcial), T-306 (parcial), T-310 (parcial), T-312 (relatório de segurança em elaboração) e a verificação fora do Chrome.
 
 ## 1. O que existe
 - `hub/ferramentas/csv/` (leitor de CSV com Web Worker, Papa Parse 5.7.1 local) e `hub/ferramentas/sql/` (playground com sql.js **1.16.0** local, Worker próprio, CSV como tabela).
@@ -59,12 +59,12 @@ Legenda: **ENTREGUE (Chrome)** = implementado e coberto por teste automatizado p
 D3c (Pyodide, Fase 4), D5 (PIX, Fase 6), D8 (sem backend, Fase 7) e D9. Nenhuma bloqueia o MVP da Fase 3, mas nenhum documento as trata como decididas.
 
 ## 7. Revisão independente
-**REJEITADA, com 3 Altos, em correção:**
+**Primeira revisão REJEITADA (3 Altos), corrigidos; reavaliação final APROVADA (e377ca0):**
 1. Texto de privacidade (`hub.priv.s1.p` e `hub/privacidade/index.html`) dizia que as ferramentas ainda não estavam disponíveis. Reescrito: CSV e SQL rodam no navegador, arquivos processados localmente e não enviados, afirmações **provisórias até a revisão final (T-310)** (PRV-10). Corrigido no working tree.
 2. `hub.home.lede` (EN e PT) dizia "being built"/"sendo construídas". Reescrito; HUB-03 em `tests/hub/a11y.js` agora também falha com essas expressões, em EN e PT, na home e em ferramentas. Corrigido no working tree.
 3. `manifest.json` de dependências (PRV-12): criado (com `SHA256SUMS`), `sha256sum -c` OK. Verificado pelo revisor independente na nova revisão.
 
-Documentação que citava sql.js 1.15.0 foi atualizada para 1.16.0 (pesos reais: 47.621 + 688.197 = 735.818 B), com a anotação "atualizado de 1.15.0 na vendorização (T-301)". **Nenhum revisor independente reavaliou as correções.**
+Documentação que citava sql.js 1.15.0 foi atualizada para 1.16.0 (pesos reais: 47.621 + 688.197 = 735.818 B), com a anotação "atualizado de 1.15.0 na vendorização (T-301)". A reavaliação final do revisor independente aprovou (sem achados críticos/altos/médios).
 
 ## 8. Para você decidir
 - Aceitar as três suposições do SQL (REAL para decimal com vírgula, 1.000 linhas, 10 s).
