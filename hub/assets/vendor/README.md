@@ -10,8 +10,8 @@ Arquivos próprios, sem CDN (decisão D3b do Lucas). Cada arquivo abaixo é cóp
 ## Como foi verificado (2026-11-12)
 - A integridade SHA-512 de cada `.tgz` baixado foi **comparada com o valor que o próprio registro npm publica** (`npm view <pacote> dist.integrity`): as duas bateram. Isso prova que o tarball é o que o registro serve, não que o código seja livre de vulnerabilidades.
 - O campo `license` do `package.json` de cada pacote diz `MIT`; os arquivos `LICENSE` foram copiados do pacote.
-- **Não verificado:** advisories de segurança dos dois pacotes (GitHub Advisory Database, npm audit) e diferença entre o tarball e o repositório de origem. Ficam como tarefa do `security-auditor` (T-312).
-- A documentação da Fase 1 citava sql.js 1.15.0 como suposição. O npm mostra 1.16.0 como versão atual; usamos a 1.16.0 e a documentação deve ser atualizada.
+- **Verificado na revisão de segurança da Fase 3** (`docs/security/phase-3-review.md`): `npm audit` com 0 vulnerabilidades e tarballs idênticos ao registro. **Não verificado:** GitHub Advisory Database direta e OSV (inacessíveis) e diferença entre o tarball e o repositório de origem (T-312).
+- A documentação da Fase 1 citava sql.js 1.15.0 como suposição. O npm mostra 1.16.0 como versão atual; usamos a 1.16.0 e a documentação foi atualizada.
 
 ## SHA-256 dos arquivos
 
