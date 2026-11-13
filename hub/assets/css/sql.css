@@ -36,6 +36,13 @@
 .sql-schema-table td,.sql-schema-table th{overflow-wrap:anywhere}
 .sql-schema-table thead th{position:static}
 
+/* Banco de exemplo e consultas de exemplo */
+.sql-sub{font-size:18px;font-weight:700;margin-top:6px}
+.sql-samples{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:12px}
+.sql-samples li{display:flex;flex-direction:column;gap:6px;min-width:0}
+.sql-samples .btn{justify-content:flex-start;text-align:left;white-space:normal;line-height:1.3;overflow-wrap:anywhere}
+.sql-samples .sql-qd{font-size:14px;color:var(--ink-2);overflow-wrap:anywhere}
+
 @media (max-width:640px){
   .sql-timeout{margin-left:0;flex:1 1 100%}
   .sql-actions .btn{flex:1 1 100%}

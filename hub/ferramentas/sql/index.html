@@ -47,6 +47,18 @@
     <p class="lede csv-lede" data-i="hub.sql.lede">Write SQL and run it on a database that lives in this browser tab. You can load your own CSV files as tables. Nothing is uploaded: the files and the queries stay on this device.</p>
 
     <div class="csv-tool sql-tool" id="sqlTool" data-state="preparing">
+      <section class="sql-sec" aria-labelledby="sqlSampleH">
+        <h2 id="sqlSampleH" data-i="hub.sql.sample.h">Sample database</h2>
+        <p data-i="hub.sql.sample.p">A made-up online shop with five related tables: clientes, categorias, produtos, pedidos and itens_pedido. All data is fictional. Use it to practise SELECT, JOINs and GROUP BY.</p>
+        <div class="sql-actions">
+          <button class="btn btn-dark" id="sqlSampleBtn" type="button" disabled><span data-i="hub.sql.sample.btn">Load the sample database</span></button>
+        </div>
+        <p class="csv-note" data-i="hub.sql.sample.note">Loading it again replaces the five sample tables with a fresh copy (changes you made to them are lost). After Stop or a time limit it is reloaded automatically. Reset database removes everything.</p>
+        <h3 class="sql-sub" id="sqlSampleQH" data-i="hub.sql.sample.q.h">Sample queries</h3>
+        <p class="csv-note" data-i="hub.sql.sample.q.p">Choose a query to put it in the editor. It does not run by itself: read it, change it if you like, then press Run. Load the sample database first.</p>
+        <ul class="sql-samples" id="sqlSampleQ" aria-labelledby="sqlSampleQH"></ul>
+      </section>
+
       <section class="sql-sec" aria-labelledby="sqlDataH">
         <h2 id="sqlDataH" data-i="hub.sql.data.h">Your tables</h2>
         <div class="csv-opts">

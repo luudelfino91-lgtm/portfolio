@@ -49,6 +49,8 @@ const { execSync } = require('child_process');
     try {
       sh(`git clone -q --no-hardlinks "${L.REPO}" "${tmp}/c"`, tmp); const c = `${tmp}/c`;
       sh('git config user.email t@t && git config user.name t', c);
+      // o origin/main do clone e o branch main LOCAL do repo (pode estar atrasado); use o origin/main real do repo
+      sh(`git fetch -q "${L.REPO}" +refs/remotes/origin/main:refs/remotes/origin/main`, c);
       res.push(['controle limpo (HEAD commitado)', S.offending(c).length === 0]);
       fs.appendFileSync(`${c}/docs/_x.md`, 'x'); res.push(['controle: arquivo novo em docs/ nao acusa', S.offending(c).length === 0]); fs.unlinkSync(`${c}/docs/_x.md`);
       for (const f of ['index.html', 'certificacoes.html', 'assets/css/styles.css', 'README.md', 'CHANGELOG.md']) {
