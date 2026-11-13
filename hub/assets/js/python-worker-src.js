@@ -18,9 +18,9 @@
                        {t:'out', id, parts:[[stream, texto], ...]}   stream 'out' | 'err'
                        {t:'done', id, ok}
                        {t:'pkgs', id, s:'loading'|'ready', names, bytes}   (D12) so informativo; pacotes sendo baixados/prontos
-                       {t:'done', id, ok, hint?}                 hint = {k:'nomodule', name} quando o erro foi ModuleNotFoundError
-   D12 (numpy + pandas): sem micropip e SEM loadPackage exposto ao usuario. Quem carrega pacotes e este Worker, ANTES de
-   executar o codigo do usuario, a partir de uma LISTA FECHADA de 5 pacotes (numpy, pandas, python-dateutil, pytz, six),
+                       {t:'done', id, ok, hint?}                 hint = {k:'nomodule', name} (ModuleNotFoundError) | {k:'toodeep'} | {k:'dead'} (Pyodide morreu) | {k:'pkgfail'} | {k:'isolation'}
+   D12 (numpy + pandas): sem micropip e SEM loadPackage exposto ao usuario. Quem carrega pacotes e este Worker, no inicio de cada execucao (antes de iniciar o
+   codigo DESTA execucao; codigo de uma execucao anterior, ex. setInterval, pode continuar rodando: limite conhecido, M1), a partir de uma LISTA FECHADA de 5 pacotes (numpy, pandas, python-dateutil, pytz, six),
    decidida por analise do AST do codigo (imports) e nao por pedido do usuario. Os wheels vem do proprio site
    (vendor/pyodide/packages/, URL absoluta derivada de indexURL, sha256 conferido pelo Pyodide contra o pyodide-lock.json
    FILTRADO, que so conhece esses 5 pacotes). Depois de carregar, o canario roda de novo.
@@ -46,7 +46,7 @@
       'six': { deps: [], bytes: 11050 }
     };
     var own = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };
-    var realLoad = null, helper = null, loadedPkgs = {};
+    var realLoad = null, helper = null, loadedPkgs = {}, gateOpen = false;
     // Analise (so ast.parse, nada do usuario executa): nomes de modulo de nivel superior em `import x`, `from x import y` (nivel 0),
     // e chamadas __import__('x') / import_module('x') com literal. Qualquer erro de analise (SyntaxError, recursao...) = nenhum pacote.
     var DETECT_PY = [
@@ -82,6 +82,23 @@
       var pk = [];
       res.forEach(function (m) { if (own(IMPORT2PKG, m) && pk.indexOf(IMPORT2PKG[m]) < 0) pk.push(IMPORT2PKG[m]); });
       return pk;
+    }
+    // M2: o parser/AST do CPython no WebAssembly estoura a pilha (fatal, o Pyodide morre) em expressoes de ~1000 niveis: parenteses,
+    // operadores unarios, cadeias de atributos ou de operadores binarios. Barreira barata e linear ANTES de ast.parse e antes de
+    // executar. Limites bem abaixo do estouro (medido: ate 800 niveis passa; ~1000 mata; limites: 150 colchetes, 600 em cadeias). Nao cobre toda forma possivel de
+    // aninhamento: o que escapar e tratado como "Pyodide morto" (ver run()).
+    function tooComplex(code) {
+      var depth = 0, max = 0;
+      for (var i = 0; i < code.length; i++) {
+        var ch = code.charCodeAt(i);
+        if (ch === 40 || ch === 91 || ch === 123) { if (++depth > max) max = depth; }
+        else if (ch === 41 || ch === 93 || ch === 125) { if (depth > 0) depth--; }
+      }
+      if (max > 150) return 'more than 150 nested brackets';
+      if (/(?:[-+~][ \t]*){601,}/.test(code) || /(?:\bnot[ \t]+){601,}/.test(code)) return 'more than 600 chained unary operators';
+      if (/(?:\.[ \t]*[A-Za-z_][A-Za-z_0-9]*[ \t]*){601,}/.test(code)) return 'more than 600 chained attribute accesses';
+      if (/(?:[-+*\/%|&^][ \t]*[A-Za-z_0-9.]+[ \t]*){601,}/.test(code)) return 'more than 600 chained operators in one expression';
+      return null;
     }
     function closure(names) {
       var seen = [];
@@ -187,10 +204,28 @@
       realLoad = pyodide.loadPackage.bind(pyodide);
       var off = function () { throw new Error('Package loading is disabled in this playground.'); };
       try { pyodide.loadPackage = off; pyodide.loadPackagesFromImports = off; } catch (e) {}
-      // a API interna (pyodide_js._api.packageManager) tambem e alcancavel pelo Python: sombreia o metodo na instancia (realLoad ja esta
-      // ligada ao original). Isto NAO e a defesa principal: mesmo se alguem a contornar, o lock so conhece 5 pacotes, a CSP so deixa a
-      // propria origem e cada wheel tem sha256 conferido.
-      try { if (pyodide._api && pyodide._api.packageManager) pyodide._api.packageManager.loadPackage = off; } catch (e) {}
+      // A API interna (pyodide_js._api.packageManager) tambem e alcancavel pelo Python, inclusive pelo prototipo
+      // (Reflect.apply(proto.loadPackage...), constructor.prototype, deleteProperty na instancia). Fechamento (A1): os metodos que
+      // carregam (loadPackage, loadPackageInner) sao SUBSTITUIDOS NO PROTOTIPO por uma versao com portao (so abre dentro de
+      // ensurePackages), o prototipo e CONGELADO (nao da para trocar de volta) e o lock em memoria (lockfile_packages) e CONGELADO
+      // (nao da para registrar pacote novo). Nao da para congelar a instancia (o Pyodide grava callbacks nela). Limite honesto: as
+      // outras funcoes internas do gerenciador continuam chamaveis, mas sem entrada no lock so alcancam os 5 wheels do mesmo site;
+      // a defesa real continua sendo CSP + sandbox de origem opaca + sha256 de cada wheel.
+      try {
+        var api = pyodide._api, pm = api && api.packageManager, PR = pm && Object.getPrototypeOf(pm);
+        if (PR) {
+          ['loadPackage', 'loadPackageInner'].forEach(function (k) {
+            var orig = PR[k]; if (typeof orig !== 'function') return;
+            Object.defineProperty(PR, k, { configurable: false, writable: false, value: function () {
+              if (!gateOpen) throw new Error('Package loading is disabled in this playground.');
+              return orig.apply(this, arguments);
+            } });
+          });
+          Object.freeze(PR);
+        }
+        if (api && api.lockfile_packages) Object.freeze(api.lockfile_packages);
+        if (api && api.lockfile && api.lockfile.packages) Object.freeze(api.lockfile.packages);
+      } catch (e) { self.postMessage({ t: 'fatal', detail: 'hardening failed: ' + String((e && e.message) || e).slice(0, 200) }); throw e; }
       helper = pyodide.globals.get('dict')();   // namespace PRIVADO do detector (o usuario roda em outro dict)
       pyodide.runPython(DETECT_PY, { globals: helper, filename: '<detector>' });
       self.postMessage({ t: 'status', s: 'ready' });
@@ -203,7 +238,9 @@
       var total = need.reduce(function (a, n) { return a + PKGS[n].bytes; }, 0);
       self.postMessage({ t: 'pkgs', id: cur, s: 'loading', names: need, bytes: total });
       var errs = [];
-      await realLoad(names.filter(function (n) { return own(PKGS, n); }), { messageCallback: function () {}, errorCallback: function (m) { errs.push(String(m)); } });
+      gateOpen = true;
+      try { await realLoad(names.filter(function (n) { return own(PKGS, n); }), { messageCallback: function () {}, errorCallback: function (m) { errs.push(String(m)); } }); }
+      finally { gateOpen = false; }
       var got = Object.keys(pyodide.loadedPackages || {});
       var stray = got.filter(function (n) { return !own(PKGS, n); });
       if (stray.length) throw new Error('unexpected package loaded: ' + stray.join(','));
@@ -218,6 +255,11 @@
       var ok = true, g = null, hint = null;
       try {
         if (d.tables) syncFiles(d.tables);
+        var why = tooComplex(String(d.code));
+        if (why) {   // nao analisa nem executa: o parser do CPython no WASM morreria
+          emit('err', 'Code not run: ' + why + ' (the Python parser would crash in this browser build).');
+          flush(); self.postMessage({ t: 'done', id: cur, ok: false, hint: { k: 'toodeep' } }); return;
+        }
         var want = detectPackages(String(d.code));
         if (want.length) {
           try { await ensurePackages(want); }
@@ -235,9 +277,22 @@
       } catch (e) {
         ok = false;
         var m = String((e && e.message) || e);
-        emit('err', cleanTb(m).replace(/\n+$/, ''));
-        var mm = /ModuleNotFoundError: No module named '([A-Za-z0-9_]{1,60})/.exec(m);
+        var shown = cleanTb(m).replace(/\n+$/, '');
+        var mm0 = /ModuleNotFoundError: No module named '([^'\n]{1,60})'/.exec(m);
+        if (mm0) {
+          // B2: a mensagem do Pyodide manda usar micropip/loadPackage, que NAO existem aqui: tira e explica o que vale neste playground
+          shown = shown.split('\n').filter(function (l) { return /^ModuleNotFoundError/.test(l) || !/micropip|loadPackage|included in the Pyodide distribution|You can install it|loading-packages/i.test(l); }).join('\n');
+          var top = mm0[1].split('.')[0];
+          shown += '\n' + (own(IMPORT2PKG, top)
+            ? 'Note: numpy and pandas are loaded only when an import statement is visible in your code (for example "import ' + top + '" at the top). Imports hidden in exec(), getattr or __import__(variable) are not detected.'
+            : 'Note: only the Python standard library, numpy and pandas are available here (nothing can be installed).');
+        }
+        emit('err', shown);
+        var mm = /ModuleNotFoundError: No module named '([^'\n]{1,60})'/.exec(m);
         if (mm) hint = { k: 'nomodule', name: mm[1] };
+        var dead = /fatally failed|fatal error|Maximum call stack/i.test(m);
+        if (!dead) { try { pyodide.runPython('0', { globals: helper }); } catch (pe2) { dead = true; } }   // sonda de vida: o estouro de pilha chega como excecao comum e deixa o Pyodide morto
+        if (dead) hint = { k: 'dead' };   // Pyodide morreu (ex.: pilha estourada): a pagina recria a sessao
       } finally {
         try { if (g) g.destroy(); } catch (e) {}
       }

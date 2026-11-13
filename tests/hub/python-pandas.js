@@ -18,7 +18,7 @@ const ONLY = process.env.ONLY ? new RegExp(process.env.ONLY) : null; const want 
 const PKGDIR = `${L.REPO}/hub/assets/vendor/pyodide/packages/`;
 const MIME = { html: 'text/html; charset=utf-8', js: 'text/javascript; charset=utf-8', mjs: 'text/javascript; charset=utf-8', css: 'text/css; charset=utf-8', json: 'application/json', wasm: 'application/wasm', zip: 'application/zip', svg: 'image/svg+xml', woff2: 'font/woff2', csv: 'text/csv', txt: 'text/plain', md: 'text/plain' };
 // instrument: [de, para] aplicado a python-worker-src.js servido (so PD-04/PD-09: conta e simula falha do canario)
-const opts = { wheelDelayMs: 0, corrupt: null, missing: null, instrument: null }; const served = [];
+const opts = { wheelDelayMs: 0, corrupt: null, missing: null, instrument: null, instrumentPage: null }; const served = [];
 const isWheel = u => /\.whl$/.test(u), wheelName = u => u.split('/').pop().split('-')[0].replace('_', '-');
 function siteServer() {
   return http.createServer((req, res) => {
@@ -34,6 +34,7 @@ function siteServer() {
       return opts.wheelDelayMs ? setTimeout(send, opts.wheelDelayMs) : send();
     }
     if (opts.instrument && /python-worker-src\.js$/.test(p)) { const b = fs.readFileSync(p, 'utf8'); const o = b.replace(opts.instrument[0], opts.instrument[1]); if (o === b) throw new Error('instrumentacao nao aplicada'); res.writeHead(200, h); return res.end(o); }
+    if (opts.instrumentPage && /assets\/js\/python\.js$/.test(p)) { const b = fs.readFileSync(p, 'utf8'); const o = b.replace(opts.instrumentPage[0], opts.instrumentPage[1]); if (o === b) throw new Error('instrumentacao da pagina nao aplicada'); res.writeHead(200, h); return res.end(o); }
     res.writeHead(200, h); fs.createReadStream(p).pipe(res);
   }).listen(PORT_PY, '127.0.0.1').on('error', portBusy);
 }
@@ -193,6 +194,46 @@ function cmpFrame(out, rows) {
     L.rec('PD-02 o Worker so mapeia nomes de import conhecidos por hasOwnProperty (nada de lookup em objeto com prototipo) e carrega so nomes da tabela PKGS', /var own = function \(o, k\) \{ return Object\.prototype\.hasOwnProperty\.call/.test(WORKER) && /own\(IMPORT2PKG, m\)/.test(WORKER) && /names\.filter\(function \(n\) \{ return own\(PKGS, n\); \}\)/.test(WORKER), 'ok');
   }
 
+  // ===== PD-02b (M2): barreira de profundidade antes do ast.parse + Pyodide morto =====
+  if (want('PD-02|PD-02b')) {
+    const m = /function tooComplex\(code\) \{[\s\S]*?\n    \}\n/.exec(WORKER); const tooComplex = vm.runInNewContext('(' + m[0].replace('function tooComplex', 'function') + ')');
+    const REJ = [['"(" x151', '('.repeat(151) + ')'.repeat(151)], ['"-" x601', '-'.repeat(601) + '1'], ['"not " x601', 'not '.repeat(601) + '1'], ['a + ".b" x601', 'a' + '.b'.repeat(601)], ['1 + "+1" x601', '1' + '+1'.repeat(601)], ['100000 parenteses', '('.repeat(100000) + ')'.repeat(100000)], ['45000 "not " (160 KB, perto do teto de 200 KB)', 'not '.repeat(45000) + '1'], ['100000 "-"', '-'.repeat(100000) + '1'], ['100000 ".b"', 'a' + '.b'.repeat(100000)], ['100000 "+1"', '1' + '+1'.repeat(100000)], ['100000 colchetes', '['.repeat(100000) + ']'.repeat(100000)], ['100000 chaves', '{'.repeat(100000)]];
+    const ACC = [['150 parenteses', 'x = ' + '('.repeat(150) + '1' + ')'.repeat(150)], ['"-" x600', 'x = ' + '-'.repeat(600) + '1'], ['a + ".b" x600', 'a' + '.b'.repeat(600)], ['codigo normal', 'import pandas as pd\ndf = pd.read_csv("/data/x.csv")\nprint(df.groupby("a")["b"].sum())\nprint("-" * 80, "=" * 80)'], ['linha de 300 numeros decimais', 'x = [' + Array.from({ length: 300 }, (_, i) => i + '.5').join(', ') + ']'], ['divisor de comentario com 100 hifens', '# ' + '-'.repeat(100) + '\nprint(1)'], ['', '']];
+    const badR = REJ.filter(([, c]) => !tooComplex(c)).map(x => x[0]), badA = ACC.filter(([, c]) => tooComplex(c)).map(x => x[0] + ': ' + tooComplex(x[1]));
+    L.rec(`PD-02b barreira linear antes do ast.parse: ${REJ.length} codigos patologicos (parenteses/colchetes/chaves/not/menos unario/cadeia de atributos/cadeia de + ate 100.000 termos) recusados; ${ACC.length} validos (limites exatos, linhas longas de dados, divisores) aceitos`, badR.length === 0 && badA.length === 0, JSON.stringify({ badR, badA }));
+    for (const lang of ['en', 'pt']) {
+      const { c, pg, log } = await open(br, SITE, lang, 'light'); await run(pg, 'print("quente")');
+      const res = [];
+      for (const [name, code] of REJ.slice(5)) { const s0 = Date.now(); await run(pg, 'print("NAO DEVE EXECUTAR")\n' + code, { secs: 30 }); const g = await grab(pg); res.push([name, g.errVisible && (lang === 'en' ? /too deeply nested/ : /aninhado demais/).test(g.errT) && !/NAO DEVE/.test(g.out) && g.engine === 'ready' && g.frames === 1 && g.state === 'idle' && Date.now() - s0 < 5000]); }
+      await run(pg, 'print("segue vivo")'); const g2 = await grab(pg);
+      L.rec(`PD-02b (${lang}) ${REJ.length - 5} codigos de 100.000 niveis via a pagina: mensagem clara, nada executa, o motor continua pronto (iframe vivo) e a execucao seguinte funciona, sem fatal e sem pageerror`, res.every(r => r[1]) && g2.out === 'segue vivo\n' && log.pageerrors.length === 0, JSON.stringify(res.filter(r => !r[1])) + ' ' + JSON.stringify(g2.out));
+      await c.close();
+    }
+    // o que a barreira nao cobre: exec() de texto profundo mata o Pyodide; a pagina detecta, mostra mensagem e recria a sessao
+    for (const lang of ['en', 'pt']) {
+      const { c, pg, log } = await open(br, SITE, lang, 'light'); await run(pg, 'print("quente")');
+      await run(pg, 'print("antes")\nexec("(" * 1000 + ")" * 1000)'); const g = await grab(pg);
+      L.rec(`PD-02b (${lang}) exec() de texto com 1000 parenteses (nao detectavel antes de executar): Pyodide morre; a pagina mostra "Python crashed"/"O Python travou", remove o iframe, volta a idle (UI liberada) e o botao Parar fica desabilitado`, g.errVisible && (lang === 'en' ? /Python crashed/ : /O Python travou/).test(g.errT) && g.frames === 0 && g.state === 'idle' && g.engine === 'none' && !g.runDisabled && g.out.startsWith('antes\n') && log.pageerrors.length === 0, JSON.stringify({ errT: g.errT, frames: g.frames, state: g.state, engine: g.engine, out: g.out.slice(0, 40) }));
+      await run(pg, 'import pandas as pd\nprint("sessao nova", pd.__version__)'); const g2 = await grab(pg);
+      L.rec(`PD-02b (${lang}) depois de o Pyodide morrer, o proximo Executar recria o iframe e funciona (inclusive com pandas)`, g2.out === 'sessao nova 3.0.2\n' && !g2.errVisible && g2.frames === 1, JSON.stringify(g2.out));
+      await c.close();
+    }
+    // caminho quente travado (Worker nao responde): estado "loading" e o Parar funciona; o timer do caminho quente dispara
+    { opts.instrument = ["else if (d.t === 'run' && pyodide) {", "else if (d.t === 'run' && pyodide && !self.__ignoreRun) {"];
+      const { c, pg } = await open(br, SITE, 'en', 'light'); await run(pg, 'print("quente")');
+      await pg.workers()[0].evaluate(() => { self.__ignoreRun = true; });
+      await pg.fill('#pyEditor', 'print("nunca")'); await pg.click('#pyRun'); await pg.waitForTimeout(1500); const g = await grab(pg);
+      const t0 = Date.now(); await pg.click('#pyStop'); await idle(pg, 3000); const g2 = await grab(pg);
+      L.rec(`PD-02b caminho quente com Worker que nao responde: a interface fica em "carregando" (estado ${g.state}) e o Parar funciona (${Date.now() - t0} ms; iframe removido)`, g.state === 'loading' && g2.state === 'idle' && g2.frames === 0, JSON.stringify({ g: g.state, g2: g2.state, frames: g2.frames }));
+      opts.instrument = null; await c.close(); }
+    { opts.instrument = ["else if (d.t === 'run' && pyodide) {", "else if (d.t === 'run' && pyodide && !self.__ignoreRun) {"]; opts.instrumentPage = ['var LOAD_TIMEOUT_MS = 120000;', 'var LOAD_TIMEOUT_MS = 3000;'];
+      const { c, pg } = await open(br, SITE, 'en', 'light'); await pg.click('#pyRun'); await idle(pg);
+      await pg.workers()[0].evaluate(() => { self.__ignoreRun = true; });
+      await pg.fill('#pyEditor', 'print("nunca")'); await pg.click('#pyRun'); await pg.waitForFunction(() => document.getElementById('pyTool').dataset.state === 'idle', null, { timeout: 15000 }); const g = await grab(pg);
+      L.rec('PD-02b o timer do caminho quente (aqui encurtado para 3 s so neste teste, por copia da pagina) encerra a sessao e mostra erro em vez de ficar preso em "carregando"', g.errVisible && g.frames === 0 && /stopped unexpectedly/.test(g.errT), JSON.stringify({ errT: g.errT, frames: g.frames }));
+      opts.instrument = null; opts.instrumentPage = null; await c.close(); }
+  }
+
   // ===== PD-03: PRV-14 e codigo sem import nao baixa pacote =====
   if (want('PD-03')) {
     for (const p of ['hub/', PAGE]) {
@@ -339,6 +380,63 @@ print(json.dumps(res))
     L.rec('PD-08 tentativas do usuario de pedir pacote (pyodide_js.loadPackage, loadPackagesFromImports, URL de fora, API interna packageManager, micropip, pip): as expostas lancam erro; qualquer chamada que devolva Promise nao instala nada (nada carregado, 0 hits fora, nenhum modulo novo)', ['pyodide_js.loadPackage', 'pyodide_js.loadPackage(url fora)', 'pyodide_js.loadPackagesFromImports', 'micropip', 'pip'].every(k => res[k] && res[k] !== 'ABERTO' && res[k] !== 'PROMISE') && outHits.length === 0 && loaded === "[] []", JSON.stringify(res) + ' hits=' + JSON.stringify(outHits) + ' modulos=' + loaded);
     L.rec('PD-08 a API interna (_api.packageManager.loadPackage) foi sombreada pelo Worker: lanca erro em vez de devolver Promise (a defesa real continua sendo o lock filtrado, a CSP e o sha256; ver docs)', ['api.packageManager.loadPackage(scipy)', 'api.packageManager.loadPackage(url fora)', 'api.packageManager.loadPackage(url do site)'].every(k => res[k] && res[k] !== 'ABERTO' && res[k] !== 'PROMISE'), JSON.stringify(res));
     L.rec('PD-08 nenhuma tentativa de pacote gerou requisicao a outra origem (alem do canario) nem a PyPI/scipy; sem pageerror', !log.requests.some(u => /pypi|pythonhosted|jsdelivr|scipy|evil/.test(u)) && outHits.length === 0 && log.pageerrors.length === 0, JSON.stringify(log.requests.filter(u => !u.startsWith(SITE))));
+    { // A1: os 4 caminhos que contornavam o sombreamento da instancia (prototipo, constructor.prototype, deleteProperty, mutacao do lock)
+      outHits.length = 0; const s2 = served.length;
+      const code2 = `
+import js, json, pyodide_js
+pm = pyodide_js._api.packageManager
+res = {}
+def t(name, f):
+    try:
+        r = f()
+        res[name] = 'ABERTO' if r is not False else 'recusado (False)'
+    except BaseException as e:
+        res[name] = type(e).__name__ + ': ' + str(e)[:60]
+proto = js.Object.getPrototypeOf(pm)
+for pkg in ('scipy', 'six'):
+    t('Reflect.apply(proto.loadPackage, ' + pkg + ')', lambda: js.Reflect.apply(proto.loadPackage, pm, js.Array.of(pkg)))
+    t('constructor.prototype.loadPackage.call(' + pkg + ')', lambda: pm.constructor.prototype.loadPackage.call(pm, js.Array.of(pkg)))
+    t('loadPackageInner(' + pkg + ')', lambda: pm.loadPackageInner.call(pm, js.Array.of(pkg)))
+t('deleteProperty(pm, loadPackage) e chamar de novo', lambda: (js.Reflect.deleteProperty(pm, 'loadPackage'), pm.loadPackage('scipy'))[1])
+def redefine():
+    d = js.Object.new(); d.value = js.Object.new()
+    return js.Reflect.defineProperty(proto, 'loadPackage', d)
+t('redefinir proto.loadPackage', redefine)
+lock = pyodide_js._api.lockfile_packages
+t('Reflect.set(lockfile_packages, scipy = six)', lambda: js.Reflect.set(lock, 'scipy', lock.six))
+def define():
+    d = js.Object.new(); d.value = lock.six
+    return js.Reflect.defineProperty(lock, 'scipy', d)
+t('defineProperty(lockfile_packages, scipy)', define)
+t('delete lockfile_packages.six', lambda: js.Reflect.deleteProperty(lock, 'six'))
+res['lock tem scipy?'] = 'scipy' in list(js.Object.keys(lock))
+res['lock frozen'] = bool(js.Object.isFrozen(lock))
+res['prototipo frozen'] = bool(js.Object.isFrozen(proto))
+print(json.dumps(res))
+try:
+    import scipy
+    print('SCIPY IMPORTOU')
+except ModuleNotFoundError as e:
+    print('scipy:', e)
+`;
+      await run(pg, code2); await pg.waitForTimeout(2500); const g4 = await grab(pg);
+      let r4 = {}; try { r4 = JSON.parse(g4.out.split('\n').filter(l => l.startsWith('{"'))[0]); } catch (e) {}
+      const open4 = Object.entries(r4).filter(([k, v]) => /^(Reflect\.apply|constructor|loadPackageInner|deleteProperty|redefinir|Reflect\.set|defineProperty|delete lock)/.test(k) && !/^(Error|JsException|TypeError)|recusado/.test(v) && !/disabled/.test(v));
+      L.rec('PD-08/A1 caminhos que o revisor achou (Reflect.apply no prototipo, constructor.prototype.loadPackage.call, loadPackageInner, deleteProperty + chamar, redefinir o prototipo, mutar/definir/apagar no lock em memoria) para scipy E six: todos recusados; prototipo e lock estao congelados; "import scipy" continua falhando; 0 hits fora; nenhuma requisicao a scipy/wheel nova', open4.length === 0 && r4['lock frozen'] === true && r4['prototipo frozen'] === true && r4['lock tem scipy?'] === false && /scipy: No module named 'scipy'/.test(g4.out) && !/SCIPY IMPORTOU/.test(g4.out) && outHits.length === 0 && !served.slice(s2).some(u => /scipy/.test(u)) && wheels(s2).length === 0, JSON.stringify(r4) + ' hits=' + JSON.stringify(outHits) + ' abertos=' + JSON.stringify(open4));
+      await run(pg, 'import numpy as np\nimport pandas as pd\nprint("ok depois do endurecimento", pd.__version__)'); const g5 = await grab(pg);
+      L.rec('PD-08/A1 o endurecimento nao quebra o carregamento legitimo: na mesma sessao numpy/pandas continuam importaveis', g5.out === 'ok depois do endurecimento 3.0.2\n', JSON.stringify(g5.out));
+      const f = await open(br, SITE, 'en', 'light'); await run(f.pg, 'import six\nprint(six.__version__)'); const g6 = await grab(f.pg);
+      L.rec('PD-08/A1 sessao nova (carregamento so de six, pacote do codigo) funciona depois do endurecimento', g6.out === '1.17.0\n', JSON.stringify(g6.out)); await f.c.close();
+    }
+    { // B1 (nome de modulo com unicode, sem truncar) e B2 (nada de micropip/loadPackage na saida)
+      const q = await grab(pg);
+      await run(pg, 'import módulo_ç'); const gu = await grab(pg);
+      L.rec('PD-08/B1 dica de modulo ausente com nome unicode ("módulo_ç") mostra o nome inteiro, sem truncar', /No module named 'módulo_ç'/.test(gu.warn), JSON.stringify(gu.warn.slice(0, 70)));
+      const fx = await open(br, SITE, 'en', 'light'); await run(fx.pg, 'exec("import pandas")'); const gb = await grab(fx.pg); await fx.c.close();   // sessao nova: pandas ainda nao carregado
+      L.rec('PD-08/B2 exec("import pandas") nao e detectado: a saida NAO manda usar micropip nem loadPackage e explica que o import precisa estar visivel no codigo', /ModuleNotFoundError: No module named 'pandas'/.test(gb.out) && !/micropip|loadPackage|pyodide\.org/i.test(gb.out) && /import statement is visible/.test(gb.out), JSON.stringify(gb.out.slice(-260)));
+      await run(pg, 'import scipy'); const gs = await grab(pg);
+      L.rec('PD-08/B2 pacote fora da lista: saida sem micropip/loadPackage e com a nota da lista fechada', !/micropip|loadPackage|pyodide\.org/i.test(gs.out) && /only the Python standard library, numpy and pandas/.test(gs.out), JSON.stringify(gs.out.slice(-200)));
+    }
     await c.close();
   }
 
@@ -421,6 +519,17 @@ print(json.dumps(res))
       await pg.waitForFunction(() => document.getElementById('pyTool').dataset.state === 'running', null, { timeout: 90000 }); await pg.waitForTimeout(1500);
       const t0 = Date.now(); await pg.click('#pyStop'); await idle(pg, 5000); const g = await grab(pg);
       L.rec(`PD-10 Parar durante calculo longo do pandas (numpy sobre 50 milhoes de linhas): volta a idle em ${Date.now() - t0} ms, iframe e Worker removidos`, g.state === 'idle' && g.frames === 0 && pg.workers().length === 0, JSON.stringify(g)); await c.close(); }
+  }
+
+  // ===== PD-10b (M1): codigo de uma execucao anterior continua rodando; o canario repetido nao e fronteira =====
+  if (want('PD-10b|PD-10')) {
+    opts.wheelDelayMs = 1500; const { c, pg } = await open(br, SITE, 'en', 'light'); outHits.length = 0;
+    await run(pg, 'import js\nfrom pyodide.ffi import create_proxy\njs.setInterval(create_proxy(lambda: print("tick")), 40)\nprint("armado")');
+    await pg.click('#pyClear');
+    await run(pg, 'import pandas as pd\nprint("execucao 2")', { secs: 30 }); const g = await grab(pg); opts.wheelDelayMs = 0;
+    const ticks = (g.out.match(/tick/g) || []).length;
+    L.rec(`PD-10b LIMITE CONHECIDO (M1): um setInterval/create_proxy criado numa execucao anterior continua rodando durante o download/canario da execucao seguinte (${ticks} "tick" apareceram na saida da execucao 2). O Worker nao e reiniciado entre execucoes; o canario repetido NAO e fronteira de seguranca (a fronteira e CSP + sandbox de origem opaca); 0 hits no servidor de fora`, ticks >= 1 && /execucao 2/.test(g.out) && outHits.length === 0, JSON.stringify({ out: g.out.slice(0, 80), ticks, hits: outHits }));
+    await c.close();
   }
 
   // ===== PD-11: wheel corrompido / ausente =====
