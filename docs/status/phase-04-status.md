@@ -76,3 +76,46 @@ Corrigido: **M3** (`python-runner.js` recusa iniciar se `window.origin`/`self.or
 Limite conhecido: o Python do usuário ainda pode forjar um `done` válido (id atual, `ok` booleano) e encerrar a própria execução mais cedo; não afeta outras sessões.
 
 Contagens reais (Chrome; portas 8581/8582/8583, python.js em 8586/8587, logs em `/tmp/py-fix`; **não** rodei o `run-all.sh` inteiro nem csv, sql, sample, budget_file): python **110 PASS**/0 FAIL (antes 103), a11y 17/0, reg 16/0, shell 6/0, i18n_theme_privacy 26/0 + 1 N/A, check-i18n-keys PASS. O allowlist de REG não precisou mudar (só `docs/`, `hub/`, `tests/` alterados). Fica **não verificado**: o resto do que está na seção 5 (outros navegadores, Pages real, memória, celular, WebTransport, advisories), e os testes csv/sql/sample/budget depois destas correções.
+
+
+## 8. numpy + pandas (D12, `feat/pandas`, 2026-11-13)
+
+**Estado: Implementado, testado só no Chrome (Playwright, Linux headless). Sem commit, push ou PR. Sem revisão independente de segurança nem QA (T-405).** Decisão e justificativa: D12 em `docs/decisions/decision-log.md`. Segurança: `docs/security/phase-4-worker-isolation.md` seção 11.
+
+### 8.1 O que foi feito
+- **Vendor (conferido):** (a) o sha256 dos 5 wheels (numpy 2.4.6, pandas 3.0.2, python-dateutil 2.9.0.post0, pytz 2026.1.post1, six 1.17.0) bate com o campo `sha256` do `pyodide-lock.json` da distribuição; (b) os 5 arquivos do núcleo vendorizado (`pyodide.asm.wasm`, `pyodide.asm.mjs`, `python_stdlib.zip`, `pyodide.mjs`, `pyodide-lock.json` original) são **byte a byte iguais** aos extraídos do `pyodide-314.0.7.tar.bz2` (`cmp`); (c) o fecho de dependências de pandas no lock é exatamente numpy, python-dateutil, pytz, six. Wheels em `hub/assets/vendor/pyodide/packages/` (7.889.748 B no total), `pyodide-lock.json` filtrado a 5 entradas (script `docs/testing/vendor-pyodide-lock-filter.py`), sha256/versão/licença em `manifest.json`, `SHA256SUMS` (`sha256sum -c` OK) e `README.md`.
+- **Worker (`python-worker-src.js`):** lock e `packageBaseUrl` explícitos; detector de imports em Python (`ast.parse`) com namespace privado; `ensurePackages` carrega só o que falta, confere `loadedPackages` contra a lista e **repete o canário**; `loadPackage`/`loadPackagesFromImports` expostos continuam lançando erro e `pyodide._api.packageManager.loadPackage` foi sombreado; dica de `ModuleNotFoundError`. **Runner:** repassa mensagens `pkgs` e `hint` só em formatos conhecidos. **Página (`python.js`, `index.html`, `i18n.js` PT/EN):** aviso de download extra na nota e no status ("Baixando pandas... cerca de 8 MB"), tempo limite próprio de 120 s para o download (não conta no limite do usuário), aviso de módulo ausente, erro de pacote (a sessão é encerrada), botão **um exemplo de pandas por cenário** (merge + groupby, comentários PT/EN). Nota na página de privacidade, no cartão de Python (home e lista de ferramentas) e `README` do vendor atualizados.
+- **Detecção: AST, não caixa de seleção.** Justificativa: não exige passo da pessoa, nunca deixa o usuário nomear um pacote, e o pedido de pacote decorre do código que será executado. Falsos positivos (comentário, string, docstring, nomes parecidos como `pandas_profiling`, `numpyro`, atributos, imports relativos) e falsos negativos (função, classe, `try`, `from`, submódulo, `__import__`/`import_module` com literal) estão em 42 casos executados contra o código real do Worker (PD-02). Não detectados e documentados: `getattr(__builtins__, '__import__')`, `__import__(variável)`, `exec("import pandas")`; o erro é `ModuleNotFoundError` com dica na página.
+- **CSP, `sandbox`, canário, `connect-src`: inalterados** (PD-15 compara os textos).
+
+### 8.2 Contagens reais (`bash tests/hub/run-all.sh`, `PORT_ROOT=9281 PORT_SUB=9282 PORT_GZ=9283 PORT_PY=9284 PORT_OUT=9285 HUB_LOG_DIR=/tmp/pd-logs`, Chrome)
+
+| Grupo | PASS | FAIL | N/A |
+|---|---|---|---|
+| datasets | 41 | 0 | 0 |
+| reg | 16 | 0 | 0 |
+| shell | 6 | 0 | 0 |
+| i18n/tema/privacidade | 26 | 0 | 1 |
+| a11y | 17 | 0 | 0 |
+| budget_file | 5 | 0 | 0 |
+| csv | 39 | 0 | 0 |
+| sql | 114 | 0 | 0 |
+| sample | 62 | 0 | 0 |
+| exercises | 63 | 0 | 0 |
+| scenarios | 39 | 0 | 0 |
+| nouploads | 10 | 0 | 0 |
+| python | 113 | 0 | 0 |
+| **python-pandas (novo)** | **85** | 0 | 0 |
+| check-i18n-keys | exit 0 | | |
+
+Mudanças em testes existentes: `run-all.sh` ganhou `python-pandas`; nenhum teste anterior foi alterado. Durante o desenvolvimento o teste novo achou e eu corrigi: (1) o exemplo de logística contava `atraso_dias` não nulo em vez de entregas (erro meu, pego pelo oráculo sqlite); (2) após falha parcial de wheel a sessão continuava quebrada (agora é encerrada); (3) o axe acusava `target-size` na migalha parcialmente sob o cabeçalho fixo depois da rolagem do clique (artefato de rolagem; o teste volta ao topo antes do axe).
+
+### 8.3 Medições (localhost sem rede, 2 núcleos; mediana de 3; `PD-12`)
+- Carga: só Python a frio ~2,6 s; `import numpy` com motor quente ~1,0 s; pandas a **frio** (núcleo + 5 wheels) ~5,9 s; quente (tudo carregado) ~0,15 s; quente com `read_csv` ~0,46 s. Tempos de rede real **não medidos**.
+- Download extra: pandas com fecho 7.889.748 B (7,52 MiB); numpy sozinho 2.960.568 B. O cache HTTP não é reaproveitado no iframe de origem opaca: **a cada abertura da página que usa pandas, ~13,6 MiB** (núcleo 6,1 MiB com gzip + 7,52 MiB).
+- Memória (heap do WASM): núcleo 43 MiB; +numpy 52 MiB; +pandas 75 MiB; DataFrame de 3 milhões de linhas com merge 543 MiB; arrays de numpy até falhar: `MemoryError` em 4.096 MiB de arrays (heap 4.039 MiB), aba viva e Worker utilizável depois. Pico do **processo** do navegador e celular não medidos.
+- Parar durante o download de pacotes: 37 ms; Parar durante cálculo longo do numpy: 33 ms.
+
+### 8.4 NÃO verificado
+Firefox, Safari, Edge, celular; GitHub Pages real (CORS dos wheels para origem opaca, MIME/compressão de `.whl`, cache, subpasta real); **advisories/CVE de numpy 2.4.6, pandas 3.0.2, dateutil, pytz, six e Pyodide (sem acesso a bases de CVE)**; licenças do código nativo além dos metadados dos wheels; memória em celular; timeout de 120 s do download de pacotes (existe, não esperado em teste); leitor de tela. `pd.read_csv` de URL da própria origem falhou, mas não é garantia de projeto (`connect-src 'self'`).
+
