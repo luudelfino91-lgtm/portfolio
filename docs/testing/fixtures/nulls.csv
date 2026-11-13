@@ -1,0 +1,31 @@
+id,vazio,texto_null,texto_na,so_espacos,todo_nulo,um_valor,numero,texto
+1,1,NULL,w1,s1,,unico,NULL,banana
+2,2,v2,NA,s2,,unico,NA,Abacaxi
+3,3,v3,w3,   ,,unico,  ,cereja
+4,4,v4,w4,s4,,unico,7.5,ação
+5,5,v5,w5,s5,,unico,5,zebra
+6,,v6,w6,s6,,unico,,
+7,7,NULL,w7,s7,,unico,NULL,banana
+8,8,v8,NA,s8,,unico,NA,Abacaxi
+9,9,v9,w9,   ,,unico,  ,cereja
+10,10,v10,w10,s10,,unico,7.5,ação
+11,11,v11,w11,s11,,unico,11,zebra
+12,,v12,w12,s12,,unico,,
+13,13,NULL,w13,s13,,unico,NULL,banana
+14,14,v14,NA,s14,,unico,NA,Abacaxi
+15,15,v15,w15,   ,,unico,  ,cereja
+16,16,v16,w16,s16,,unico,7.5,ação
+17,17,v17,w17,s17,,unico,17,zebra
+18,,v18,w18,s18,,unico,,
+19,19,NULL,w19,s19,,unico,NULL,banana
+20,20,v20,NA,s20,,unico,NA,Abacaxi
+21,21,v21,w21,   ,,unico,  ,cereja
+22,22,v22,w22,s22,,unico,7.5,ação
+23,23,v23,w23,s23,,unico,23,zebra
+24,,v24,w24,s24,,unico,,
+25,25,NULL,w25,s25,,unico,NULL,banana
+26,26,v26,NA,s26,,unico,NA,Abacaxi
+27,27,v27,w27,   ,,unico,  ,cereja
+28,28,v28,w28,s28,,unico,7.5,ação
+29,29,v29,w29,s29,,unico,29,zebra
+30,,v30,w30,s30,,unico,,

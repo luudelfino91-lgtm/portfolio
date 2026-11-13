@@ -1,0 +1,42 @@
+/* =====================================================================
+   SQL playground (T-304/T-305). Reaproveita csv.css (tabela, rolagem,
+   avisos, campos) e só os tokens do portfólio/hub.css; sem cores novas.
+   ===================================================================== */
+.sql-tool{gap:24px}
+.sql-sec{display:flex;flex-direction:column;gap:12px;min-width:0}
+.sql-sec h2{font-size:clamp(20px,2.4vw,26px);font-weight:700}
+
+.sql-label{font-weight:600;font-size:15px}
+.sql-editor{display:block;width:100%;min-height:9em;resize:vertical;font:400 15px/1.55 var(--f-mono);color:var(--ink);background:var(--surface);border:1px solid var(--ink-3);border-radius:var(--r-md);padding:12px 14px;tab-size:2;white-space:pre;overflow:auto}
+.sql-editor:focus-visible{outline:3px solid var(--plum);outline-offset:2px}
+:root[data-theme="dark"] .sql-editor:focus-visible{outline-color:var(--focus-dark)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sql-editor:focus-visible{outline-color:var(--focus-dark)}}
+
+.sql-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.sql-timeout{margin-left:auto}
+.sql-tool .btn:focus-visible{outline:3px solid var(--plum);outline-offset:3px}
+:root[data-theme="dark"] .sql-tool .btn:focus-visible{outline-color:var(--focus-dark)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sql-tool .btn:focus-visible{outline-color:var(--focus-dark)}}
+.sql-tool .btn[disabled],.sql-tool .btn[aria-disabled="true"]{opacity:.6;cursor:not-allowed}
+.csv-pick.is-disabled{opacity:.6;cursor:not-allowed}
+
+/* Resultado: esmaecido (não apagado) durante execução e depois de erro */
+.sql-sec.csv-result[aria-busy="true"]{opacity:1}
+.sql-sec.is-stale .csv-scroll,.sql-sec.is-stale .sql-resmsg{opacity:.78}
+.sql-resmsg{font-size:16px;color:var(--ink)}
+.sql-null{font-style:italic;color:var(--ink-2)}
+.sql-blob{font-style:italic;color:var(--ink-2)}
+.sql-engine{overflow-wrap:anywhere;font-family:var(--f-mono);font-size:14px}
+.sql-id{overflow-wrap:anywhere}
+
+/* Esquema */
+.sql-schema{max-height:50vh}
+.sql-schema-table{width:100%}
+.sql-schema-table+.sql-schema-table{margin-top:12px}
+.sql-schema-table td,.sql-schema-table th{overflow-wrap:anywhere}
+.sql-schema-table thead th{position:static}
+
+@media (max-width:640px){
+  .sql-timeout{margin-left:0;flex:1 1 100%}
+  .sql-actions .btn{flex:1 1 100%}
+}

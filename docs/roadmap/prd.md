@@ -1,23 +1,23 @@
 # PRD: Data & AI Community Hub
 
-Versão 0.3 (Fase 1, reconciliação, adendo C10). Data: 2026-11-12. Status: aguardando aprovação do Lucas (portão G1). Vale `docs/decisions/phase-1-reconciliation.md` (C1 a C10) sobre qualquer divergência.
+Versão 0.4 (Fase 1, reconciliação, adendo C10; D3b, RNF-03, G1-b, G1-c e G1-d aprovadas). Data: 2026-11-12. Status: aguardando aprovação do Lucas (portão G1). Vale `docs/decisions/phase-1-reconciliation.md` (C1 a C10) sobre qualquer divergência.
 
 ## 1. Premissas e decisões
 
-Aprovadas (fatos, fonte: `decision-log.md`): D1 (JS/HTML/CSS puros, sem build), D4 (Hub em `hub/` no mesmo repositório, sem alterar as páginas atuais), D6 (trabalho via branch e PR), D2 (hospedagem em GitHub Pages; custo US$ 0 segue condicionado aos termos do Pages, não verificados), D3a (fontes locais no Hub) e o adendo C10. As linhas D2 e D3 da tabela abaixo ficam como histórico da recomendação: D2 e a parte de fontes de D3 estão aprovadas; só D3b (sql.js, Papa Parse, Pyodide) segue pendente.
+Aprovadas (fatos, fonte: `decision-log.md`): D1 (JS/HTML/CSS puros, sem build), D4 (Hub em `hub/` no mesmo repositório, sem alterar as páginas atuais), D6 (trabalho via branch e PR), D2 (hospedagem em GitHub Pages; custo US$ 0 segue condicionado aos termos do Pages, não verificados), D3a (fontes locais no Hub), D3b (sql.js e Papa Parse em arquivos próprios, versão fixada, sem CDN), RNF-03 (confirmada), G1-b (chip "Em construção" nos 2 cartões ativos até a Fase 3 entregar as ferramentas), G1-c (link Portfólio para Hub em `index.html`, PR separado), G1-d (contraste de `--ink-3` no tema claro, PR separado) e o adendo C10. As linhas D2 e D3 da tabela abaixo ficam como histórico da recomendação: D2, D3a e D3b estão aprovadas; só D3c (Pyodide, Fase 4) segue pendente.
 
-Pendentes (D3b, D5, D8). Nenhuma é tratada como decidida; o planejamento usa uma recomendação e as tarefas ligadas a elas dizem "se D-n aprovado":
+Pendentes (D3c, D5, D8). Nenhuma é tratada como decidida; o planejamento usa uma recomendação e as tarefas ligadas a elas dizem "se D-n aprovado":
 
 | ID | Recomendação usada no planejamento | Bloqueia (C2) | Se mudar |
 |---|---|---|---|
 | D2 | Hospedagem em GitHub Pages (o README ainda cita Vercel como recomendado; divergência a corrigir) | Fase 2 (URLs, cabeçalhos) | Caminhos e rotas precisam ser revalidados |
-| D3 | Fontes locais; `sql.js`, Papa Parse e Pyodide como arquivos próprios com versão fixada | Fontes: Fase 2. sql.js e Papa Parse: Fase 3. Pyodide: Fase 4 | Com CDN, muda a política de privacidade, o uso sem rede e o limite de tamanho do repositório |
+| D3 (D3a e D3b aprovadas; D3c, Pyodide, pendente) | Fontes locais (D3a); `sql.js` e Papa Parse como arquivos próprios com versão fixada (D3b); Pyodide como arquivos próprios com versão fixada (D3c, recomendação) | Fontes: Fase 2. sql.js e Papa Parse: Fase 3. Pyodide: Fase 4 | Com CDN, muda a política de privacidade, o uso sem rede e o limite de tamanho do repositório |
 | D5 | PIX com QR estático e copia-e-cola, sem coleta de dados | Fase 6 (qualquer texto de PIX é provisório até lá) | Qualquer coleta exige revisão de privacidade |
 | D8 | O plano assume "sem backend" (descartar backend, formulário e blog do roadmap antigo) como recomendação | Fase 7 | Reabre a restrição "sem backend" |
 
 D9 (equipe): os nomes reais dos agentes e o mapeamento dos papéis genéricos estão fixados em C5 (`product-manager`, `solution-architect`, `ui-ux-designer`, `frontend-developer`, `qa-engineer`, `security-auditor`, `technical-writer`, `independent-reviewer`, `tech-lead`) e valem a partir da aprovação do G1.
 
-Nota sobre fontes (M5, C9): o portfólio mantém o Google Fonts e não será alterado sem aprovação. "Zero requisição externa" vale **somente para as páginas do Hub**. Se D3 (fontes locais) não for aprovado, essa afirmação precisa ser reescrita.
+Nota sobre fontes (M5, C9): o portfólio mantém o Google Fonts e não será alterado sem aprovação. "Zero requisição externa" vale **somente para as páginas do Hub**. D3a (fontes locais) está aprovada; se for revertida, essa afirmação precisa ser reescrita.
 
 ## 2. Problema
 
@@ -35,7 +35,7 @@ O portfólio atual mostra projetos, mas é uma vitrine estática: o visitante n�
 | Objetivo | Métrica verificável |
 |---|---|
 | Entregar valor prático sem custo | Visualizador de CSV e SQL playground funcionando, depois do primeiro carregamento, **sem rede enquanto a aba permanece aberta** (recarregar offline exigiria Service Worker, que não faz parte do MVP) |
-| Preservar o portfólio | Zero diff em `index.html`, `certificacoes.html` e `assets/` nas fases em que isso for proibido (REG-01); regressão contra a linha de base de T-210 aprovada; regressão visual do Hub (T-211) sempre que `assets/` mudar |
+| Preservar o portfólio | Zero diff em `index.html`, `certificacoes.html` e `assets/` nas fases em que isso for proibido (REG-01), salvo as exceções autorizadas T-214 (link no rodapé de `index.html`, G1-c) e T-215 (`--ink-3` em `styles.css`, G1-d), em PR separado do portfólio; regressão contra a linha de base de T-210 aprovada; regressão visual do Hub (T-211) sempre que `assets/` mudar |
 | Privacidade | Nenhuma requisição para outra origem nas páginas do Hub e nenhum dado do usuário em qualquer requisição (teste com canário, método 5.2 do plano de testes) |
 | Custo | Custo recorrente de R$ 0 (sem domínio pago, sem API paga). Conclusão condicionada à verificação dos termos do GitHub Pages (C8) |
 | Bilíngue | Script de chaves i18n sem chave faltante em PT ou EN no Hub |
@@ -46,8 +46,8 @@ Prioridade: P0 = MVP, P1 = planejado, não bloqueia o MVP, P2 = desejável. MVP 
 
 | ID | Requisito | Prio | Fase |
 |---|---|---|---|
-| RF-01 | Página inicial do Hub em `hub/` com **2 cartões ativos na casca da Fase 2: CSV e SQL**. Sem cartão nem link de Apoie/PIX até a Fase 6 e D5. Cartões "Em breve" (Python, Cursos, Recursos, IA) só existem se o Lucas aprovar no G1 e ficam fora do critério de aceite (C10.2) | P0 | 2 |
-| RF-02 | Link do Hub para o portfólio; o link inverso no `index.html` só com autorização do Lucas | P0 | 2 |
+| RF-01 | Página inicial do Hub em `hub/` com **2 cartões ativos na casca da Fase 2: CSV e SQL**. Sem cartão nem link de Apoie/PIX até a Fase 6 e D5. Cartões "Em breve" (Python, Cursos, Recursos, IA) só existem se o Lucas aprovar no G1 e ficam fora do critério de aceite (C10.2). Os 2 cartões ativos mantêm o chip "Em construção" até a Fase 3 entregar a ferramenta correspondente; ao entregar, o chip é removido da home e de `hub/ferramentas/` e a página "em construção" é substituída (G1-b; T-302, T-304) | P0 | 2 |
+| RF-02 | Link do Hub para o portfólio. O link inverso (Portfólio para Hub, rodapé de `index.html`) foi autorizado em G1-c e é a tarefa T-214, em PR separado do portfólio, fora do MVP | P0 | 2 |
 | RF-03 | Alternância PT/EN no Hub, com persistência da escolha e mesmo idioma do portfólio | P0 | 2 |
 | RF-04 | Tema claro/escuro e tokens de identidade visual reutilizados do portfólio por referência a `assets/css/styles.css` | P0 | 2 |
 | RF-05 | Carregar CSV local de até 10 MB (arrastar/selecionar), mostrar pré-visualização tabular, contagem de linhas/colunas e tipos inferidos | P0 | 3 |
@@ -74,18 +74,18 @@ Fora do MVP (P2), **sem RF nem tarefa até serem formalizados** (C6): página `s
 |---|---|---|
 | RNF-01 | Sem build, sem backend, sem API paga, sem dependência de npm no deploy | Inspeção do repositório; site abre via servidor estático |
 | RNF-02 | Processamento 100% no navegador; nenhum dado do usuário enviado. "Externa" = outra origem; "saída" = dado do usuário em qualquer requisição | Teste automatizado com canário (método 5.2); aba Network sem requisição para outra origem |
-| RNF-03 | Sem cookies de rastreamento e sem analytics de terceiros. **SUPOSIÇÃO ainda não confirmada pelo Lucas** (pergunta 14 do roadmap). PRV-06 e PRV-08 só viram P0 definitivos após a confirmação dele; até lá são P0 provisórios (T-209) | PRV-06 e PRV-08 |
+| RNF-03 | Sem cookies de rastreamento e sem analytics de terceiros. **Confirmada pelo Lucas** (`decision-log.md`). PRV-06 e PRV-08 são P0 definitivos (T-209) | PRV-06 e PRV-08 |
 | RNF-04 | **REVOGADO** (era 300 KB de peso inicial). Substituído por RNF-13 e RNF-14 conforme C3 | n/a |
-| RNF-05 | CSV de até **10 MB** carrega sem long task > 1 s (critério do MVP). 50 MB é meta a validar por medição, sem ser critério | Fixture `limit-10mb.csv` (critério) e `big-50mb.csv` (medição) com `PerformanceObserver`, Chrome headless, sem throttling |
+| RNF-05 | CSV de até **10 MB** carrega sem long task > 1 s (critério do MVP). **10 MB = 10 MiB = 10.485.760 bytes**; a interface mostra "10 MB". 50 MB é meta a validar por medição, sem ser critério | Fixture `limit-10mb.csv` (exatamente 10.485.760 bytes; critério), `over-limit.csv` (10.485.761 bytes, recusado) e `big-50mb.csv` (medição) com `PerformanceObserver`, Chrome headless, sem throttling |
 | RNF-06 | Acessibilidade: navegação por teclado, `lang` correto, contraste AA verificado por cálculo com os pares de cor listados e axe. Lighthouse acessibilidade >= 90 é indicador complementar, não prova de AA | A11-02, A11-04 a A11-08, A11-10; `lighthouse@13.6.0`, mobile, mediana de 3 |
 | RNF-07 | Responsivo de 360 px (menor viewport suportado) a desktop | RSP-01 em 360, 768 e 1280 px |
-| RNF-08 | Identidade visual preservada: só tokens de `styles.css` (por referência) e fontes locais do Hub (se D3 aprovado) | Busca por cores fixas (HUB-23) e revisão visual |
+| RNF-08 | Identidade visual preservada: só tokens de `styles.css` (por referência) e fontes locais do Hub (D3a aprovada) | Busca por cores fixas (HUB-23) e revisão visual |
 | RNF-09 | Navegadores: duas últimas versões de Chrome, Edge e Firefox, via Playwright. Safari/WebKit é best effort (o WebKit do Playwright é aproximação; Safari real fica a cargo do Lucas) e não é critério de aceite | Relatório de QA com `Não executado (motivo)` quando o navegador não existir no ambiente |
 | RNF-10 | Licenças de dependências compatíveis (open source) e registradas | Arquivo de licenças do Hub e `manifest.json` com hashes |
-| RNF-11 | Limites do GitHub Pages respeitados (repositório abaixo de 1 GB; Pyodide é grande e pode exigir decisão em D3) | Medição de tamanho |
+| RNF-11 | Limites do GitHub Pages respeitados (repositório abaixo de 1 GB; Pyodide é grande e pode exigir decisão em D3c) | Medição de tamanho |
 | RNF-12 | Caminhos relativos que funcionem em subpasta do Pages; sem roteador | HUB-41 em subpasta e em URL real do Pages (T-213, se D2 aprovado) |
 | RNF-13 | Orçamento do shell do Hub (HTML + CSS + JS próprios + `styles.css` do portfólio, **sem** fontes e sem imagens): <= 150 KB transferidos, cache vazio. Meta provisória, a confirmar por medição no primeiro protótipo. Bibliotecas pesadas (sql.js, Papa Parse, Pyodide) não entram no shell, carregam sob demanda e têm orçamento próprio | HUB-40: soma de bytes transferidos por `page.on("response")`, cache vazio, excluindo fontes e imagens |
-| RNF-14 | Fontes locais (woff2) <= 120 KB, orçamento separado (se D3 aprovado) | Soma dos bytes dos arquivos em `hub/assets/fonts/` |
+| RNF-14 | Fontes locais (woff2) <= 120 KB, orçamento separado (D3a aprovada) | Soma dos bytes dos arquivos em `hub/assets/fonts/` |
 
 Regra de contagem (RNF-13 e RNF-14): bytes transferidos, cache vazio, página única por vez, shell sem fontes e sem imagens, `styles.css` do portfólio incluído, bibliotecas sob demanda fora da soma e medidas à parte.
 
@@ -97,7 +97,7 @@ Regra de contagem (RNF-13 e RNF-14): bytes transferidos, cache vazio, página ú
 - Processamento de pagamento, webhook ou confirmação automática de PIX; emissão de recibo.
 - Domínio próprio pago (depende de D2).
 - Roteador do lado do cliente e `404.html` na raiz (este só com aprovação; fora do MVP).
-- Alterações em `index.html`, `certificacoes.html` e `assets/` na fase de planejamento (e, nas fases seguintes, só com aprovação explícita).
+- Alterações em `index.html`, `certificacoes.html` e `assets/` na fase de planejamento (e, nas fases seguintes, só com aprovação explícita; G1-c e G1-d aprovam T-214 e T-215, em PR separado do portfólio).
 - Reescrever o portfólio existente.
 - Itens P2 sem RF/T listados na seção 5.
 
@@ -105,7 +105,7 @@ Regra de contagem (RNF-13 e RNF-14): bytes transferidos, cache vazio, página ú
 
 | Risco | Mitigação |
 |---|---|
-| Pyodide (~10 MB+) pesa e pressiona o limite do Pages | MVP exclui Python; decidir D3 (Pyodide) antes da Fase 4 |
+| Pyodide (~10 MB+) pesa e pressiona o limite do Pages | MVP exclui Python; decidir D3c (Pyodide) antes da Fase 4 |
 | CSV grande trava o navegador | Limite de 10 MB como critério do MVP, medição de 50 MB como meta (só registro) e Web Worker com Parar/Cancelar como parte do MVP (RF-19, T-306, C10.1) |
 | Divergência de hospedagem (README cita Vercel) | Decidir D2 e corrigir README |
 | Mudança em `assets/` quebra o Hub, que referencia `styles.css` | T-211: regressão visual obrigatória quando `assets/` mudar |

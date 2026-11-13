@@ -6,7 +6,7 @@ Legenda: **[V]** lido nesta sessão em URL **primária** (API do jsDelivr/npm do
 
 Suposições explícitas: **D2** (GitHub Pages) e **D3** (arquivos próprios em `hub/assets/vendor/`, em vez de CDN) estão **pendentes** e são tratadas como suposição [S] em todas as rotas e caminhos deste documento. Decisões D3 bloqueiam: fontes locais, Fase 2; sql.js e Papa Parse, Fase 3; Pyodide, Fase 4.
 
-Aviso importante: nesta rodada só foram relidos em fonte primária os dados do **sql.js 1.15.0** (API do jsDelivr/npm) e os limites do GitHub Pages. Todo o restante (Papa Parse, DuckDB-WASM, Pyodide e **todas as licenças**) é **[S]** e está listado em "pendente de verificação" (seção 9). Licenças têm de ser confirmadas lendo o `LICENSE` real antes de qualquer commit em `vendor/` (gate no `manifest.json`).
+Aviso importante: nesta rodada só foram relidos em fonte primária os dados do **sql.js 1.15.0** (API do jsDelivr/npm; hoje vendorizado na **1.16.0**, ver seção 2.1) e os limites do GitHub Pages. Todo o restante (Papa Parse, DuckDB-WASM, Pyodide e **todas as licenças**) é **[S]** e está listado em "pendente de verificação" (seção 9). Licenças têm de ser confirmadas lendo o `LICENSE` real antes de qualquer commit em `vendor/` (gate no `manifest.json`).
 
 Tamanhos são **bytes sem compressão** como publicados no pacote npm via API do jsDelivr. A transferência real pelo GitHub Pages pode ser menor se houver gzip ou brotli, o que **não foi medido** [S].
 
@@ -18,7 +18,7 @@ Orçamento de peso (C3, meta provisória a medir no primeiro protótipo): shell 
 
 | Necessidade | Recomendação | Alternativas avaliadas | Status |
 |---|---|---|---|
-| SQL no navegador | **sql.js 1.15.0** [V] | DuckDB-WASM, SQLite WASM oficial, wa-sqlite, AlaSQL | Fase 3b (depende de CSV), se D3 aprovado |
+| SQL no navegador | **sql.js 1.16.0** [C] (atualizado de 1.15.0 na vendorização (T-301)) | DuckDB-WASM, SQLite WASM oficial, wa-sqlite, AlaSQL | Fase 3b (depende de CSV), se D3 aprovado |
 | Python no navegador | **Pyodide 314.x** (versão exata a fixar após medir) | PyScript, JupyterLite, MicroPython WASM, Brython/Skulpt | Fase 4, se D3 Pyodide aprovado |
 | Leitura de CSV | **Papa Parse 5.7.1** [S] | Parser próprio, d3-dsv, DuckDB (lê CSV nativamente) | Fase 3 (CSV antes de SQL), se D3 aprovado |
 | Fontes (páginas do Hub) | **Locais (woff2, mesmos nomes de família)** | Google Fonts, fontes de sistema | Fase 2, se D3 aprovado; o portfólio mantém Google Fonts (C9) |
@@ -30,7 +30,9 @@ Orçamento de peso (C3, meta provisória a medir no primeiro protótipo): shell 
 
 ### 2.1 Dados verificados
 
-**sql.js** [V para os dois arquivos principais, lidos nesta sessão em https://data.jsdelivr.com/v1/packages/npm/sql.js@1.15.0?structure=flat: `sql-wasm.wasm` 684.897 B e `sql-wasm.js` 46.635 B; o campo `license` não existe nos metadados do pacote, mas há arquivo `/LICENSE` de 2.199 B, **não lido**]. Que 1.15.0 é a versão mais recente (`latest`) e os demais arquivos da tabela vêm de consulta anterior não repetida: [S] até confirmação nas releases do GitHub (https://github.com/sql-js/sql.js/releases, não lida):
+**Atualização (T-301):** o Hub vendoriza **sql.js 1.16.0** (atualizado de 1.15.0 na vendorização (T-301)): `sql-wasm.js` 47.621 B + `sql-wasm.wasm` 688.197 B = **735.818 B** [C: medidos em `hub/assets/vendor/sqljs/`]. Os números e a tabela abaixo são da 1.15.0, lidos na rodada de pesquisa, e ficam como histórico; não foram refeitos para os demais arquivos de `dist/`.
+
+**sql.js 1.15.0** [V para os dois arquivos principais, lidos nesta sessão em https://data.jsdelivr.com/v1/packages/npm/sql.js@1.15.0?structure=flat: `sql-wasm.wasm` 684.897 B e `sql-wasm.js` 46.635 B; o campo `license` não existe nos metadados do pacote, mas há arquivo `/LICENSE` de 2.199 B, **não lido**]. Que 1.15.0 é a versão mais recente (`latest`) e os demais arquivos da tabela vêm de consulta anterior não repetida: [S] até confirmação nas releases do GitHub (https://github.com/sql-js/sql.js/releases, não lida):
 
 | Arquivo | Bytes | Observação |
 |---|---|---|
@@ -40,7 +42,7 @@ Orçamento de peso (C3, meta provisória a medir no primeiro protótipo): shell 
 | `dist/sql-wasm-inline.js` | 959.508 | WASM embutido em base64 em um só arquivo |
 | `dist/sql-asm.js` | 1.414.714 | Versão asm.js, sem WASM (fallback) |
 
-Download típico da v1: `sql-wasm.js` + `sql-wasm.wasm` = **731.532 bytes (~0,73 MB)**.
+Download típico da v1: `sql-wasm.js` + `sql-wasm.wasm` = **735.818 bytes (~0,74 MB)** na 1.16.0 vendorizada [C] (731.532 bytes na 1.15.0; atualizado de 1.15.0 na vendorização (T-301)).
 
 **DuckDB-WASM** (`@duckdb/duckdb-wasm`) [S: consulta anterior não repetida nesta rodada], tag `latest` no jsDelivr = **1.33.1-dev57.0** (uma versão de desenvolvimento) e tag `next` = 1.33.1-dev110.0 (https://data.jsdelivr.com/v1/packages/npm/@duckdb/duckdb-wasm?structure=flat). Arquivos de https://data.jsdelivr.com/v1/packages/npm/@duckdb/duckdb-wasm@1.33.1-dev57.0?structure=flat:
 
@@ -68,7 +70,7 @@ Download típico do bundle `eh`: 35.913.747 + 773.223 + 32.000 = **36.718.970 by
 | Adequação a ensino básico/intermediário (SELECT, JOIN, GROUP BY, CTE) | Alta | Alta | Alta | Alta | Média: diverge do SQL padrão |
 | Adequação a dados grandes (centenas de MB) | Baixa (memória) | Alta | Média | Média | Baixa |
 | Licença | MIT [S] | MIT [S] | Domínio público/Apache [S] | MIT [S] | MIT [S] |
-| Manutenção | Ativa (1.15.0 como mais recente: [S], releases não lidas) | Ativa, mas `latest` aponta para dev [S] | [S] | [S] | [S] |
+| Manutenção | Ativa (1.16.0 vendorizada, atualizado de 1.15.0 na vendorização (T-301); releases do GitHub não lidas [S]) | Ativa, mas `latest` aponta para dev [S] | [S] | [S] | [S] |
 
 ### 2.3 Decisão proposta
 
@@ -201,7 +203,7 @@ Pendências: obter os arquivos de origem confiável, confirmar a licença OFL de
 
 ### 6.2 Práticas
 
-1. Versão no caminho: `hub/assets/vendor/sql.js@1.15.0/`. Troca de versão = novo diretório e atualização do `manifest.json`, o que contorna o cache curto [S].
+1. Versão no caminho: `hub/assets/vendor/sqljs/` (versão 1.16.0 registrada no `manifest.json`). Troca de versão = novo diretório e atualização do `manifest.json`, o que contorna o cache curto [S].
 2. Carregamento só nas páginas que precisam, e Python só após clique.
 3. Verificar tamanho antes de commitar: nenhum arquivo individual acima de 50 MB sem proposta [S, meta de projeto, aproxima limite do Git não verificado].
 4. Remover da pasta os arquivos não usados (debug, `.map`, bundles de Node, versão `asm.js`), mantendo só os necessários. Para o sql.js: `sql-wasm.js` e `sql-wasm.wasm`.
@@ -228,7 +230,7 @@ Pendências: obter os arquivos de origem confiável, confirmar a licença OFL de
 
 | Biblioteca | Versão verificada | Tamanho a baixar (sem compressão) | Fonte do tamanho | Licença | Status da licença |
 |---|---|---|---|---|---|
-| sql.js | 1.15.0 [S: `latest` não confirmado nas releases] | 731.532 B (js + wasm) [V] | API jsDelivr, lida em 2026-11-12 (ver trecho abaixo) | MIT | [S] não verificada |
+| sql.js | 1.16.0 (vendorizado, T-301; antes suposto 1.15.0) | 735.818 B (js 47.621 + wasm 688.197) [V] | API jsDelivr, lida em 2026-11-12 (ver trecho abaixo) | MIT | [S] não verificada |
 | Papa Parse | 5.7.1 [S] | 19.012 B [S] | API jsDelivr, consulta não repetida | MIT | [S] não verificada |
 | Pyodide | 314.0 (8 jun 2026) [S]; patch posterior [S] | não verificado | blog do Pyodide: só via espelho | MPL-2.0 | [S] não verificada |
 | DuckDB-WASM | `latest` = 1.33.1-dev57.0 [S] | 36.718.970 B (bundle eh) [S] | API jsDelivr, consulta não repetida | MIT | [S] não verificada |

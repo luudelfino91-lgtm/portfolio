@@ -19,6 +19,11 @@ function startServers() {
   // raiz do repo em PORT_ROOT; <SITE_DIR>/portfolio -> repo em PORT_SUB. SITE_DIR vem do run-all.sh; sem ele, cria e limpa um proprio.
   let own = null, site = process.env.SITE_DIR;
   if (!site) { own = fs.mkdtempSync(path.join(os.tmpdir(), 'hub-site-')); site = own; fs.symlinkSync(REPO, path.join(site, 'portfolio')); }
+  // Falha se a porta estiver ocupada: um servidor antigo (orfao) serviria conteudo que nao e o desta execucao.
+  for (const port of [PORT_ROOT, PORT_SUB]) {
+    try { require('child_process').execFileSync('python3', ['-c', `import socket,sys\ns=socket.socket();s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)\ntry:\n s.bind(('127.0.0.1',${Number(port)}))\nexcept OSError:\n sys.exit(3)`], { stdio: 'ignore' }); }
+    catch (e) { if (own) fs.rmSync(own, { recursive: true, force: true }); throw new Error('porta ' + port + ' ocupada: encerre o servidor antigo (pkill -f "http.server ' + port + '") antes de rodar os testes'); }
+  }
   const a = spawn('python3', ['-m', 'http.server', PORT_ROOT, '--bind', '127.0.0.1', '-d', REPO], { stdio: 'ignore' });
   const b = spawn('python3', ['-m', 'http.server', PORT_SUB, '--bind', '127.0.0.1', '-d', site], { stdio: 'ignore' });
   return { stop() { a.kill(); b.kill(); if (own) fs.rmSync(own, { recursive: true, force: true }); } };

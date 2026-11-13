@@ -273,7 +273,7 @@ Suposição D2: o host é o GitHub Pages, que **não permite configurar cabeçal
 |---|---|---|
 | COOP/COEP (isolamento de origem) | `crossOriginIsolated` falso; sem `SharedArrayBuffer` | Usar apenas engines que funcionem sem isso: sql.js, Pyodide em Worker. Evitar `coi-serviceworker` (hack de terceiros, instável). DuckDB-WASM fora da v1. |
 | CSP por cabeçalho | Indisponível | `<meta http-equiv="Content-Security-Policy">` em cada página. Não suporta `frame-ancestors`. Testar `wasm-unsafe-eval` e necessidades do Pyodide antes de fixar a política [S]. |
-| `Cache-Control` imutável | Não configurável; cache curto por padrão [S] | Versão no caminho (`vendor/sql.js@1.15.0/…`) e, opcionalmente, Service Worker com Cache API para os WASM (Fase 7). |
+| `Cache-Control` imutável | Não configurável; cache curto por padrão [S] | Versão no caminho (`vendor/sql.js@1.16.0/…`; atualizado de 1.15.0 na vendorização (T-301); o caminho real hoje é `hub/assets/vendor/sqljs/`) e, opcionalmente, Service Worker com Cache API para os WASM (Fase 7). |
 | MIME `application/wasm` | Esperado correto [S] | Teste de fumaça: `WebAssembly.instantiateStreaming` com fallback para `instantiate(ArrayBuffer)`. |
 | Compressão de `.wasm` | Incerta [S] | Medir a transferência real no deploy de teste e registrar em `technology-stack.md`. |
 
@@ -283,7 +283,7 @@ Sobre D3 (arquivos próprios vs CDN): todas as rotas de bibliotecas (`hub/assets
 
 Tamanhos (tabelas completas em `technology-stack.md`):
 
-- sql.js 1.15.0: `sql-wasm.wasm` 684.897 bytes + `sql-wasm.js` 46.635 bytes, total 731.532 bytes [V: https://data.jsdelivr.com/v1/packages/npm/sql.js@1.15.0?structure=flat, relida em 2026-11-12; trecho lido: `/dist/sql-wasm.wasm` 684,897 bytes e `/dist/sql-wasm.js` 46,635 bytes].
+- sql.js 1.16.0 (atualizado de 1.15.0 na vendorização (T-301)): `sql-wasm.wasm` 688.197 bytes + `sql-wasm.js` 47.621 bytes, total 735.818 bytes [C: arquivos em `hub/assets/vendor/sqljs/`, medidos; ver `hub/assets/vendor/README.md`]. Os valores da 1.15.0 (684.897 + 46.635 = 731.532 B) foram a estimativa inicial via API do jsDelivr.
 - Papa Parse 5.7.1: `papaparse.min.js` 19.012 bytes [S: não relido nesta sessão].
 - DuckDB-WASM (tag `latest` 1.33.1-dev57.0): `duckdb-eh.wasm` 35.913.747 bytes; `duckdb-mvp.wasm` 41.325.187 bytes [S: não relidos nesta sessão].
 - Pyodide: **tamanho não verificado** [S].
@@ -306,7 +306,7 @@ Fluxo para uma página de ferramenta (exemplo: SQL, se D3 aprovado para sql.js):
 1. Página carrega shell, tema, i18n e o módulo da ferramenta (poucos KB, dentro do orçamento do shell).
 2. Editor e interface renderizam imediatamente, com botão "Executar" desabilitado e rótulo "Preparando motor SQL…".
 3. O módulo cria o Worker do SQL (Worker clássico para sql.js) e envia `init`.
-4. O Worker faz `fetchWithProgress` de `vendor/sql.js@1.15.0/sql-wasm.wasm` e instancia.
+4. O Worker faz `fetchWithProgress` de `vendor/sql.js@1.16.0/sql-wasm.wasm` (caminho real: `hub/assets/vendor/sqljs/sql-wasm.wasm`; atualizado de 1.15.0 na vendorização (T-301)) e instancia.
 5. Interface é habilitada; estado "pronto" persiste em memória enquanto a página viver.
 6. Falhas (rede, WASM não suportado, memória) viram mensagem bilíngue com ação "tentar de novo" e sugestão de navegador.
 

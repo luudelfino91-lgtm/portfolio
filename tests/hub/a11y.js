@@ -115,6 +115,14 @@ function contrastProbe() {
   // estrutura: 2 cartoes, nav igual entre paginas (HUB-45), headings, landmarks
   { const c = await L.ctx(br, {}); const pg = await c.newPage(); await pg.goto(url('hub/'));
     const cards = await pg.evaluate(() => [...document.querySelectorAll('.hub-card a')].map(a => a.getAttribute('href'))); L.rec('HUB-02 exatamente 2 cartoes ativos (csv e sql)', cards.join() === 'ferramentas/csv/,ferramentas/sql/', JSON.stringify(cards));
+    for (const p of ['hub/', 'hub/ferramentas/']) { await pg.goto(url(p)); const cd = await pg.evaluate(() => [...document.querySelectorAll('.hub-card')].map(c => ({ href: c.querySelector('a').getAttribute('href'), chip: !!c.querySelector('.chip') })));
+      const csv = cd.find(x => /csv\/$/.test(x.href)), sql = cd.find(x => /sql\/$/.test(x.href));
+      await pg.click('.hub-card a[href$="csv/"]'); await pg.waitForLoadState('load'); const opensCsv = await pg.evaluate(() => !!document.getElementById('csvFile'));
+      await pg.goto(url(p)); await pg.click('.hub-card a[href$="sql/"]'); await pg.waitForLoadState('load'); const opensSql = await pg.evaluate(() => !!document.getElementById('sqlEditor') && !document.querySelector('.empty'));
+      const txt = await (async () => { await pg.goto(url(p)); return pg.evaluate(() => document.querySelector('main').innerText); })();
+      const cpt = await L.ctx(br, { lang: 'pt', theme: 'light' }); const ppt = await cpt.newPage(); await ppt.goto(url(p)); const txtPt = await ppt.evaluate(() => document.querySelector('main').innerText); await cpt.close();
+      const BAN = /under construction|em constru|being built|sendo constru/i;
+      L.rec(`HUB-03 ${p}: cartoes de CSV e de SQL sem chip "Em construcao", cada link abre a ferramenta, e nenhum texto (EN e PT) diz "em construcao"/"under construction"/"being built"/"sendo construidas"`, csv && !csv.chip && sql && !sql.chip && opensCsv && opensSql && !BAN.test(txt) && !BAN.test(txtPt), JSON.stringify(cd) + ' abre CSV=' + opensCsv + ' abre SQL=' + opensSql + ' texto EN/PT limpo=' + (!BAN.test(txt) && !BAN.test(txtPt))); }
     const navs = []; for (const p of L.PAGES) { await pg.goto(url(p)); navs.push(await pg.evaluate(() => [...document.querySelectorAll('header .nav-in a:not(.brand)')].map(a => a.textContent.trim().replace(/\s+/g, ' ') + '|' + new URL(a.href).pathname.replace(/.*\/hub\//, 'hub/')).join(';') + ' #' + document.querySelector('footer nav').children.length)); }
     const rel = await pg.evaluate(() => 0);
     L.rec('HUB-45 itens de navegacao iguais em todas as paginas (rotulos; hrefs sao relativos a profundidade)', new Set(navs.map(n => n.split('|').map(x => x.replace(/[^;]*$/, '')).join())).size >= 1 && new Set(navs.map(n => n.replace(/\|[^;#]*/g, ''))).size === 1, navs.join('\n'));
