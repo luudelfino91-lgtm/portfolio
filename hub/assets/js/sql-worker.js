@@ -9,9 +9,9 @@
    - Cancelar/Parar/tempo limite = o sql.js (pagina) chama worker.terminate();
      o banco em memória e perdido e recriado.
    Entradas: {type:'run', id, sql, limit, cellBudget} | {type:'load', id, file, delimiter, encoding}
-             | {type:'drop', id, name}
+             | {type:'drop', id, name} | {type:'sample', id, sql}   (sql = texto de loja-exemplo.sql, buscado pela pagina)
    Saidas:   {type:'ready', version} | {type:'initerror', detail}
-             | {type:'result', id, ...} | {type:'loaded', id, ...} | {type:'error', id, ...}
+             | {type:'result', id, ...} | {type:'loaded', id, ...} | {type:'sample', id, ...} | {type:'error', id, ...}
    ===================================================================== */
 'use strict';
 importScripts('csv-worker.js');                  // define decode, detectDelimiter, kindOf, typeOf, Papa (relativo a este arquivo)
@@ -72,7 +72,10 @@ function sqSchema() {
   var names = r.length ? r[0].values : [];
   for (var i = 0; i < names.length; i++) {
     var info = sqDb.exec('PRAGMA table_info(' + sqQuote(names[i][0]) + ')');
-    var cols = info.length ? info[0].values.map(function (v) { return { name: String(v[1]), type: String(v[2]) }; }) : [];
+    var fkl = sqDb.exec('PRAGMA foreign_key_list(' + sqQuote(names[i][0]) + ')');
+    var fks = {};
+    if (fkl.length) fkl[0].values.forEach(function (f) { fks[String(f[3])] = String(f[2]) + '.' + String(f[4]); });  // coluna -> tabela.coluna
+    var cols = info.length ? info[0].values.map(function (v) { return { name: String(v[1]), type: String(v[2]), pk: Number(v[5]) > 0, fk: fks[String(v[1])] || '' }; }) : [];
     out.push({ name: String(names[i][0]), kind: String(names[i][1]), columns: cols });
   }
   return out;
@@ -221,6 +224,28 @@ function sqLoad(m) {
   });
 }
 
+// ---------- banco de exemplo (loja-exemplo.sql) ----------
+// Nomes fixos (constantes do projeto, nunca vindos do usuario ou do arquivo). Ordem: pais antes dos filhos.
+var SQ_SAMPLE = ['clientes', 'categorias', 'produtos', 'pedidos', 'itens_pedido'];
+function sqSample(m) {
+  var existing = sqSchema().map(function (t) { return t.name; });
+  var replaced = SQ_SAMPLE.filter(function (n) { return existing.indexOf(n) !== -1; });
+  sqDb.run('SAVEPOINT sample');
+  try {
+    for (var i = SQ_SAMPLE.length - 1; i >= 0; i--) sqDb.run('DROP TABLE IF EXISTS ' + sqQuote(SQ_SAMPLE[i]));   // filhos primeiro
+    sqDb.run(String(m.sql));
+    var fk = sqDb.exec('PRAGMA foreign_key_check');
+    if (fk.length && fk[0].values.length) throw new Error('foreign_key_check: ' + fk[0].values.length + ' violations');
+    var rows = 0, counts = {};
+    SQ_SAMPLE.forEach(function (n) { var c = sqDb.exec('SELECT COUNT(*) FROM ' + sqQuote(n))[0].values[0][0]; counts[n] = c; rows += c; });
+    sqDb.run('RELEASE sample');
+  } catch (e) {
+    try { sqDb.run('ROLLBACK TO sample'); sqDb.run('RELEASE sample'); } catch (e2) {}
+    throw e;
+  }
+  return { type: 'sample', id: m.id, tables: SQ_SAMPLE.slice(), replaced: replaced, counts: counts, rows: rows, schema: sqSafeSchema() };
+}
+
 function sqDrop(m) {
   try { sqDb.run('DROP TABLE IF EXISTS ' + sqQuote(m.name)); return { type: 'dropped', id: m.id, schema: sqSafeSchema() }; }
   catch (e) { return { type: 'error', id: m.id, code: 'sql', message: String(e && e.message || e) }; }
@@ -233,8 +258,9 @@ self.onmessage = function (e) {
     if (m.type === 'run') self.postMessage(sqRun(m));
     else if (m.type === 'load') sqLoad(m).then(function (r) { self.postMessage(r); });
     else if (m.type === 'drop') self.postMessage(sqDrop(m));
+    else if (m.type === 'sample') self.postMessage(sqSample(m));
   } catch (err) {
-    self.postMessage({ type: 'error', id: m.id, code: sqIsFatal(err) ? 'crash' : 'worker', message: String(err && err.message || err) });
+    self.postMessage({ type: 'error', id: m.id, code: sqIsFatal(err) ? 'crash' : (m.type === 'sample' ? 'sample' : 'worker'), message: String(err && err.message || err), schema: sqSafeSchema() });
   }
 };
 
