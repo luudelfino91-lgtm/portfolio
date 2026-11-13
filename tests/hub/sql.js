@@ -254,7 +254,7 @@ const nf = (n, lang) => new Intl.NumberFormat(lang === 'pt' ? 'pt-BR' : 'en-US')
       const out = [];
       const states = [['inicial', async () => { await pg.reload({ waitUntil: 'networkidle' }); await ready(pg); }], ['cenario carregado + resultado', async () => { await loadSample(pg, 'logistica'); await run(pg, 'SELECT * FROM entregas LIMIT 20'); }], ['aviso de substituicao', async () => { await loadSample(pg, 'rh'); }], ['erro de SQL', async () => { await run(pg, 'SELEC 1'); }], ['sem linhas', async () => { await run(pg, 'SELECT 1 WHERE 0'); }], ['tempo limite', async () => { await pg.selectOption('#sqlTimeout', '5'); await pg.fill('#sqlEditor', 'WITH RECURSIVE c(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM c) SELECT count(*) FROM c'); await pg.click('#sqlRun'); await pg.waitForFunction(() => document.getElementById('sqlTool').dataset.state !== 'running', null, { timeout: 15000 }); await ready(pg); }]];
       for (const [st, fn] of states) {
-        await fn(); await pg.evaluate(AXE);
+        await fn(); await pg.evaluate(() => window.scrollTo(0, 0)); await pg.evaluate(AXE);
         const r = await pg.evaluate(async () => { const r = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } }); return r.violations.map(v => ({ id: v.id, impact: v.impact, n: v.nodes.length, t: v.nodes.slice(0, 2).map(x => x.target.join(' ')) })); });
         out.push(`${st}: ${r.length ? JSON.stringify(r) : 'sem violacoes'}`);
       }
@@ -263,7 +263,7 @@ const nf = (n, lang) => new Intl.NumberFormat(lang === 'pt' ? 'pt-BR' : 'en-US')
     await c.close();
   }
   { const { c, pg } = await open(br, L.BASE, 'en', 'dark', 1280);
-    await loadSample(pg, 'marketing-digital'); await run(pg, 'SELECT * FROM leads LIMIT 20'); await pg.evaluate(AXE);
+    await loadSample(pg, 'marketing-digital'); await run(pg, 'SELECT * FROM leads LIMIT 20'); await pg.evaluate(() => window.scrollTo(0, 0)); await pg.evaluate(AXE);
     const r = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => v.id + ' ' + v.impact));
     L.rec('A11-02 axe (en/dark/1280) cenario carregado com resultado: zero violacoes', r.length === 0, JSON.stringify(r)); await c.close(); }
 

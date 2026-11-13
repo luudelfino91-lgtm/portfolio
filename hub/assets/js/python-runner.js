@@ -30,8 +30,8 @@
   // dica opcional no fim da execucao: so formatos conhecidos (o Python pode forjar; o pior efeito e a propria sessao)
   function cleanHint(h) {
     if (!h || typeof h !== 'object') return null;
-    if (h.k === 'nomodule' && typeof h.name === 'string' && /^[A-Za-z0-9_]{1,60}$/.test(h.name)) return { k: 'nomodule', name: h.name };
-    if (h.k === 'pkgfail') return { k: 'pkgfail' };
+    if (h.k === 'nomodule' && typeof h.name === 'string' && /^[^\u0000-\u001f]{1,60}$/.test(h.name)) return { k: 'nomodule', name: h.name };
+    if (h.k === 'pkgfail' || h.k === 'toodeep' || h.k === 'dead') return { k: h.k };
     if (h.k === 'isolation') return { k: 'isolation' };
     return null;
   }

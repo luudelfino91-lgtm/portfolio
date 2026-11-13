@@ -253,7 +253,7 @@ const rx = { cols: /returns (\d+) columns, but the exercise asks for (\d+)/, nam
     L.rec(`EX-80 360px (${lang}/${theme}): sem rolagem horizontal da pagina em todos os estados dos exercicios`, sizes.every(([, x]) => x.sw <= x.cw), JSON.stringify(sizes));
     L.rec(`EX-81 (${lang}/${theme}) resultado da verificacao e progresso em regioes aria-live=polite role=status presentes desde o carregamento`, live.length === 6 && live.every(x => x === 'polite/status'), live.join(' '));
     if (AXE) { const out = [];
-      const probe = async st => { await pg.evaluate(AXE); const r = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => ({ id: v.id, impact: v.impact, n: v.nodes.length, t: v.nodes.slice(0, 2).map(x => x.target.join(' ')) }))); out.push(`${st}: ${r.length ? JSON.stringify(r) : 'sem violacoes'}`); };
+      const probe = async st => { await pg.evaluate(() => window.scrollTo(0, 0)); await pg.evaluate(AXE); const r = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => ({ id: v.id, impact: v.impact, n: v.nodes.length, t: v.nodes.slice(0, 2).map(x => x.target.join(' ')) }))); out.push(`${st}: ${r.length ? JSON.stringify(r) : 'sem violacoes'}`); };
       await probe('falha + longo + resolvido + confirmacao aberta');
       await pg.click('#sqlExYes-filtro'); await pg.click('#sqlExList li:nth-child(3) summary'); await probe('solucao mostrada (nao resolvido) + dica aberta');
       await pg.reload({ waitUntil: 'networkidle' }); await ready(pg); await pg.fill('#sqlExTa-sub', OK.sub); await pg.click('#sqlExV-sub'); await probe('aviso "carregar banco" no exercicio');
@@ -261,7 +261,7 @@ const rx = { cols: /returns (\d+) columns, but the exercise asks for (\d+)/, nam
       L.rec(`EX-82 axe (${lang}/${theme}/360) em 4 estados dos exercicios: zero violacoes`, out.every(s => /sem violacoes/.test(s)), out.join('\n')); }
     await c.close(); }
   { const { c, pg } = await open(br, L.BASE, 'pt', 'dark', 1280); await loadSample(pg); await verify(pg, 'sub', OK.sub); await verify(pg, 'join', 'SELECT 1');
-    if (AXE) { await pg.evaluate(AXE); const r = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => v.id + ' ' + v.impact)); L.rec('EX-83 axe (pt/dark/1280) exercicios com aprovado e falha: zero violacoes', r.length === 0, JSON.stringify(r)); }
+    if (AXE) { await pg.evaluate(() => window.scrollTo(0, 0)); await pg.evaluate(AXE); const r = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => v.id + ' ' + v.impact)); L.rec('EX-83 axe (pt/dark/1280) exercicios com aprovado e falha: zero violacoes', r.length === 0, JSON.stringify(r)); }
     // so teclado: Tab chega a caixa, ao Verificar; Enter verifica
     await pg.focus('#sqlExTa-grupo'); await pg.keyboard.type(OK.grupo); await pg.keyboard.press('Tab'); const f = await pg.evaluate(() => document.activeElement.id); await pg.keyboard.press('Enter'); await ready(pg);
     const f2 = await pg.evaluate(() => document.activeElement.id); const r = await fb(pg, 'grupo');
