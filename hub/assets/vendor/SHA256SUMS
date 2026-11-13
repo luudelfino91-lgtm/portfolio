@@ -5,5 +5,10 @@
 f7cdc8ece80678ceb712f8e65ebe6d3a83203a180c399865f49612a051693635  pyodide/pyodide.asm.mjs
 cc36e3cab04fdfc9a63ff13eb52eae2b911bf46c025cc7b281f394bd3de1d5e6  pyodide/pyodide.asm.wasm
 fa1957e5777068fc4f7437f96d860ae2fbe9c19732ba06c84e004ec16dd7dd7a  pyodide/python_stdlib.zip
-5dc2fc119108bc148c7457dc86e7675b5c87e1cafd420b9c34c1eaef7b36c010  pyodide/pyodide-lock.json
+62768aa2b02ba64450cc7132addbb1efbf14b7faa7589e13c5a64aa57de88af7  pyodide/pyodide-lock.json
 fab3dd6bdab226f1c08630b1dd917e11fcb4ec5e1e020e2c16f83a0a13863e85  pyodide/LICENSE-MPL-2.0.txt
+a292c1f5d7d8a2208cd5e94fc467604c131cabcd2fc14fed6eefde121e7fabdf  pyodide/packages/numpy-2.4.6-cp314-cp314-pyemscripten_2026_0_wasm32.whl
+45ff57772cc2f366a8582c7d3097cc4e6676342ecd5a3c08184a43462d5a02ae  pyodide/packages/pandas-3.0.2-cp314-cp314-pyemscripten_2026_0_wasm32.whl
+9b13365edf9c188f570baf9c540bbb3029ada2a2dacb9694b3659941693ee9e5  pyodide/packages/python_dateutil-2.9.0.post0-py2.py3-none-any.whl
+b8249d6450146e0b61e6d710dc02ebb35a904796c4c2f97fe87d4ac5872db36a  pyodide/packages/pytz-2026.1.post1-py2.py3-none-any.whl
+228c50f73aa7addf2c2ccf2979c256802a59ab69cad8152b31b9443cc8140f42  pyodide/packages/six-1.17.0-py2.py3-none-any.whl

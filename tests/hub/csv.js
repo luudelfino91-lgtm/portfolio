@@ -155,7 +155,7 @@ const pick = async (pg, slug) => { await pg.check(`#csvPicker input[value="${slu
     if (AXE) {
       const out = [];
       for (const [st, fn] of [['inicial', async () => { await pg.unroute('**/csv/rh/aus*.csv'); await pg.reload({ waitUntil: 'networkidle' }); await ready(pg); }], ['outro cenario, tabela larga', async () => { await pick(pg, 'atendimento'); await pg.selectOption('#csvTable', 'interacoes'); await ready(pg, 'interacoes'); }], ['ER aberto', async () => { await pg.click('#csvPicker .sc-er summary'); }], ['erro', async () => { await pg.route('**/csv/rh/ausencias.csv', r => r.fulfill({ status: 404, body: 'x' })); await pick(pg, 'rh'); await pg.selectOption('#csvTable', 'ausencias'); await pg.waitForFunction(() => document.getElementById('csvTool').dataset.state === 'error'); }]]) {
-        await fn(); await pg.evaluate(AXE);
+        await fn(); await pg.evaluate(() => window.scrollTo(0, 0)); await pg.evaluate(AXE);
         const r = await pg.evaluate(async () => { const r = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } }); return r.violations.map(v => ({ id: v.id, impact: v.impact, n: v.nodes.length, t: v.nodes.slice(0, 2).map(x => x.target.join(' ')) })); });
         out.push(`${st}: ${r.length ? JSON.stringify(r) : 'sem violacoes'}`);
       }
@@ -164,7 +164,7 @@ const pick = async (pg, slug) => { await pg.check(`#csvPicker input[value="${slu
     await c.close();
   }
   { const c = await L.ctx(br, { lang: 'pt', theme: 'dark', vp: 1280 }); const pg = await c.newPage(); await pg.goto(`${L.BASE}/${PAGE}`); await ready(pg); await pick(pg, 'logistica');
-    await pg.evaluate(AXE); const r = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => v.id + ' ' + v.impact));
+    await pg.evaluate(() => window.scrollTo(0, 0)); await pg.evaluate(AXE); const r = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => v.id + ' ' + v.impact));
     L.rec('A11-02 axe (pt/dark/1280) explorador com tabela carregada: zero violacoes', r.length === 0, JSON.stringify(r)); await c.close(); }
 
   // ===== EXP-08: teclado: Tab chega ao seletor, a lista de tabelas e as regioes rolaveis; foco visivel =====
