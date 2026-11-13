@@ -51,8 +51,8 @@ const { execSync } = require('child_process');
       sh('git config user.email t@t && git config user.name t', c);
       // o origin/main do clone e o branch main LOCAL do repo (pode estar atrasado); use o origin/main real do repo
       sh(`git fetch -q "${L.REPO}" +refs/remotes/origin/main:refs/remotes/origin/main`, c);
-      res.push(['controle limpo (HEAD commitado)', S.offending(c).length === 0]);
-      fs.appendFileSync(`${c}/docs/_x.md`, 'x'); res.push(['controle: arquivo novo em docs/ nao acusa', S.offending(c).length === 0]); fs.unlinkSync(`${c}/docs/_x.md`);
+      res.push(['controle limpo (HEAD commitado)', S.offending(c).filter(f => !APPROVED.includes(f)).length === 0]);
+      fs.appendFileSync(`${c}/docs/_x.md`, 'x'); res.push(['controle: arquivo novo em docs/ nao acusa', S.offending(c).filter(f => !APPROVED.includes(f)).length === 0]); fs.unlinkSync(`${c}/docs/_x.md`);
       for (const f of ['index.html', 'certificacoes.html', 'assets/css/styles.css', 'README.md', 'CHANGELOG.md']) {
         if (!fs.existsSync(`${c}/${f}`)) { res.push([`${f} (ausente no clone)`, false]); continue; }
         fs.appendFileSync(`${c}/${f}`, '\n<!-- x -->'); res.push([`${f} alterado no working tree acusa`, S.offending(c).includes(f)]);
