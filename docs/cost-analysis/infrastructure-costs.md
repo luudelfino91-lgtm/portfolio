@@ -54,7 +54,7 @@ Premissas: sem cache do navegador e sem compressão (pior caso), 1 GB = 1.000 MB
 
 | Cenário | Peso por carga | Cargas para consumir 100 GB/mês |
 |---|---|---|
-| Laboratório SQL (sql.js 1.15.0: 731.532 B [V]) | ~0,73 MB | ~137.000 |
+| Laboratório SQL (sql.js 1.16.0: 735.818 B [C]; atualizado de 1.15.0 na vendorização (T-301)) | ~0,73 MB | ~137.000 |
 | Papa Parse (19.012 B [S]) | ~0,02 MB | ~5.260.000 |
 | DuckDB-WASM, bundle eh (36.718.970 B [S]) | ~36,7 MB | ~2.700 |
 | Pyodide | não medido [S] | a calcular com a Fase 4 |

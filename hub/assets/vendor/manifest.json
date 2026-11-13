@@ -1,0 +1,45 @@
+{
+  "_nota": "Verificar com: cd hub/assets/vendor && sha256sum -c SHA256SUMS. Origem: pacotes npm sql.js e papaparse (integridade conferida contra o registro npm na vendorizacao, T-301). Advisories de seguranca: ver docs/security/phase-3-review.md.",
+  "files": [
+    {
+      "path": "sqljs/sql-wasm.js",
+      "package": "sql.js",
+      "version": "1.16.0",
+      "license": "MIT",
+      "bytes": 47621,
+      "sha256": "9b96118841c6edfdf53c6f388c1419d1f473cf469df6a6fc2864b386d60bdb5e"
+    },
+    {
+      "path": "sqljs/sql-wasm.wasm",
+      "package": "sql.js",
+      "version": "1.16.0",
+      "license": "MIT",
+      "bytes": 688197,
+      "sha256": "43bbcdd44287e5a2db3b6b5af34b1a3485a7a441285d247976c1ebe3c61f8dbf"
+    },
+    {
+      "path": "sqljs/LICENSE",
+      "package": "sql.js",
+      "version": "1.16.0",
+      "license": "MIT",
+      "bytes": 2199,
+      "sha256": "60a3f6e4d7b29b4321359e683b36cf198d24f58e24582070f56e6fa89d5ee2be"
+    },
+    {
+      "path": "papaparse/papaparse.min.js",
+      "package": "Papa Parse",
+      "version": "5.7.1",
+      "license": "MIT",
+      "bytes": 19012,
+      "sha256": "e032656b2c709e9a756d5be817da9885d58b2313c43d432c414eb8534a752685"
+    },
+    {
+      "path": "papaparse/LICENSE",
+      "package": "Papa Parse",
+      "version": "5.7.1",
+      "license": "MIT",
+      "bytes": 1079,
+      "sha256": "99aa68e4b42758b09828a46515f70369e5463458ab7a990189f641af2b8d9b4e"
+    }
+  ]
+}

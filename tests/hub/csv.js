@@ -5,6 +5,7 @@ const L = require('./lib'); const fs = require('fs'); const path = require('path
 const FX = path.join(L.REPO, 'docs/testing/fixtures'); const LARGE = process.env.FIXTURES_LARGE || '/tmp/csv-large';
 const EXP = JSON.parse(fs.readFileSync(FX + '/expected.json', 'utf8')).files.reduce((a, f) => (a[f.file] = f, a), {});
 const AXE = fs.existsSync(L.AXE_PATH) ? fs.readFileSync(L.AXE_PATH, 'utf8') : null;
+if (!AXE) L.rec('A11-02 (CSV) axe-core presente em ' + L.AXE_PATH + ' (sem ele a cobertura axe nao roda)', false, 'instale axe-core: cd /tmp/axe && npm pack axe-core && tar xzf axe-core-*.tgz');
 const PAGE = 'hub/ferramentas/csv/';
 const fpath = n => path.isAbsolute(n) ? n : fs.existsSync(path.join(FX, n)) ? path.join(FX, n) : path.join(LARGE, n);
 
@@ -24,6 +25,10 @@ const grab = pg => pg.evaluate(() => {
     resultVisible: !g('csvResult').hidden, bodyText: document.body.innerText,
   };
 });
+const os = require('os');
+// SEC-P3-01: fixtures de largura geradas em tempo de teste, fora do repo
+const WDIR = fs.mkdtempSync(path.join(os.tmpdir(), 'hub-wide-'));
+const wide = n => { const p = path.join(WDIR, 'wide-' + n + '.csv'); const h = Array.from({ length: n }, (_, i) => 'c' + (i + 1)); fs.writeFileSync(p, h.join(',') + '\n' + h.map((_, i) => i).join(',') + '\n' + h.map((_, i) => 'v' + i).join(',') + '\n'); return p; };
 const nf = (n, lang) => new Intl.NumberFormat(lang === 'pt' ? 'pt-BR' : 'en-US').format(n);
 
 (async () => {
@@ -44,8 +49,8 @@ const nf = (n, lang) => new Intl.NumberFormat(lang === 'pt' ? 'pt-BR' : 'en-US')
         const rowsOk = r.rows === (e.rows === 1 ? (lang === 'pt' ? '1 linha' : '1 row') : `${nf(e.rows, lang)} ${lang === 'pt' ? 'linhas' : 'rows'}`);
         const colsOk = r.cols === (e.columns === 1 ? (lang === 'pt' ? '1 coluna' : '1 column') : `${e.columns} ${lang === 'pt' ? 'colunas' : 'columns'}`);
         const delimOk = new RegExp(dn).test(r.delim);
-        const hdrOk = JSON.stringify(r.header.map(h => /^\((no name|sem nome)\)$/.test(h) ? '' : h)) === JSON.stringify(e.header);
-        const firstOk = e.first_rows.slice(0, 10).every((row, i) => r.body[i] && r.body[i].length === e.columns && row.slice(0, e.columns).every((v, j) => r.body[i][j] === v));
+        const hdrOk = JSON.stringify(r.header.map(h => /^\((no name|sem nome)\)$/.test(h) ? '' : h)) === JSON.stringify(e.header.slice(0, 200)); // previa limitada a 200 colunas (SEC-P3-01)
+        const firstOk = e.first_rows.slice(0, 10).every((row, i) => r.body[i] && r.body[i].length === Math.min(e.columns, 200) && row.slice(0, Math.min(e.columns, 200)).every((v, j) => r.body[i][j] === v));
         const typesOk = e.columns_stats ? JSON.stringify(r.types) === JSON.stringify(e.columns_stats.map(s => s.type)) : true;
         const nobom = !r.header.join('').includes('﻿') && !r.bodyText.includes('﻿');
         const nofffd = !r.bodyText.includes('�') || n === 'xss.csv';
@@ -136,6 +141,32 @@ const nf = (n, lang) => new Intl.NumberFormat(lang === 'pt' ? 'pt-BR' : 'en-US')
     }
     await c.close(); }
 
+
+  // ---- SEC-P3-01: limite de colunas (2.000), Hub.t em passada unica
+  { const c = await L.ctx(br, { lang: 'pt' }); await c.addInitScript(() => { window.__lt = []; try { new PerformanceObserver(l => l.getEntries().forEach(e => window.__lt.push(e.duration))).observe({ entryTypes: ['longtask'] }); } catch (e) { window.__lt = null; } });
+    const pg = await c.newPage(); const log = L.newLog(); L.watch(pg, log); await pg.goto(`${L.BASE}/${PAGE}`);
+    const nodes = () => pg.evaluate(() => document.getElementsByTagName('*').length);
+    const lts = () => pg.evaluate(() => window.__lt);
+    await load(pg, wide(2000)); let r = await grab(pg);
+    const n2000 = await nodes();
+    L.rec('SEC-P3-01 CSV 2.000 colunas aceito: 2.000 colunas/tipos contados, previa limitada a 200 colunas com aviso', r.state === 'ready' && r.cols.startsWith('2.000') && r.types.length === 2000 && r.header.length === 200 && r.body.length === 2 && r.body[0].length === 200 && /200 primeiras de 2\.000/.test(r.warn) && n2000 < 20000, `estado=${r.state} cols="${r.cols}" tipos=${r.types.length} cabecalho=${r.header.length} aviso="${r.warn}" nos DOM=${n2000}`);
+    await load(pg, 'basic.csv');
+    for (const n of [2001, 5000, 100000]) {
+      await pg.evaluate(() => { window.__lt = []; });
+      const t0 = Date.now(); await load(pg, wide(n)); const dt = Date.now() - t0; r = await grab(pg); const lt = await lts(); const mx = lt && lt.length ? Math.max(...lt) : 0; const nn = await nodes();
+      L.rec(`SEC-P3-01 CSV ${n} colunas recusado com causa e acao, arquivo anterior mantido, long task < 1 s, DOM < 20.000 nos`, r.errVisible && r.err.includes(nf(n, 'pt')) && r.err.includes('2.000') && /Escolha/.test(r.err) && /continua sendo mostrado/.test(r.err) && r.resultVisible && r.rows.startsWith('10.000') && lt !== null && mx < 1000 && nn < 20000 && log.pageerrors.length === 0, `msg="${r.err}" tempo=${dt} ms maior long task=${Math.round(mx)} ms nos=${nn} resultado anterior=${r.resultVisible}/${r.rows}`);
+    }
+    // EN
+    await pg.evaluate(() => Hub.setLang('en')); await pg.waitForTimeout(100); r = await grab(pg);
+    L.rec('SEC-P3-01 mensagem de colunas em EN', /Too many columns|columns and the limit is 2,000/.test(r.err) && !/\{|\}|undefined/.test(r.err), `msg="${r.err}"`);
+    await pg.evaluate(() => Hub.setLang('pt'));
+    // Hub.t: passada unica
+    const bufb = fs.readFileSync(fpath('basic.csv'));
+    await load(pg, { name: '{rows} {cols}.csv', mimeType: 'text/csv', buffer: bufb }); r = await grab(pg);
+    const tt = await pg.evaluate(() => Hub.t('hub.csv.stat.file', { v: '{x}' }) + '|' + Hub.t('hub.csv.data.cap.some', { n: '{total}', total: 'T' }));
+    L.rec('Hub.t substitui {x} em passada unica: arquivo "{rows} {cols}.csv" aparece literal no status', /\{rows\} \{cols\}\.csv/.test(await pg.textContent('[data-stat=file]')) && /\{x\}/.test(tt) && tt.includes('Primeiras {total} de T'), `status="${r.status}" t="${tt}"`);
+    await c.close(); }
+
   // ---- 360px sem rolagem horizontal, temas, axe
   for (const theme of ['light', 'dark']) for (const lang of ['en', 'pt']) {
     const c = await L.ctx(br, { lang, theme, vp: 360 }); const pg = await c.newPage(); await pg.goto(`${L.BASE}/${PAGE}`, { waitUntil: 'networkidle' });
@@ -181,6 +212,7 @@ const nf = (n, lang) => new Intl.NumberFormat(lang === 'pt' ? 'pt-BR' : 'en-US')
     await pg.click('[data-lang=pt]'); const pt = await grab(pg);
     L.rec('HUB-15 troca EN->PT com arquivo carregado traduz resumo e legenda', en.rows === '10,000 rows' && pt.rows === '10.000 linhas' && /Primeiras 100 de 10\.000 linhas/.test(await pg.textContent('#csvDataCap')), `${en.rows} -> ${pt.rows}`); await c.close(); }
 
+  fs.rmSync(WDIR, { recursive: true, force: true });
   await br.close(); srv.stop();
   process.exit(L.results.some(r => !r.ok) ? 1 : 0);
 })().catch(e => { console.log('FAIL erro do teste :: ' + (e && e.stack || e)); process.exit(1); });

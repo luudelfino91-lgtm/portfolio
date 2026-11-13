@@ -33,5 +33,5 @@ e032656b2c709e9a756d5be817da9885d58b2313c43d432c414eb8534a752685  papaparse/papa
 Carregam **sob demanda**, só nas páginas das ferramentas, e não entram no orçamento do shell (150 KB). Se o GitHub Pages serve `.wasm` comprimido não foi verificado.
 
 ## Requisitos para quem usar
-- O WebAssembly exige `'wasm-unsafe-eval'` no `script-src` da CSP das páginas que carregam sql.js (a CSP atual do Hub não o tem). Mudar a CSP é decisão de segurança: registrar e testar (ST relacionado).
+- `'wasm-unsafe-eval'` **não é exigido no Chrome**: a auditoria da Fase 3 mediu o motor funcionando sem o token, porque só o Worker carrega o sql.js (a CSP da página não se aplica ao Worker). O token foi mantido por precaução em Firefox e Safari, **sem teste** nesses navegadores; remova só depois de testá-los. **A página SQL (`hub/ferramentas/sql/`) agora tem `'wasm-unsafe-eval'` e `worker-src 'self'`; as demais páginas do Hub continuam sem eles.** Mudar a CSP é decisão de segurança: registrada e coberta por teste (`tests/hub`); a revisão de segurança da Fase 3 é do `security-auditor`.
 - `sql-wasm.js` não deve ser editado. Para atualizar, repita o procedimento acima, atualize este README e o `manifest.json` (T-312).

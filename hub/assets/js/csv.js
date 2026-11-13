@@ -10,6 +10,7 @@
   'use strict';
   var LIMIT = 10485760;      // 10 MiB, exibido como "10 MB"
   var PREVIEW = 100;
+  var MAX_COLS = 2000;       // igual a MAX_COLS de csv-worker.js (só para a mensagem)
   var WORKER_URL = new URL('csv-worker.js', document.currentScript.src).href;
   var $ = function (id) { return document.getElementById(id); };
   var t = function (k, v) { return Hub.t(k, v); };
@@ -63,6 +64,7 @@
     if (r) {
       if (r.fallback) items.push(t('hub.csv.warn.fallback'));
       else if (r.replacement) items.push(t('hub.csv.warn.replacement'));
+      if (r.previewCols && r.previewCols < r.colCount) items.push(t('hub.csv.warn.colcap', { n: num(r.previewCols), total: num(r.colCount) }));
       if (r.ragged) items.push(t('hub.csv.warn.ragged', { n: num(r.ragged) }));
       if (r.quoteErrors) items.push(t('hub.csv.warn.quotes'));
     }
@@ -96,12 +98,13 @@
     var tbl = $('csvData'), thead = tbl.tHead, tbody = tbl.tBodies[0];
     thead.textContent = ''; tbody.textContent = '';
     var htr = document.createElement('tr');
-    r.header.forEach(function (h) { var th = document.createElement('th'); th.scope = 'col'; setName(th, h); htr.appendChild(th); });
+    var pc = Math.min(r.colCount, r.previewCols || r.colCount);
+    r.header.slice(0, pc).forEach(function (h) { var th = document.createElement('th'); th.scope = 'col'; setName(th, h); htr.appendChild(th); });
     thead.appendChild(htr);
     var frag = document.createDocumentFragment();
     r.rows.forEach(function (row) {
       var tr = document.createElement('tr');
-      for (var i = 0; i < r.colCount; i++) {
+      for (var i = 0; i < pc; i++) {
         var td = document.createElement('td'), d = document.createElement('div');
         d.className = 'csv-cell';
         d.textContent = i < row.length ? row[i] : '';
@@ -156,7 +159,7 @@
       if (my !== job) return;
       var m = ev.data;
       if (m.type === 'progress') { prog.value = m.pct; pct.textContent = m.pct + '%'; }
-      else if (m.type === 'error') { fail(m.code, { detail: m.detail }); }
+      else if (m.type === 'error') { fail(m.code, m.code === 'cols' ? { n: num(+m.detail), max: num(MAX_COLS) } : { detail: m.detail }); }
       else if (m.type === 'result') {
         stopWorker(); busy(false); pending = null;
         shown = { file: { name: f.name, size: f.size }, fileObj: f, res: m, opts: opts };

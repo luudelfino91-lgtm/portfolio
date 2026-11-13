@@ -39,7 +39,7 @@
  "hub.home.eyebrow": "Data & AI hub",
  "hub.home.h1a": "Practise data skills",
  "hub.home.h1b": "right in your browser",
- "hub.home.lede": "Free tools for people who work with data and AI. They are being built so that your files never leave your browser, with no sign-up and no tracking.",
+ "hub.home.lede": "Free tools for people who work with data and AI. The Hub is growing: the CSV viewer and the SQL playground are ready, and Python, courses and resources are on the way. Your files stay in your browser, with no sign-up and no tracking.",
  "hub.home.cta1": "See tools",
  "hub.home.cta2": "How your data is handled",
  "hub.home.tools.h2": "Tools",
@@ -128,6 +128,9 @@
  "hub.csv.err.worker.m": "The file could not be processed. Choose the file again; if it keeps happening, try a smaller file or another browser.",
  "hub.csv.err.noworker.t": "This browser cannot run the reader",
  "hub.csv.err.noworker.m": "The tool needs Web Workers to read files without freezing the page. Use a current version of Chrome, Edge or Firefox.",
+ "hub.csv.err.cols.t": "Too many columns",
+ "hub.csv.err.cols.m": "The file has {n} columns and the limit is {max} (the same as the SQL engine), so it was not read. Choose a file with fewer columns, or export only the columns you need.",
+ "hub.csv.warn.colcap": "Showing the first {n} of {total} columns in the preview. The column list and types below cover all of them.",
  "hub.csv.err.keep": "The previous file is still shown below.",
  "hub.sql.lede": "Write SQL and run it on a database that lives in this browser tab. You can load your own CSV files as tables. Nothing is uploaded: the files and the queries stay on this device.",
  "hub.sql.data.h": "Your tables",
@@ -216,7 +219,7 @@
  "hub.priv.h1": "Privacy",
  "hub.priv.lede": "Short and honest: what this Hub does with your data.",
  "hub.priv.s1.h": "Your data stays in your browser",
- "hub.priv.s1.p": "The Hub is a set of static pages. It has no server that receives files or queries, and it asks for no account. The tools are not available yet; this is a design commitment that will be checked by tests before they launch.",
+ "hub.priv.s1.p": "The Hub is a set of static pages. It has no server that receives files or queries, and it asks for no account. The CSV viewer and the SQL playground already run in your browser: your files are processed locally and are not uploaded. These statements are provisional until the final privacy review.",
  "hub.priv.s2.h": "Cookies and tracking",
  "hub.priv.s2.p": "Hub pages set no cookies and include no analytics, advertising or tracking scripts.",
  "hub.priv.s3.h": "What is stored on your device",
@@ -254,7 +257,7 @@
  "hub.home.eyebrow": "Hub de dados e IA",
  "hub.home.h1a": "Pratique dados",
  "hub.home.h1b": "direto no seu navegador",
- "hub.home.lede": "Ferramentas gratuitas para quem trabalha com dados e IA. Estão sendo construídas para que seus arquivos nunca saiam do navegador, sem cadastro e sem rastreamento.",
+ "hub.home.lede": "Ferramentas gratuitas para quem trabalha com dados e IA. O Hub está em evolução: o leitor de CSV e o playground de SQL já estão prontos, e Python, cursos e recursos estão a caminho. Seus arquivos ficam no navegador, sem cadastro e sem rastreamento.",
  "hub.home.cta1": "Ver ferramentas",
  "hub.home.cta2": "Como seus dados são tratados",
  "hub.home.tools.h2": "Ferramentas",
@@ -343,6 +346,9 @@
  "hub.csv.err.worker.m": "Não foi possível processar o arquivo. Escolha o arquivo de novo; se continuar, tente um arquivo menor ou outro navegador.",
  "hub.csv.err.noworker.t": "Este navegador não consegue executar o leitor",
  "hub.csv.err.noworker.m": "A ferramenta precisa de Web Workers para ler arquivos sem travar a página. Use uma versão atual do Chrome, Edge ou Firefox.",
+ "hub.csv.err.cols.t": "Colunas demais",
+ "hub.csv.err.cols.m": "O arquivo tem {n} colunas e o limite é {max} (o mesmo do motor SQL), então não foi lido. Escolha um arquivo com menos colunas ou exporte só as colunas de que precisa.",
+ "hub.csv.warn.colcap": "Mostrando as {n} primeiras de {total} colunas na prévia. A lista de colunas e tipos abaixo cobre todas.",
  "hub.csv.err.keep": "O arquivo anterior continua sendo mostrado abaixo.",
  "hub.sql.lede": "Escreva SQL e execute em um banco de dados que vive nesta aba do navegador. Você pode carregar seus próprios arquivos CSV como tabelas. Nada é enviado: os arquivos e as consultas ficam neste dispositivo.",
  "hub.sql.data.h": "Suas tabelas",
@@ -431,7 +437,7 @@
  "hub.priv.h1": "Privacidade",
  "hub.priv.lede": "Curto e honesto: o que este Hub faz com os seus dados.",
  "hub.priv.s1.h": "Seus dados ficam no seu navegador",
- "hub.priv.s1.p": "O Hub é um conjunto de páginas estáticas. Não existe servidor que receba arquivos ou consultas, e não é pedido cadastro. As ferramentas ainda não estão disponíveis; este é um compromisso de projeto, que será conferido por testes antes do lançamento.",
+ "hub.priv.s1.p": "O Hub é um conjunto de páginas estáticas. Não existe servidor que receba arquivos ou consultas, e não é pedido cadastro. O leitor de CSV e o playground de SQL já rodam no seu navegador: seus arquivos são processados localmente e não são enviados. Estas afirmações são provisórias até a revisão final de privacidade.",
  "hub.priv.s2.h": "Cookies e rastreamento",
  "hub.priv.s2.p": "As páginas do Hub não criam cookies e não incluem análise de audiência, anúncios nem scripts de rastreamento.",
  "hub.priv.s3.h": "O que fica guardado no seu dispositivo",
@@ -468,7 +474,7 @@
     var s = DICT[Hub.lang][key];
     if (s === undefined) s = DICT.en[key];
     if (s === undefined) return '';
-    if (vars) for (var x in vars) s = s.split('{' + x + '}').join(String(vars[x]));
+    if (vars) s = s.replace(/\{([A-Za-z0-9_]+)\}/g, function (m, x) { return Object.prototype.hasOwnProperty.call(vars, x) ? String(vars[x]) : m; }); // passada única
     return s;
   };
 

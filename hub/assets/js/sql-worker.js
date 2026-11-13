@@ -144,14 +144,15 @@ function sqLoad(m) {
     bytes = null; buf = null;
     var text = dec.text;
     var delim = m.delimiter && m.delimiter !== 'auto' ? m.delimiter : detectDelimiter(text);
-    var header = null, data = [], masks = [], ragged = 0, quoteErrors = 0, step = 0, last = 0;
+    var header = null, data = [], masks = [], ragged = 0, quoteErrors = 0, step = 0, last = 0, tooWide = 0;
     self.postMessage({ type: 'progress', id: m.id, pct: 0 });
     Papa.parse(text, {
       delimiter: delim || ',', skipEmptyLines: true,
-      step: function (r) {
+      step: function (r, parser) {
+        if (tooWide) return;
         if (r.errors && r.errors.length) for (var e = 0; e < r.errors.length; e++) if (r.errors[e].type === 'Quotes') quoteErrors++;
         var row = r.data;
-        if (header === null) { header = row; for (var c = 0; c < header.length; c++) masks.push(0); return; }
+        if (header === null) { if (row.length > MAX_COLS) { tooWide = row.length; parser.abort(); return; } header = row; for (var c = 0; c < header.length; c++) masks.push(0); return; }
         if (row.length !== header.length) ragged++;
         data.push(row);
         var n = Math.min(row.length, header.length);
@@ -164,6 +165,7 @@ function sqLoad(m) {
     });
     var replacement = text.indexOf('\uFFFD') !== -1;
     text = null;
+    if (tooWide) return { type: 'error', id: m.id, code: 'cols', detail: String(tooWide) };
     if (header === null) return { type: 'error', id: m.id, code: 'empty' };
 
     // tipos: inteiro seguro -> INTEGER; decimal (ponto ou virgula) -> REAL; o resto -> TEXT (datas e booleanos ficam texto)

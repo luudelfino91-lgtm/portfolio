@@ -11,6 +11,8 @@
 'use strict';
 importScripts('../vendor/papaparse/papaparse.min.js'); // relativo a este arquivo: hub/assets/vendor/
 
+// Teto de colunas (igual ao SQLite) e de colunas levadas à prévia (SEC-P3-01). Compartilhado com sql-worker.js.
+var MAX_COLS = 2000, PREVIEW_COLS = 200;
 var CANDIDATES = [',', ';', '\t', '|'];
 var RE_INT = /^[+-]?(0|[1-9][0-9]*)$/;
 var RE_DEC = /^[+-]?(0|[1-9][0-9]*)\.[0-9]+$/;
@@ -92,22 +94,24 @@ function run(msg) {
     var text = dec.text;
     var delim = msg.delimiter && msg.delimiter !== 'auto' ? msg.delimiter : detectDelimiter(text);
     var keep = msg.preview || 100;
-    var header = null, preview = [], rows = 0, ragged = 0, quoteErrors = 0, masks = [];
+    var header = null, preview = [], rows = 0, ragged = 0, quoteErrors = 0, masks = [], tooWide = 0;
     var total = text.length, last = 0;
     self.postMessage({ type: 'progress', pct: 0 });
     Papa.parse(text, {
       delimiter: delim || ',',
       skipEmptyLines: true,
-      step: function (r) {
+      step: function (r, parser) {
+        if (tooWide) return;
         if (r.errors && r.errors.length) for (var e = 0; e < r.errors.length; e++) if (r.errors[e].type === 'Quotes') quoteErrors++;
         var row = r.data;
         if (header === null) {
+          if (row.length > MAX_COLS) { tooWide = row.length; parser.abort(); return; } // não lê o resto do arquivo
           header = row; for (var c = 0; c < header.length; c++) masks.push(0);
           return;
         }
         rows++;
         if (row.length !== header.length) ragged++;
-        if (preview.length < keep) preview.push(row);
+        if (preview.length < keep) preview.push(row.length > PREVIEW_COLS ? row.slice(0, PREVIEW_COLS) : row);
         var n = Math.min(row.length, header.length);
         for (var k = 0; k < n; k++) {
           var v = row[k];
@@ -124,9 +128,10 @@ function run(msg) {
         }
       }
     });
+    if (tooWide) return fail('cols', String(tooWide));
     if (header === null) return fail('empty');
     self.postMessage({
-      type: 'result', header: header, rows: preview, rowCount: rows, colCount: header.length,
+      type: 'result', header: header, rows: preview, rowCount: rows, colCount: header.length, previewCols: Math.min(header.length, PREVIEW_COLS),
       delimiter: delim, encoding: dec.encoding, bom: dec.bom, fallback: dec.fallback,
       replacement: text.indexOf('�') !== -1, ragged: ragged, quoteErrors: quoteErrors,
       types: masks.map(typeOf), size: file.size

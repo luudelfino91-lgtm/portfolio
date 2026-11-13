@@ -5,8 +5,13 @@ const L = require('./lib'); const fs = require('fs'); const path = require('path
 const FX = path.join(L.REPO, 'docs/testing/fixtures'); const LARGE = process.env.FIXTURES_LARGE || '/tmp/csv-large';
 const EXP = JSON.parse(fs.readFileSync(FX + '/expected.json', 'utf8')).files.reduce((a, f) => (a[f.file] = f, a), {});
 const AXE = fs.existsSync(L.AXE_PATH) ? fs.readFileSync(L.AXE_PATH, 'utf8') : null;
+if (!AXE) L.rec('A11-02 (SQL) axe-core presente em ' + L.AXE_PATH + ' (sem ele a cobertura axe nao roda)', false, 'instale axe-core: cd /tmp/axe && npm pack axe-core && tar xzf axe-core-*.tgz');
 const PAGE = 'hub/ferramentas/sql/';
-const fpath = n => fs.existsSync(path.join(FX, n)) ? path.join(FX, n) : path.join(LARGE, n);
+const fpath = n => path.isAbsolute(n) ? n : fs.existsSync(path.join(FX, n)) ? path.join(FX, n) : path.join(LARGE, n);
+const os = require('os');
+// SEC-P3-01: fixtures de largura geradas em tempo de teste, fora do repo
+const WDIR = fs.mkdtempSync(path.join(os.tmpdir(), 'hub-wide-'));
+const wide = n => { const p = path.join(WDIR, 'wide-' + n + '.csv'); const h = Array.from({ length: n }, (_, i) => 'c' + (i + 1)); fs.writeFileSync(p, h.join(',') + '\n' + h.map((_, i) => i).join(',') + '\n' + h.map((_, i) => 'v' + i).join(',') + '\n'); return p; };
 const T0 = 60000;
 
 const state = pg => pg.evaluate(() => document.getElementById('sqlTool').dataset.state);
@@ -227,6 +232,22 @@ const SQL_TYPE = { integer: 'INTEGER', decimal: 'REAL', decimal_br: 'REAL' };
     }
     await c.close(); }
 
+  // ===== SEC-P3-01: limite de colunas no SQL =====
+  { const c = await L.ctx(br, { lang: 'pt' }); await c.addInitScript(() => { window.__lt = []; try { new PerformanceObserver(l => l.getEntries().forEach(e => window.__lt.push(e.duration))).observe({ entryTypes: ['longtask'] }); } catch (e) { window.__lt = null; } });
+    const pg = await c.newPage(); const log = L.newLog(); L.watch(pg, log); await pg.goto(`${L.BASE}/${PAGE}`); await ready(pg);
+    await loadCsv(pg, wide(2000)); let g = await grab(pg);
+    L.rec('SEC-P3-01 SQL: CSV com 2.000 colunas aceito como tabela', g.schema.length === 1 && /2\.000 colunas/.test(g.schema[0].cap) && !g.errVisible, `cap="${g.schema[0] && g.schema[0].cap}" erro=${g.errVisible}`);
+    await loadCsv(pg, 'basic.csv');
+    for (const n of [2001, 5000, 100000]) {
+      await pg.evaluate(() => { window.__lt = []; });
+      await loadCsv(pg, wide(n)); g = await grab(pg); const lt = await pg.evaluate(() => window.__lt); const mx = lt && lt.length ? Math.max(...lt) : 0;
+      const nn = await pg.evaluate(() => document.getElementsByTagName('*').length);
+      L.rec(`SEC-P3-01 SQL: CSV com ${n} colunas recusado com a mesma mensagem; tabelas anteriores intactas; motor pronto; long task < 1 s`, g.errVisible && g.errM.includes('2.000') && /Escolha/.test(g.errM) && g.schema.length === 2 && g.state === 'ready' && lt !== null && mx < 1000 && nn < 20000 && log.pageerrors.length === 0, `msg="${g.errM}" tabelas=${g.schema.length} maior long task=${Math.round(mx)} ms nos=${nn}`);
+    }
+    await run(pg, 'SELECT COUNT(*) FROM basic'); g = await grab(pg);
+    L.rec('SEC-P3-01 SQL: apos recusar, consulta segue funcionando', g.body[0][0] === '10000', JSON.stringify(g.body));
+    await c.close(); }
+
   // ===== Parar e tempo limite (SQL-32, SQL-33, T-306a) =====
   { const c = await L.ctx(br, { lang: 'en' }); await c.addInitScript(() => { window.__lt = []; try { new PerformanceObserver(l => l.getEntries().forEach(e => window.__lt.push(e.duration))).observe({ entryTypes: ['longtask'] }); } catch (e) { window.__lt = null; } });
     const pg = await c.newPage(); const log = L.newLog(); L.watch(pg, log); await pg.goto(`${L.BASE}/${PAGE}`); await ready(pg);
@@ -259,7 +280,7 @@ const SQL_TYPE = { integer: 'INTEGER', decimal: 'REAL', decimal_br: 'REAL' };
     await run(pg, 'SELECT length(zeroblob(2000000000))'); const z1 = await grab(pg);
     await run(pg, 'SELECT length(randomblob(900000000))', 'Control+Enter'); const z2 = await grab(pg);
     await run(pg, 'SELECT 9'); const z3 = await grab(pg);
-    L.rec('ST-05 zeroblob(2e9) e randomblob(9e8): erro recuperavel (ou resultado), aba responsiva, consulta seguinte executa', z3.body[0][0] === '9' && log.pageerrors.length === 0, `zeroblob: err=${z1.errVisible} "${z1.errM}" ${JSON.stringify(z1.body)}; randomblob: err=${z2.errVisible} "${z2.errM}" ${z2.errT} ${JSON.stringify(z2.body)}; estado final=${z3.state}`);
+    L.rec('ST-05 zeroblob(2e9) e randomblob(9e8): cada consulta termina com mensagem de erro nao vazia OU resultado (nunca tela em branco), aba responsiva, consulta seguinte executa', z3.body[0][0] === '9' && log.pageerrors.length === 0 && [z1, z2].every(z => (z.errVisible && String(z.errM || '').trim().length > 0) || (z.body && z.body.length > 0)), `zeroblob: err=${z1.errVisible} "${z1.errM}" ${JSON.stringify(z1.body)}; randomblob: err=${z2.errVisible} "${z2.errM}" ${z2.errT} ${JSON.stringify(z2.body)}; estado final=${z3.state}`);
     const lt = await pg.evaluate(() => window.__lt); const mx = lt && lt.length ? Math.max(...lt) : 0;
     L.rec('SQL-32/33 aba principal sem long task > 1 s durante consulta sem fim, Parar e tempo limite (a consulta roda no Worker)', lt !== null && mx < 1000, `long tasks=${JSON.stringify(lt)} maior=${Math.round(mx)} ms`);
     await c.close(); }
@@ -374,6 +395,7 @@ const SQL_TYPE = { integer: 'INTEGER', decimal: 'REAL', decimal_br: 'REAL' };
     const r = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => v.id + ' ' + v.impact));
     L.rec('A11-02 axe (en/dark/1280) tabela carregada com resultado: zero violacoes', r.length === 0, JSON.stringify(r)); await c.close(); }
 
+  fs.rmSync(WDIR, { recursive: true, force: true });
   await br.close(); srv.stop();
   process.exit(L.results.some(r => !r.ok) ? 1 : 0);
 })().catch(e => { console.log('FAIL erro do teste :: ' + (e && e.stack || e)); process.exit(1); });

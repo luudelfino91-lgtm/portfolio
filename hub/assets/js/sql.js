@@ -283,6 +283,7 @@
     }
     if (m.code === 'sql' || m.code === 'worker') { stale = !!res; err = { kind: 'sql', message: m.message, statement: m.statement || 1 }; }
     else if (m.code === 'load') err = { kind: 'load', code: 'parse', vars: { detail: m.message } };
+    else if (m.code === 'cols') err = { kind: 'load', code: 'cols', vars: { n: num(+m.detail), max: num(2000) } };
     else err = { kind: 'load', code: m.code, vars: {} };
     say(null);
     if (reload) { reload.failed.push(reload.current && reload.current.name); err = null; renderAll(); nextReload(); return; }
