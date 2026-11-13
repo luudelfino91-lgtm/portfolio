@@ -83,6 +83,7 @@
  "r.f3d": "26 desafios e 56 certificados na plataforma pelo caminho.",
  "f.1": "Projetos",
  "f.2": "Certificações",
+ "f.h": "Hub da comunidade",
  "f.3": "Voltar ao topo ↑"
 };
   if(window.PT_EXTRA) for(var k in window.PT_EXTRA) PT[k]=window.PT_EXTRA[k];

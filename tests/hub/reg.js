@@ -39,8 +39,11 @@ const { execSync } = require('child_process');
     L.rec('REG case 360px sem rolagem horizontal', h && log.pageerrors.length === 0, 'scrollWidth<=innerWidth=' + h); await c.close(); }
   // diff do portfolio (commitado + working tree + nao rastreados)
   const S = require('./scope'); const fs = require('fs'), os = require('os'), path = require('path');
-  const all = S.changed(L.REPO); const out = S.offending(L.REPO);
-  L.rec('REG-01/T-210 nenhum arquivo fora de docs/, hub/, tests/, .claude/ alterado (diff commitado + working tree + porcelain)', out.length === 0, 'arquivos fora do escopo: ' + JSON.stringify(out) + ' (total alterados: ' + all.length + ')');
+  const all = S.changed(L.REPO);
+  // Alteracao do portfolio APROVADA pelo Lucas (link Portfolio->Hub no rodape + contraste --ink-3): somente estes 3 arquivos.
+  const APPROVED = ['index.html', 'assets/css/styles.css', 'assets/js/i18n.js'];
+  const out = S.offending(L.REPO).filter(f => !APPROVED.includes(f));
+  L.rec('REG-01/T-210 nenhum arquivo fora de docs/, hub/, tests/, .claude/ alterado, exceto os 3 aprovados (diff commitado + working tree + porcelain)', out.length === 0, 'arquivos fora do escopo: ' + JSON.stringify(out) + ' (total alterados: ' + all.length + ')');
   { const sh = (c, d) => execSync(c, { cwd: d, stdio: 'pipe', encoding: 'utf8' });
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'hub-neg-')); const res = [];
     try {
@@ -62,7 +65,8 @@ const { execSync } = require('child_process');
     await pg.goto(`${L.BASE}/index.html`, { waitUntil: 'networkidle' });
     const hubReq = log.requests.filter(u => /\/hub\//.test(u));
     const hubLinks = await pg.evaluate(() => [...document.querySelectorAll('a[href^="hub/"],a[href^="./hub/"],a[href*="/hub/"]')].map(a => a.href));
-    L.rec('REG-70 portfolio sem requisicoes/links para /hub/', hubReq.length === 0 && hubLinks.length === 0, JSON.stringify({ hubReq, hubLinks })); await c.close(); }
+    const footerLinks = await pg.evaluate(() => [...document.querySelectorAll('footer a[href="hub/"]')].length);
+    L.rec('REG-70 portfolio sem requisicoes para /hub/; unico link para o Hub e o do rodape (aprovado)', hubReq.length === 0 && hubLinks.length === 1 && footerLinks === 1, JSON.stringify({ hubReq, hubLinks })); await c.close(); }
   await br.close(); srv.stop();
   process.exit(L.results.some(r => !r.ok) ? 1 : 0);
 })();
