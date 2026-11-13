@@ -115,6 +115,10 @@ function contrastProbe() {
   // estrutura: 2 cartoes, nav igual entre paginas (HUB-45), headings, landmarks
   { const c = await L.ctx(br, {}); const pg = await c.newPage(); await pg.goto(url('hub/'));
     const cards = await pg.evaluate(() => [...document.querySelectorAll('.hub-card a')].map(a => a.getAttribute('href'))); L.rec('HUB-02 exatamente 2 cartoes ativos (csv e sql)', cards.join() === 'ferramentas/csv/,ferramentas/sql/', JSON.stringify(cards));
+    for (const p of ['hub/', 'hub/ferramentas/']) { await pg.goto(url(p)); const cd = await pg.evaluate(() => [...document.querySelectorAll('.hub-card')].map(c => ({ href: c.querySelector('a').getAttribute('href'), chip: !!c.querySelector('.chip') })));
+      const csv = cd.find(x => /csv\/$/.test(x.href)), sql = cd.find(x => /sql\/$/.test(x.href));
+      await pg.click('.hub-card a[href$="csv/"]'); await pg.waitForLoadState('load'); const opens = await pg.evaluate(() => !!document.getElementById('csvFile'));
+      L.rec(`HUB-03 ${p}: cartao de CSV sem chip "Em construcao" e abre a ferramenta; cartao de SQL mantem o chip`, csv && !csv.chip && sql && sql.chip && opens, JSON.stringify(cd) + ' abre ferramenta=' + opens); }
     const navs = []; for (const p of L.PAGES) { await pg.goto(url(p)); navs.push(await pg.evaluate(() => [...document.querySelectorAll('header .nav-in a:not(.brand)')].map(a => a.textContent.trim().replace(/\s+/g, ' ') + '|' + new URL(a.href).pathname.replace(/.*\/hub\//, 'hub/')).join(';') + ' #' + document.querySelector('footer nav').children.length)); }
     const rel = await pg.evaluate(() => 0);
     L.rec('HUB-45 itens de navegacao iguais em todas as paginas (rotulos; hrefs sao relativos a profundidade)', new Set(navs.map(n => n.split('|').map(x => x.replace(/[^;]*$/, '')).join())).size >= 1 && new Set(navs.map(n => n.replace(/\|[^;#]*/g, ''))).size === 1, navs.join('\n'));
