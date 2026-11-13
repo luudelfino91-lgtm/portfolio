@@ -18,7 +18,6 @@
 :root[data-theme="dark"] .sql-tool .btn:focus-visible{outline-color:var(--focus-dark)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sql-tool .btn:focus-visible{outline-color:var(--focus-dark)}}
 .sql-tool .btn[disabled],.sql-tool .btn[aria-disabled="true"]{opacity:.6;cursor:not-allowed}
-.csv-pick.is-disabled{opacity:.6;cursor:not-allowed}
 
 /* Resultado: esmaecido (não apagado) durante execução e depois de erro */
 .sql-sec.csv-result[aria-busy="true"]{opacity:1}

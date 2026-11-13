@@ -1,0 +1,162 @@
+{
+ "slug": "loja-exemplo",
+ "tables": [
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nome",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "email",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "cidade",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "data_cadastro",
+     "pk": false,
+     "type": "TEXT"
+    }
+   ],
+   "name": "clientes"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nome",
+     "pk": false,
+     "type": "TEXT"
+    }
+   ],
+   "name": "categorias"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nome",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "categorias.id",
+     "name": "categoria_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "preco",
+     "pk": false,
+     "type": "REAL"
+    },
+    {
+     "fk": "",
+     "name": "estoque",
+     "pk": false,
+     "type": "INTEGER"
+    }
+   ],
+   "name": "produtos"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "clientes.id",
+     "name": "cliente_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "data_pedido",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "data_entrega",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "status",
+     "pk": false,
+     "type": "TEXT"
+    }
+   ],
+   "name": "pedidos"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "pedidos.id",
+     "name": "pedido_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "produtos.id",
+     "name": "produto_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "quantidade",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "preco_unitario",
+     "pk": false,
+     "type": "REAL"
+    }
+   ],
+   "name": "itens_pedido"
+  }
+ ]
+}

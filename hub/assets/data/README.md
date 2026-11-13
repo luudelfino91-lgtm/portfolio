@@ -40,7 +40,7 @@ itens_pedido(id PK, pedido_id FK -> pedidos.id, produto_id FK -> produtos.id, qu
 
 ## Cenários adicionais (T-307 ampliado)
 
-Além da loja (cenário **Vendas**, acima), há 4 bases sintéticas no mesmo padrão: gerador próprio determinístico (LCG, semente fixa), só biblioteca padrão, FKs declaradas, NULLs intencionais, datas ISO, e-mails em `example.com`, nomes por combinação genérica, zero dados reais. Cada `.sql` começa com comentários e `CREATE TABLE` (sem `PRAGMA`/`BEGIN`, como a loja) e passa em `PRAGMA integrity_check` (ok) e `PRAGMA foreign_key_check` (vazio). O teste `tests/hub/datasets.js` confere os 5 cenários. Não edite os .sql à mão: altere o gerador, regere e atualize bytes e SHA-256 (o teste confere).
+Além da loja (cenário **Vendas**, acima), há 4 bases sintéticas no mesmo padrão: gerador próprio determinístico (LCG, semente fixa), só biblioteca padrão, FKs declaradas, NULLs intencionais, datas ISO, e-mails em `example.com`, nomes por combinação genérica, zero dados reais. Cada `.sql` começa com comentários e `CREATE TABLE` (sem `PRAGMA`/`BEGIN`, como a loja) e passa em `PRAGMA integrity_check` (ok) e `PRAGMA foreign_key_check` (vazio). O teste `tests/hub/datasets.js` confere os 5 cenários e os CSV exportados (D11). Não edite os .sql à mão: altere o gerador, regere e atualize bytes e SHA-256 (o teste confere).
 
 Tabelas de domínio pequenas (canais, centros_distribuicao, transportadoras, departamentos, cargos) têm menos de 20 linhas, como `categorias` na loja.
 
@@ -193,7 +193,60 @@ Consultas-chave do oráculo: `tma_por_agente` (20 linhas), `backlog_por_priorida
 
 ### Teste dos 5 cenários
 
-`node tests/hub/datasets.js` (sem servidor e sem navegador; precisa de `python3` e `node`): regera cada .sql duas vezes e compara com o commitado e com o SHA-256/bytes deste README, confere tamanho (<= 120 KB), integridade, FKs, contagens, e cada consulta-chave contra o oráculo (`compute_*_expected.py`; para a loja, `compute_loja_expected.py` e `compute_loja_keyq_expected.py`). Usa o sqlite3 do Python, não o sql.js do Hub.
+`node tests/hub/datasets.js` (sem servidor e sem navegador; precisa de `python3` e `node`): regera cada .sql duas vezes e compara com o commitado e com o SHA-256/bytes deste README, confere tamanho (<= 120 KB), integridade, FKs, contagens, e cada consulta-chave contra o oráculo (`compute_*_expected.py`; para a loja, `compute_loja_expected.py` e `compute_loja_keyq_expected.py`). Usa o sqlite3 do Python, não o sql.js do Hub. Desde D11 confere também os CSV de `csv/`: gerador determinístico, bytes/SHA-256 de cada arquivo, ida e volta de todas as células contra o `sqlite3`, `schema.json` = `PRAGMA`, tabelas de `scenarios.js` = `CREATE TABLE` e o diagrama ER de `scenarios.js` = o deste README.
+
+## csv/ (D11): as tabelas de cada cenário em CSV e schema.json
+
+D11 (Lucas): **nenhum upload de arquivo do usuário em lugar nenhum**; as três ferramentas trabalham só com as 5 bases de cenário. O **explorador de dados** (`hub/ferramentas/csv/`) e o **Python playground** leem estes arquivos, que o site serve na mesma origem. O SQL playground continua carregando os `.sql` acima.
+
+| Item | Valor |
+|---|---|
+| Pasta | `hub/assets/data/csv/<slug>/<tabela>.csv` e `hub/assets/data/csv/<slug>/schema.json` (slug = `loja-exemplo`, `marketing-digital`, `logistica`, `rh`, `atendimento`) |
+| Gerador | `docs/testing/fixtures/export_scenarios_csv.py` (somente biblioteca padrão; lê os `.sql` e exporta com `sqlite3`/`csv`) |
+| Regerar | `python3 -I docs/testing/fixtures/export_scenarios_csv.py` (duas execuções geram arquivos idênticos); `--report` imprime a tabela abaixo |
+| Conferir | `cd hub/assets/data/csv && sha256sum -c SHA256SUMS`; `node tests/hub/datasets.js` confere bytes e SHA-256 desta seção |
+| Formato do CSV | UTF-8 sem BOM, fim de linha LF, 1ª linha = cabeçalho, aspas só quando necessário, linhas na ordem de `rowid`. **NULL = célula vazia**; por isso o gerador **recusa** texto vazio ou com espaços nas pontas (seria ambíguo). REAL sai com `repr()` do Python (ex.: `89.9`, `100.0`). |
+| `schema.json` | tabelas na ordem do `CREATE TABLE`; por coluna: `name`, `type` (declarado), `pk`, `fk` (`tabela.coluna`), extraídos de `PRAGMA table_info`/`foreign_key_list` do próprio SQLite |
+| Peso | 32 arquivos, **251.244 bytes** (245,4 KiB) no total, 61.434 B com gzip -9 arquivo a arquivo; maior arquivo: `atendimento/interacoes.csv` (46.294 B); maior cenário: atendimento (91.993 B em 6 arquivos). O Python busca só as tabelas do cenário escolhido, e só quando o usuário aperta Executar; o explorador busca o `schema.json` e uma tabela por vez. |
+
+Bytes e SHA-256 de cada arquivo (o teste confere um a um):
+
+| Arquivo | Bytes | SHA-256 |
+|---|---|---|
+| `atendimento/agentes.csv` | 674 | `3ed4f5c35fc3a9f5425159f8330ceccff6e823c49c82777305ca58cf203fa7df` |
+| `atendimento/clientes.csv` | 6596 | `e61554a463e4cd9fa0b652cb371ebc7a518bd6123a45394446440d498d5d2ec4` |
+| `atendimento/interacoes.csv` | 46294 | `e1000c3cf8bb37b628df62cbe35c242438f44e7a72bba9c472e924302d96ff81` |
+| `atendimento/pesquisas_satisfacao.csv` | 5113 | `9fcd655d84cf30f25ecd2203969505bb0825c8a5b788a17471318ed675d02bcf` |
+| `atendimento/schema.json` | 3007 | `fc1ef400c6b0009deceedb461ff6625d81e800dbe50ce1faa9cb9c4128ffc801` |
+| `atendimento/tickets.csv` | 30309 | `776401f3dabadb60d8ce49be9016e9ee30e0402bc9b17bfc6c0e2ac91a75a2e4` |
+| `logistica/centros_distribuicao.csv` | 198 | `2eabdd6d1d8a1b53dd6a19684cf4154685a0aedc61a3773334c8391370b25eef` |
+| `logistica/entregas.csv` | 26903 | `fc5497cda230c03bd766aa111b87c81267e2f61cba8d5c9e0943b65bfa277cff` |
+| `logistica/ocorrencias.csv` | 10456 | `228e8879526201ac3290e63874d9fb83dcd7d664367078400b8d795b58f9b2a8` |
+| `logistica/rotas.csv` | 697 | `d0c85e5f092aa912d25c383a2c3e81263142003afde73d619961d7eb4bde4d88` |
+| `logistica/schema.json` | 3295 | `a0a0dea1cff9157880784f1d26deda2f49fa736749b9e247b7799e839cb298d8` |
+| `logistica/transportadoras.csv` | 336 | `675f2b8e41f7560b482b1b69a4887dbfc5babc192ac4062a2284bcf01eb84591` |
+| `logistica/veiculos.csv` | 1044 | `6c1747809959029bf2732f43f4000c8b90ed71f15a2dd2f8c44071b87590247c` |
+| `loja-exemplo/categorias.csv` | 83 | `ec8702ae8d426796f3b8948f49361517c16b50bcd9f56ca39291eac361d4777b` |
+| `loja-exemplo/clientes.csv` | 2335 | `023e60481bc0f7de0a5d6a36bf72dcdcbafa5dbc4c920a4d7dfbea7bf65788a6` |
+| `loja-exemplo/itens_pedido.csv` | 8832 | `f642b34f410a023539ffa578f94e7337acca7ae91c808486ad769ab5a1842b24` |
+| `loja-exemplo/pedidos.csv` | 7066 | `12a1237ad002bb9e272bcc8d6e5d80b92aa41adb8cf6a69ddcac2bedcb028a05` |
+| `loja-exemplo/produtos.csv` | 981 | `bdfe7594ea735a9a42e1f59335d42e44448e9f709e2f9619a4ec3d5aa68abc6d` |
+| `loja-exemplo/schema.json` | 2360 | `7e5f356bfd51b238d77dae3ce6a23ba32880e6f2aba882067ec3888ce21da16a` |
+| `marketing-digital/anuncios.csv` | 2918 | `836c8a1adc0e211812e660ad158aa4d1678f0b78726bd264726e54f58ee346c5` |
+| `marketing-digital/campanhas.csv` | 1414 | `aab1a2fb173e16d58c6bc7b85b697006181c5c81d8d7a935c24c46b37cb03bd1` |
+| `marketing-digital/canais.csv` | 117 | `0eb820a5918c12da60d32ccd506049a9368e495701e7aa47efd890309eab456e` |
+| `marketing-digital/leads.csv` | 17481 | `4e08fb5eb50f37143444b38c9aef8eed98f467868a78b917c036771a1aa420dc` |
+| `marketing-digital/metricas_diarias.csv` | 20952 | `27fb1dc94b29fd78d576e24e6d6fab2c179dd73d41aa2bee1508fa1ad75f118f` |
+| `marketing-digital/schema.json` | 3184 | `e911d9c5311f070f9473d8b40a81f74330c5da3a2ad9b982b553f870e456ffd2` |
+| `rh/ausencias.csv` | 8706 | `2540fa18b9a251b388083832d9f344f227244aa5936f838a3287790be47d5e21` |
+| `rh/avaliacoes.csv` | 9957 | `f0b7a707fa62fc52b8146f75c7de289b12109121dcde7a2d503ed62305043822` |
+| `rh/cargos.csv` | 680 | `181ae81798a7742e1582cebce9b591db2c25f8b9f89bbaa22866058ccec0299d` |
+| `rh/departamentos.csv` | 163 | `c5acad89b45a051a429d6e0833367df7e67be96cbdebae234d1e007b28dad9b2` |
+| `rh/funcionarios.csv` | 11650 | `28ea390bc3842777d684fc650d3a1eccd0669e7d4d552de471570561e3d85fb8` |
+| `rh/salarios_historico.csv` | 14011 | `d4949030dd5b71b4381911a546effa60a3ce7c84f747e2ae9d4006605bea06df` |
+| `rh/schema.json` | 3432 | `68751a6340a51269f02f1e8a697de2da009d18b09bb5212e0d10925813521e34` |
+
+Total: 32 arquivos, 251244 bytes
 
 ## exercicios.md
 

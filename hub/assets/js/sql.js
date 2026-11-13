@@ -1,34 +1,34 @@
 /* =====================================================================
-   SQL playground do Hub (T-304, T-305, T-306 SQL, T-309).
-   - Tudo local: o SQL e o CSV são processados por um Web Worker
-     (sql-worker.js) com sql.js vendorizado. Único fetch deste arquivo: o
-     banco de exemplo (../data/loja-exemplo.sql, mesma origem, caminho relativo).
-   - Conteúdo do usuário (SQL, nomes, células, mensagens do motor) entra
-     SEMPRE por textContent.
-   - Parar / Cancelar / tempo limite = worker.terminate(). O banco em memória
-     é recriado; as tabelas de CSV são recarregadas dos objetos File que a
-     página guarda (referência, nada é copiado nem persistido). Tabelas criadas
-     por SQL são perdidas e a mensagem avisa.
-   - Banco de exemplo (T-307): carregado no Worker (mensagem 'sample'); também é
-     recarregado depois de Parar/tempo limite, antes dos CSV. As consultas de
-     exemplo só colocam o SQL no editor (o texto SQL é igual em PT e EN).
-   - Exercícios guiados (T-307): 5 exercícios com verificação automática no MESMO Worker (mensagem 'verify'), com o mesmo
-     limite de tempo e o mesmo Parar. A regra de comparação está em hub/assets/data/exercicios.md e em sql-worker.js (sqVerify).
-     A verificação roda num banco novo e descartável (o banco do playground nunca é tocado). O progresso (quais foram
-     resolvidos) fica só em memória desta página: nada vai para localStorage/cookies.
-   - Textos: chaves hub.sql.* (e hub.csv.* reaproveitadas) em i18n.js (PT/EN).
+   SQL playground do Hub (T-304, T-305, T-307, T-309; D11: sem upload de arquivo).
+   - Tudo local: o SQL e processado por um Web Worker (sql-worker.js) com sql.js vendorizado. Os UNICOS dados
+     sao os 5 cenarios embutidos (scenarios.js). Unico fetch deste arquivo: o .sql do cenario escolhido
+     (../data/<cenario>.sql, mesma origem, caminho relativo). Nao existe leitura de arquivo do usuario.
+   - Conteudo do usuario (SQL, mensagens do motor) e dados entram SEMPRE por textContent.
+   - Parar / tempo limite = worker.terminate(). O banco em memoria e recriado e o cenario carregado e recarregado
+     (texto em cache, sem novo fetch). Tabelas criadas por SQL sao perdidas e a mensagem avisa.
+   - Cenarios (D11): seletor comum (HubScenarios.mount). Carregar um cenario substitui as tabelas de todos os cenarios
+     que estiverem no banco (varios usam o nome "clientes"). As consultas de exemplo so colocam o SQL no editor
+     (o texto SQL e igual em PT e EN): 12 para Vendas (loja-exemplo) e 3 para cada um dos outros 4 cenarios (as
+     consultas-chave dos oraculos docs/testing/fixtures/compute_<slug>_expected.py, com o mesmo SQL).
+   - Exercicios guiados (T-307): 5 exercicios com verificacao automatica no MESMO Worker (mensagem 'verify'), com o mesmo
+     limite de tempo e o mesmo Parar. SO para o cenario Vendas (exercicios dos outros cenarios = trabalho futuro T-404-b).
+     A regra de comparacao esta em hub/assets/data/exercicios.md e em sql-worker.js (sqVerify).
+     A verificacao roda num banco novo e descartavel (o banco do playground nunca e tocado). O progresso (quais foram
+     resolvidos) fica so em memoria desta pagina: nada vai para localStorage/cookies.
+   - Textos: chaves hub.sql.* e hub.sc.* em i18n.js (PT/EN).
    ===================================================================== */
 (function () {
   'use strict';
-  var LIMIT = 10485760;        // 10 MiB por CSV (mesmo limite do leitor)
+  var SC = window.HubScenarios;
   var ROW_LIMIT = 1000;        // linhas exibidas no máximo
   var CELL_BUDGET = 20000;     // células exibidas no máximo (linhas x colunas)
   var STOP_AFTER_MS = 3000;    // "Parar" aparece depois de 3 s
   var WORKER_URL = new URL('sql-worker.js', document.currentScript.src).href;
-  var SAMPLE_URL = new URL('../data/loja-exemplo.sql', document.currentScript.src).href;
+  var DATA_URL = new URL('../data/', document.currentScript.src).href;
+  var VENDAS = 'loja-exemplo';  // unico cenario com exercicios guiados
   // Consultas de exemplo (T-307). SQL igual nos dois idiomas; título/descrição em hub.sql.sample.q.<id>.t/.d
   var Q_ITEMS = 'SUM(ip.quantidade * ip.preco_unitario)';
-  var SAMPLE_QUERIES = [
+  var VENDAS_QUERIES = [
     { id: 'filtro', sql: 'SELECT nome, preco\nFROM produtos\nWHERE preco > 100\nORDER BY preco DESC;' },
     { id: 'nulos', sql: 'SELECT id, nome, email\nFROM clientes\nWHERE cidade IS NULL\nORDER BY nome;' },
     { id: 'join', sql: 'SELECT p.nome AS produto, c.nome AS categoria, p.preco\nFROM produtos p\nINNER JOIN categorias c ON c.id = p.categoria_id\nORDER BY c.nome, p.nome;' },
@@ -42,6 +42,32 @@
     { id: 'semana', sql: "SELECT strftime('%w', data_pedido) AS dia_semana, COUNT(*) AS pedidos\nFROM pedidos\nGROUP BY dia_semana\nORDER BY dia_semana;" },
     { id: 'mes', sql: "SELECT strftime('%Y-%m', pe.data_pedido) AS mes,\n       COUNT(DISTINCT pe.id) AS pedidos,\n       ROUND(" + Q_ITEMS + ", 2) AS receita\nFROM pedidos pe\nJOIN itens_pedido ip ON ip.pedido_id = pe.id\nWHERE pe.status <> 'cancelado'\nGROUP BY mes\nORDER BY mes;" }
   ];
+
+  // Consultas dos outros 4 cenarios: o SQL e EXATAMENTE o das consultas-chave dos oraculos (key = nome da consulta no oraculo).
+  var OTHER_QUERIES = {
+    "marketing-digital": [
+      { id: "mkt_ctr", key: "ctr_por_canal", sql: "SELECT c.nome, SUM(m.impressoes) AS impressoes, SUM(m.cliques) AS cliques,\n  ROUND(100.0 * SUM(m.cliques) / SUM(m.impressoes), 4) AS ctr_pct\nFROM metricas_diarias m JOIN anuncios a ON a.id = m.anuncio_id JOIN canais c ON c.id = a.canal_id\nGROUP BY c.id ORDER BY c.id" },
+      { id: "mkt_roas", key: "roas_por_canal_mes", sql: "SELECT c.nome, substr(m.data, 1, 7) AS mes, ROUND(SUM(m.custo), 2) AS custo,\n  ROUND(SUM(m.receita), 2) AS receita, ROUND(SUM(m.receita) / SUM(m.custo), 4) AS roas\nFROM metricas_diarias m JOIN anuncios a ON a.id = m.anuncio_id JOIN canais c ON c.id = a.canal_id\nGROUP BY c.id, mes ORDER BY c.id, mes" },
+      { id: "mkt_leads", key: "leads_sem_conversao", sql: "SELECT p.id, p.nome, COUNT(l.id) AS leads, SUM(l.convertido_em IS NULL) AS sem_conversao\nFROM campanhas p JOIN leads l ON l.campanha_id = p.id\nGROUP BY p.id ORDER BY sem_conversao DESC, p.id LIMIT 10" }
+    ],
+    "logistica": [
+      { id: "log_sla", key: "sla_por_transportadora", sql: "SELECT t.nome, COUNT(*) AS entregues, SUM(e.atraso_dias = 0) AS no_prazo,\n  ROUND(100.0 * SUM(e.atraso_dias = 0) / COUNT(*), 2) AS sla_pct, ROUND(AVG(e.atraso_dias), 2) AS atraso_medio_dias\nFROM entregas e JOIN veiculos v ON v.id = e.veiculo_id JOIN transportadoras t ON t.id = v.transportadora_id\nWHERE e.status = 'entregue' GROUP BY t.id ORDER BY t.id" },
+      { id: "log_custo", key: "custo_por_km_transportadora", sql: "SELECT t.nome, COUNT(*) AS entregas, ROUND(SUM(e.custo), 2) AS custo_total,\n  ROUND(SUM(r.distancia_km), 1) AS km_total, ROUND(SUM(e.custo) / SUM(r.distancia_km), 4) AS custo_por_km\nFROM entregas e JOIN veiculos v ON v.id = e.veiculo_id JOIN transportadoras t ON t.id = v.transportadora_id\nJOIN rotas r ON r.id = e.rota_id WHERE e.status <> 'cancelada' GROUP BY t.id ORDER BY t.id" },
+      { id: "log_atraso", key: "atraso_por_centro", sql: "SELECT c.nome, COUNT(*) AS entregues, SUM(e.atraso_dias > 0) AS atrasadas,\n  ROUND(100.0 * SUM(e.atraso_dias > 0) / COUNT(*), 2) AS atrasadas_pct\nFROM entregas e JOIN rotas r ON r.id = e.rota_id JOIN centros_distribuicao c ON c.id = r.centro_id\nWHERE e.status = 'entregue' GROUP BY c.id ORDER BY c.id" }
+    ],
+    "rh": [
+      { id: "rh_headcount", key: "headcount_turnover_por_departamento", sql: "SELECT d.nome, SUM(f.data_desligamento IS NULL) AS ativos,\n  SUM(f.data_desligamento IS NOT NULL) AS desligados,\n  ROUND(100.0 * SUM(f.data_desligamento IS NOT NULL) / COUNT(*), 2) AS turnover_pct\nFROM funcionarios f JOIN departamentos d ON d.id = f.departamento_id GROUP BY d.id ORDER BY d.id" },
+      { id: "rh_salario", key: "media_salarial_atual_por_cargo", sql: "SELECT c.nome, COUNT(*) AS ativos, ROUND(AVG(s.salario), 2) AS media_salario\nFROM funcionarios f JOIN cargos c ON c.id = f.cargo_id\nJOIN salarios_historico s ON s.funcionario_id = f.id\n AND s.data_inicio = (SELECT MAX(data_inicio) FROM salarios_historico WHERE funcionario_id = f.id)\nWHERE f.data_desligamento IS NULL GROUP BY c.id ORDER BY c.id" },
+      { id: "rh_subordinados", key: "subordinados_diretos_por_gestor", sql: "SELECT g.id, g.nome, COUNT(*) AS subordinados_ativos\nFROM funcionarios f JOIN funcionarios g ON g.id = f.gestor_id\nWHERE f.data_desligamento IS NULL GROUP BY g.id ORDER BY subordinados_ativos DESC, g.id LIMIT 10" }
+    ],
+    "atendimento": [
+      { id: "at_tma", key: "tma_por_agente", sql: "SELECT a.id, a.nome, COUNT(*) AS tickets_fechados,\n  ROUND(AVG(strftime('%s', t.fechado_em) - strftime('%s', t.aberto_em)) / 60.0, 1) AS tma_minutos\nFROM tickets t JOIN agentes a ON a.id = t.agente_id WHERE t.fechado_em IS NOT NULL\nGROUP BY a.id ORDER BY a.id" },
+      { id: "at_backlog", key: "backlog_por_prioridade", sql: "SELECT prioridade, COUNT(*) AS em_aberto, SUM(agente_id IS NULL) AS sem_agente,\n  MIN(aberto_em) AS mais_antigo\nFROM tickets WHERE fechado_em IS NULL GROUP BY prioridade\nORDER BY CASE prioridade WHEN 'urgente' THEN 1 WHEN 'alta' THEN 2 WHEN 'media' THEN 3 ELSE 4 END" },
+      { id: "at_csat", key: "csat_por_agente", sql: "SELECT a.id, a.nome, COUNT(s.nota) AS respostas, ROUND(AVG(s.nota), 2) AS nota_media,\n  ROUND(100.0 * SUM(s.nota >= 4) / COUNT(s.nota), 1) AS csat_pct\nFROM pesquisas_satisfacao s JOIN tickets t ON t.id = s.ticket_id JOIN agentes a ON a.id = t.agente_id\nWHERE s.nota IS NOT NULL GROUP BY a.id ORDER BY a.id" }
+    ]
+  };
+  var QUERIES = { 'loja-exemplo': VENDAS_QUERIES };
+  Object.keys(OTHER_QUERIES).forEach(function (k) { QUERIES[k] = OTHER_QUERIES[k]; });
 
   // Exercícios guiados (T-307). A consulta de referência é a DEFINIÇÃO do resultado esperado: executada no Worker, num banco novo,
   // a cada verificação; só é mostrada depois do acerto ou de "Ver solução". Textos em hub.sql.ex.<id>.t/.q/.hint (PT/EN).
@@ -57,27 +83,26 @@
   var t = function (k, v) { return Hub.t(k, v); };
 
   var tool = $('sqlTool'), editor = $('sqlEditor'), runBtn = $('sqlRun'), runT = $('sqlRunT'), stopBtn = $('sqlStop'), resetBtn = $('sqlReset');
-  var timeoutSel = $('sqlTimeout'), fileIn = $('sqlFile'), selDelim = $('sqlDelim'), selEnc = $('sqlEnc');
-  var loadRun = $('sqlLoadRun'), prog = $('sqlProg'), pct = $('sqlPct'), loadCancel = $('sqlLoadCancel');
+  var timeoutSel = $('sqlTimeout');
   var statusEl = $('sqlStatus'), errBox = $('sqlErr'), errT = $('sqlErrT'), errM = $('sqlErrM'), errH = $('sqlErrH'), retryBtn = $('sqlRetry'), warnBox = $('sqlWarn');
   var resBox = $('sqlResBox'), resMsg = $('sqlResMsg'), resNote = $('sqlResNote'), resTable = $('sqlResTable'), resCap = $('sqlResCap'), resSec = $('sqlResult');
   var sampleBtn = $('sqlSampleBtn'), sampleQ = $('sqlSampleQ');
   var exList = $('sqlExList'), exProg = $('sqlExProg'), exStop = $('sqlExStop');
-  var schemaBox = $('sqlSchemaBox'), schemaEl = $('sqlSchema'), schemaEmpty = $('sqlSchemaEmpty'), typeNote = $('sqlTypeNote');
+  var schemaBox = $('sqlSchemaBox'), schemaEl = $('sqlSchema'), schemaEmpty = $('sqlSchemaEmpty');
+  var picker = null;
 
   var worker = null, gen = 0, jobSeq = 0, curId = 0;
   var engine = 'preparing';     // preparing | ready | failed
   var busy = null;              // null | 'run' | 'load' | 'verify'
   var stopShown = false, stopTimer = 0, limitTimer = 0;
   var version = '';
-  var loaded = [];              // [{file, name, opts, meta}] tabelas de CSV (para recarregar após reinício)
   var reload = null;            // {queue, total, done, failed:[nomes]} durante a recarga
-  var sample = { on: false, text: null, tables: [] };   // banco de exemplo carregado (texto em cache para recarregar sem novo fetch)
+  var texts = {};               // slug -> texto do .sql (cache: recarregar e verificar sem novo fetch)
+  var sample = { on: false, slug: null, tables: [] };   // cenario carregado agora no banco
   var schema = [];              // do worker
   var res = null, stale = false;
   var err = null, statusKey = null, warns = [];
   var edited = false;
-  var pending = null;           // CSV em leitura {file,name,opts}
   var readyMsg = 'hub.sql.status.ready';
   var ex = {};                  // por exercício: {li, ta, fb, ..., solved, fb:{code,vars,seq}, sol:'hidden'|'confirm'|'shown'}; só em memória
   var exSeq = 0, curEx = null, pendingEx = null, refocusEx = null, exBuilt = false;
@@ -85,12 +110,7 @@
 
   function locale() { return Hub.lang === 'pt' ? 'pt-BR' : 'en-US'; }
   function num(n) { return new Intl.NumberFormat(locale()).format(n); }
-  function size(b) {
-    var nf = new Intl.NumberFormat(locale(), { maximumFractionDigits: 1 });
-    if (b < 1024) return num(b) + ' bytes';
-    if (b < 1048576) return nf.format(b / 1024) + ' KB';
-    return nf.format(b / 1048576) + ' MB';
-  }
+  function scName(slug) { return t('hub.sc.' + slug + '.name'); }
   function plural(k, n) { return t(k + (n === 1 ? '.one' : '.other'), { n: num(n) }); }
   function timeoutSecs() { return parseInt(timeoutSel.value, 10) || 10; }
 
@@ -106,11 +126,8 @@
     runT.textContent = engine === 'preparing' ? t('hub.sql.run.wait') : busy === 'run' || busy === 'verify' ? t('hub.sql.run.running') : t('hub.sql.run.label');
     stopBtn.hidden = !(busy === 'run' && stopShown);
     exStop.hidden = !(busy === 'verify' && stopShown);
-    loadRun.hidden = busy !== 'load';
-    fileIn.disabled = engine !== 'ready' || !!busy;
     sampleBtn.disabled = engine !== 'ready';
     if (busy) sampleBtn.setAttribute('aria-disabled', 'true'); else sampleBtn.removeAttribute('aria-disabled');
-    document.querySelector('label[for="sqlFile"]').classList.toggle('is-disabled', fileIn.disabled);
     resSec.setAttribute('aria-busy', busy === 'run' ? 'true' : 'false');
     resSec.classList.toggle('is-stale', stale || busy === 'run');
   }
@@ -139,10 +156,6 @@
       case 'sample': T = t('hub.sql.sample.err.t'); M = t('hub.sql.sample.err.m', { detail: err.detail || '' }); break;
       case 'init': T = t('hub.sql.err.init.t'); M = t('hub.sql.err.init.m', { detail: err.detail || '' }); retry = true; break;
       case 'noworker': T = t('hub.sql.err.noworker.t'); M = t('hub.sql.err.noworker.m'); break;
-      case 'load':
-        T = t('hub.csv.err.' + err.code + '.t'); M = t('hub.csv.err.' + err.code + '.m', err.vars);
-        H = t('hub.sql.err.load.keep');
-        break;
     }
     errT.textContent = T; errM.textContent = M; errH.textContent = H;
     errM.hidden = M === ''; errH.hidden = H === '';
@@ -214,31 +227,20 @@
     schemaEl.textContent = '';
     var has = schema.length > 0;
     schemaBox.hidden = !has; schemaEmpty.hidden = has;
-    typeNote.hidden = !loaded.length;
     schema.forEach(function (tb) {
-      var item = null;
-      for (var i = 0; i < loaded.length; i++) if (loaded[i].meta && loaded[i].meta.table === tb.name) item = loaded[i];
-      var meta = item && item.meta;
-      var isSample = !meta && sample.on && sample.tables.indexOf(tb.name) !== -1;
+      var isSample = sample.on && sample.tables.indexOf(tb.name) !== -1;
       var tbl = document.createElement('table'); tbl.className = 'csv-table sql-schema-table';
       var cap = document.createElement('caption');
-      cap.textContent = meta
-        ? t('hub.sql.schema.cap.csv', { name: tb.name, rows: plural('hub.csv.rows', meta.rowCount), cols: plural('hub.csv.cols', tb.columns.length) })
-        : isSample ? t('hub.sql.schema.cap.sample', { name: tb.name, cols: plural('hub.csv.cols', tb.columns.length) })
+      cap.textContent = isSample ? t('hub.sql.schema.cap.sample', { name: tb.name, cols: plural('hub.csv.cols', tb.columns.length) })
         : t('hub.sql.schema.cap', { name: tb.name, cols: plural('hub.csv.cols', tb.columns.length) });
       tbl.appendChild(cap);
       var thead = tbl.createTHead(), htr = thead.insertRow();
       th(htr, t('hub.csv.cols.th.n'), 'col'); th(htr, t('hub.sql.schema.th.name'), 'col'); th(htr, t('hub.sql.schema.th.type'), 'col');
-      if (meta) th(htr, t('hub.sql.schema.th.orig'), 'col');
       if (isSample) th(htr, t('hub.sql.schema.th.key'), 'col');
       var body = tbl.createTBody();
       tb.columns.forEach(function (c, i) {
         var tr = body.insertRow();
         th(tr, String(i + 1), 'row'); td(tr, c.name, 'sql-id'); td(tr, c.type || '');
-        if (meta) {
-          var o = meta.columns[i] ? meta.columns[i].original : '';
-          var e = td(tr, o === '' ? t('hub.csv.noname') : o); if (o === '') e.className = 'csv-noname';
-        }
         if (isSample) {
           var keys = [];
           if (c.pk) keys.push(t('hub.sql.schema.key.pk'));
@@ -250,10 +252,13 @@
     });
   }
 
-  // lista de consultas de exemplo: construída uma vez; textos refeitos a cada troca de idioma (tudo por textContent)
+  // lista de consultas de exemplo do cenario SELECIONADO: refeita quando o cenario muda; textos refeitos a cada troca de idioma (tudo por textContent)
+  var builtFor = null;
   function renderSamples() {
-    if (!sampleQ.children.length) {
-      SAMPLE_QUERIES.forEach(function (q) {
+    var slug = picker.get(), list = QUERIES[slug];
+    if (builtFor !== slug) {
+      builtFor = slug; sampleQ.textContent = '';
+      list.forEach(function (q) {
         var li = document.createElement('li');
         var b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-ghost'; b.setAttribute('data-q', q.id);
         var d = document.createElement('span'); d.className = 'sql-qd'; d.id = 'sqlQD-' + q.id;
@@ -262,7 +267,7 @@
         li.appendChild(b); li.appendChild(d); sampleQ.appendChild(li);
       });
     }
-    SAMPLE_QUERIES.forEach(function (q, i) {
+    list.forEach(function (q, i) {
       var li = sampleQ.children[i];
       li.firstChild.textContent = t('hub.sql.sample.q.' + q.id + '.t');
       li.lastChild.textContent = t('hub.sql.sample.q.' + q.id + '.d');
@@ -381,7 +386,7 @@
     if (engine !== 'ready' || busy) return;
     var s = ex[id], d = s.def;
     if (s.ta.value.trim() === '') { setFb(id, 'empty'); renderEx(); return; }
-    if (!sample.on || sample.text === null) { setFb(id, 'needsample'); renderEx(); return; }
+    if (!sample.on || sample.slug !== VENDAS || texts[VENDAS] === undefined) { setFb(id, 'needsample'); renderEx(); return; }
     err = null; warns = [];
     busy = 'verify'; stopShown = false; curEx = id;
     curId = ++jobSeq;
@@ -391,11 +396,11 @@
     limitTimer = setTimeout(function () { restart({ kind: 'timeout', s: secs }); }, secs * 1000);
     say('hub.sql.ex.status.verifying');
     renderAll();
-    worker.postMessage({ type: 'verify', id: curId, sample: sample.text, ref: d.ref, user: s.ta.value, ordered: d.ordered });
+    worker.postMessage({ type: 'verify', id: curId, sample: texts[VENDAS], ref: d.ref, user: s.ta.value, ordered: d.ordered });
   }
   function loadSampleThenVerify(id) {
     if (engine !== 'ready' || busy) return;
-    pendingEx = id; loadSample();
+    pendingEx = id; picker.set(VENDAS); renderSamples(); loadSample(VENDAS);
   }
   function onVerified(m) {
     clearTimers(); busy = null;
@@ -452,9 +457,7 @@
       say(readyMsg, { v: version }); readyMsg = 'hub.sql.status.ready'; renderAll();
     } else if (m.type === 'initerror') engineFail('init', m.detail);
     else if (m.id !== curId) return;
-    else if (m.type === 'progress') { if (busy === 'load') { prog.value = m.pct; pct.textContent = m.pct + '%'; } }
     else if (m.type === 'result') onResult(m);
-    else if (m.type === 'loaded') onLoaded(m);
     else if (m.type === 'sample') onSample(m);
     else if (m.type === 'verified') onVerified(m);
     else if (m.type === 'error') onError(m);
@@ -493,15 +496,12 @@
     if (wasVerify && m.code !== 'crash') { setFb(vid, 'internal', { message: m.message }); say(null); renderAll(); return; }
     if (wasVerify) setFb(vid, 'crash');
     if (m.code === 'crash') {
-      // arquivo que derruba o motor na recarga sai da lista (evita laço de reinícios)
-      if (reload && reload.current) { if (reload.current.sample) sample.on = false; else loaded = loaded.filter(function (x) { return x !== reload.current; }); }
-      pending = null; restart({ kind: 'crash' }); return;
+      // cenario que derruba o motor na recarga sai da recarga (evita laco de reinicios)
+      if (reload && reload.current && reload.current.sample) sample.on = false;
+      restart({ kind: 'crash' }); return;
     }
-    if (m.code === 'sql' || m.code === 'worker') { stale = !!res; err = { kind: 'sql', message: m.message, statement: m.statement || 1 }; }
-    else if (m.code === 'sample') { pendingEx = null; err = { kind: 'sample', detail: m.message }; if (reload && reload.current && reload.current.sample) sample.on = false; }
-    else if (m.code === 'load') err = { kind: 'load', code: 'parse', vars: { detail: m.message } };
-    else if (m.code === 'cols') err = { kind: 'load', code: 'cols', vars: { n: num(+m.detail), max: num(2000) } };
-    else err = { kind: 'load', code: m.code, vars: {} };
+    if (m.code === 'sample') { pendingEx = null; err = { kind: 'sample', detail: m.message }; if (reload && reload.current && reload.current.sample) sample.on = false; }
+    else { stale = !!res; err = { kind: 'sql', message: m.message, statement: m.statement || 1 }; }
     say(null);
     if (reload) { reload.failed.push(reload.current && reload.current.name); err = null; renderAll(); nextReload(); return; }
     renderAll();
@@ -511,7 +511,7 @@
   function restart(why) {
     if (busy === 'verify' && curEx) { setFb(curEx, why.kind, { s: why.s }); if (document.activeElement === exStop) refocusEx = curEx; curEx = null; }
     clearTimers();
-    var hadFocus = document.activeElement === stopBtn || document.activeElement === loadCancel;
+    var hadFocus = document.activeElement === stopBtn;
     stale = !!res; schema = []; warns = [];
     err = why;
     reload = newReload();
@@ -520,10 +520,10 @@
     refocus = hadFocus;
   }
 
-  // fila de recarga: banco de exemplo primeiro (como na ordem original de carga), depois os CSV
+  // fila de recarga: o cenario que estava carregado (texto em cache, sem novo fetch)
   function newReload() {
-    var queue = (sample.on ? [{ sample: true, name: t('hub.sql.sample.name') }] : []).concat(loaded);
-    return queue.length ? { queue: queue.slice(), total: queue.length, done: 0, failed: [], current: null } : null;
+    if (!sample.on) return null;
+    return { queue: [{ sample: true, slug: sample.slug, name: scName(sample.slug) }], total: 1, done: 0, failed: [], current: null };
   }
 
   function nextReload() {
@@ -531,87 +531,41 @@
     if (!item) { finishReload(); return; }
     reload.current = item;
     busy = 'load'; curId = ++jobSeq;
-    prog.value = 0; pct.textContent = '0%';
-    say('hub.sql.status.reloading', { k: reload.total - reload.queue.length, n: reload.total, name: item.name });
+    say('hub.sql.status.reloading', { name: item.name });
     applyState();
-    if (item.sample) { worker.postMessage({ type: 'sample', id: curId, sql: sample.text }); return; }
-    worker.postMessage({ type: 'load', id: curId, file: item.file, fileName: item.name, delimiter: item.opts.delim, encoding: item.opts.enc });
+    worker.postMessage({ type: 'sample', id: curId, slug: item.slug, sql: texts[item.slug] });
   }
 
   function finishReload() {
     var r = reload; reload = null; busy = null;
     var failed = r.failed.filter(Boolean);
-    if (failed.length) {
-      loaded = loaded.filter(function (x) { return failed.indexOf(x.name) === -1; });
-      warns.push({ key: 'hub.sql.warn.reloadfail', vars: { names: failed.join(', ') } });
-    }
-    say(sample.on ? 'hub.sql.status.restored.sample' : 'hub.sql.status.restored', { n: plural('hub.sql.tables', r.done) });
+    if (failed.length) warns.push({ key: 'hub.sql.warn.reloadfail' });
+    say(sample.on ? 'hub.sql.status.restored.sample' : null, { name: sample.slug ? scName(sample.slug) : '' });
     renderAll();
   }
 
-  // ---------- carregar CSV como tabela ----------
-  function loadFile(f) {
-    if (engine !== 'ready' || busy) return;
-    err = null; warns = [];
-    if (f.size > LIMIT) { err = { kind: 'load', code: 'size', vars: { size: size(f.size), bytes: num(f.size) } }; say(null); renderAll(); return; }
-    if (f.size === 0) { err = { kind: 'load', code: 'empty', vars: {} }; say(null); renderAll(); return; }
-    var opts = { delim: selDelim.value, enc: selEnc.value };
-    pending = { file: f, name: f.name, opts: opts };
-    busy = 'load'; curId = ++jobSeq;
-    prog.value = 0; pct.textContent = '0%';
-    say('hub.sql.status.loading', { name: f.name });
-    renderAll();
-    worker.postMessage({ type: 'load', id: curId, file: f, fileName: f.name, delimiter: opts.delim, encoding: opts.enc });
-  }
-
-  function onLoaded(m) {
-    schema = m.schema || schema;
-    var src = reload ? reload.current : pending;
-    var entry = { file: src.file, name: src.name, opts: src.opts, meta: m };
-    var at = -1;
-    for (var i = 0; i < loaded.length; i++) if (loaded[i].name === src.name || (loaded[i].meta && loaded[i].meta.table === m.table)) at = i;
-    if (reload) {
-      // recarga: a entrada ja existe; só atualiza o meta
-      for (var j = 0; j < loaded.length; j++) if (loaded[j] === src) loaded[j].meta = m;
-      reload.done++; busy = null;
-      renderAll(); nextReload(); return;
-    }
-    if (at >= 0) loaded.splice(at, 1);
-    loaded.push(entry);
-    pending = null; busy = null; err = null;
-    if (m.replaced) warns.push({ key: 'hub.sql.warn.replaced', vars: { table: m.table } });
-    if (m.fallback) warns.push({ key: 'hub.csv.warn.fallback' });
-    else if (m.replacement) warns.push({ key: 'hub.csv.warn.replacement' });
-    if (m.ragged) warns.push({ key: 'hub.csv.warn.ragged', vars: { n: num(m.ragged) } });
-    if (m.quoteErrors) warns.push({ key: 'hub.csv.warn.quotes' });
-    if (m.renamed) warns.push({ key: 'hub.sql.warn.renamed', vars: { n: num(m.renamed) } });
-    if (!edited) editor.value = 'SELECT * FROM ' + m.table + ' LIMIT 10;';
-    say('hub.sql.status.loaded', { table: m.table, name: src.name, rows: plural('hub.csv.rows', m.rowCount), cols: plural('hub.csv.cols', m.colCount) });
-    renderAll();
-  }
-
-  // ---------- banco de exemplo ----------
-  function getSampleText() {
-    if (sample.text !== null) return Promise.resolve(sample.text);
-    return fetch(SAMPLE_URL, { credentials: 'omit', cache: 'no-cache' }).then(function (r) {
+  // ---------- bancos de exemplo (cenarios) ----------
+  function getSampleText(slug) {
+    if (texts[slug] !== undefined) return Promise.resolve(texts[slug]);
+    return fetch(DATA_URL + SC.bySlug[slug].sql, { credentials: 'omit', cache: 'no-cache' }).then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.text();
     }).then(function (txt) {
       if (txt.length < 100 || txt.indexOf('CREATE TABLE') === -1) throw new Error('invalid file');
-      sample.text = txt; return txt;
+      texts[slug] = txt; return txt;
     });
   }
 
-  function loadSample() {
+  function loadSample(slug) {
     if (engine !== 'ready' || busy) return;
+    slug = typeof slug === 'string' && SC.has(slug) ? slug : picker.get();
     err = null; warns = [];
     busy = 'load'; var job = curId = ++jobSeq, g = gen;
-    prog.value = 0; pct.textContent = '0%';
-    say('hub.sql.status.loading.sample');
+    say('hub.sql.status.loading.sample', { name: scName(slug) });
     renderAll();
-    getSampleText().then(function (txt) {
+    getSampleText(slug).then(function (txt) {
       if (g !== gen || curId !== job || !worker) return;
-      worker.postMessage({ type: 'sample', id: job, sql: txt });
+      worker.postMessage({ type: 'sample', id: job, slug: slug, sql: txt });
     }, function (e) {
       if (g !== gen || curId !== job) return;
       busy = null; pendingEx = null; err = { kind: 'sample', detail: String(e && e.message || e) };
@@ -621,35 +575,19 @@
 
   function onSample(m) {
     schema = m.schema || schema;
-    if (reload) { sample.tables = m.tables; busy = null; renderAll(); nextReload(); return; }
-    sample.on = true; sample.tables = m.tables;
-    // CSV que ocupavam o nome de uma tabela de exemplo foram substituídas: saem da lista de recarga
-    loaded = loaded.filter(function (x) { return !(x.meta && m.tables.indexOf(x.meta.table) !== -1); });
+    if (reload) { sample.tables = m.tables; reload.done++; busy = null; renderAll(); nextReload(); return; }
+    sample.on = true; sample.slug = m.slug; sample.tables = m.tables;
     busy = null; err = null;
     if (m.replaced.length) warns.push({ key: 'hub.sql.warn.sample.replaced' });
-    if (!edited) editor.value = 'SELECT * FROM clientes LIMIT 10;';
-    say('hub.sql.status.sample', { n: num(m.tables.length), rows: num(m.rows) });
+    if (!edited) editor.value = 'SELECT * FROM ' + m.tables[0] + ' LIMIT 10;';
+    say('hub.sql.status.sample', { name: scName(m.slug), n: num(m.tables.length), rows: num(m.rows) });
     renderAll();
     if (pendingEx) { var pid = pendingEx; pendingEx = null; verifyEx(pid); }
   }
 
-  function cancelLoad() {
-    if (busy !== 'load') return;
-    pendingEx = null;
-    if (reload) { loaded = []; sample.on = false; reload = null; }
-    pending = null; stale = !!res; schema = []; warns = []; err = null;
-    // terminate: o banco é recriado; as tabelas de CSV anteriores são recarregadas
-    clearTimers();
-    reload = newReload();
-    warns = [{ key: 'hub.sql.warn.canceled' }];
-    boot();
-    refocus = true;
-    renderAll();
-  }
-
   function resetDb() {
     pendingEx = null; curEx = null;
-    clearTimers(); loaded = []; sample.on = false; sample.tables = []; reload = null; pending = null; res = null; stale = false; schema = []; warns = []; err = null;
+    clearTimers(); sample.on = false; sample.slug = null; sample.tables = []; reload = null; res = null; stale = false; schema = []; warns = []; err = null;
     readyMsg = 'hub.sql.status.reset';
     boot();
     renderAll();
@@ -664,17 +602,12 @@
   editor.addEventListener('input', function () { edited = true; });
   stopBtn.addEventListener('click', function () { if (busy === 'run') restart({ kind: 'stopped' }); });
   exStop.addEventListener('click', function () { if (busy === 'verify') restart({ kind: 'stopped' }); });
-  loadCancel.addEventListener('click', cancelLoad);
   resetBtn.addEventListener('click', resetDb);
-  sampleBtn.addEventListener('click', loadSample);
+  sampleBtn.addEventListener('click', function () { loadSample(); });
   retryBtn.addEventListener('click', function () { err = null; boot(); renderAll(); });
   timeoutSel.addEventListener('change', renderLimits);
-  fileIn.addEventListener('change', function () {
-    var f = fileIn.files && fileIn.files[0];
-    fileIn.value = '';
-    if (f) loadFile(f);
-  });
 
+  picker = SC.mount($('sqlPicker'), { name: 'sqlScenario', value: SC.defaultSlug, er: true, onChange: function () { renderAll(); } });
   Hub.onLang.push(function () { renderAll(); });
   renderAll();
   boot();

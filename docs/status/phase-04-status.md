@@ -1,5 +1,7 @@
 # Project Status Report: Fase 4 (playground de Python), T-402
 
+> **Atualização D11 (sem upload):** o Python não tem mais arquivo do usuário em `/data`; recebe os CSVs do cenário escolhido (fetch same-origin pela página, `postMessage` ao iframe). A CSP da página Python ganhou `connect-src 'self'`. PY-11 foi reescrito. Ver `docs/status/no-upload-status.md`.
+
 **Data:** 2026-11-13. **Branch:** `feat/phase-4-python` (sem commit, sem PR). **Autor:** frontend-developer. **Estado:** **Implementado, testado só no Chrome (Chrome for Testing/Google Chrome via Playwright, Linux headless).** Não há revisão independente nem QA (T-405) desta entrega. **Não pronta para produção.**
 
 ## 1. O que existe

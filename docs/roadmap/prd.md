@@ -50,10 +50,10 @@ Prioridade: P0 = MVP, P1 = planejado, não bloqueia o MVP, P2 = desejável. MVP 
 | RF-02 | Link do Hub para o portfólio. O link inverso (Portfólio para Hub, rodapé de `index.html`) foi autorizado em G1-c e é a tarefa T-214, em PR separado do portfólio, fora do MVP | P0 | 2 |
 | RF-03 | Alternância PT/EN no Hub, com persistência da escolha e mesmo idioma do portfólio | P0 | 2 |
 | RF-04 | Tema claro/escuro e tokens de identidade visual reutilizados do portfólio por referência a `assets/css/styles.css` | P0 | 2 |
-| RF-05 | Carregar CSV local de até 10 MB (arrastar/selecionar), mostrar pré-visualização tabular, contagem de linhas/colunas e tipos inferidos | P0 | 3 |
+| RF-05 | ~~Carregar CSV local de até 10 MB (arrastar/selecionar)~~, mostrar pré-visualização tabular, contagem de linhas/colunas e tipos inferidos. **SUPERADO PELA D11 (sem upload):** vira explorador das tabelas dos 5 cenários embutidos (prévia, contagens, tipos); sem arquivo do usuário e sem limite de 10 MB | P0 | 3 |
 | RF-06 | Perfil rápido por coluna (nulos, distintos, mín/máx) | P1 | 3 |
 | RF-07 | SQL playground: editor, execução com `sql.js`, resultado em tabela, mensagens de erro legíveis (depende do CSV, C2) | P0 | 3 |
-| RF-08 | Carregar o CSV como tabela consultável no SQL playground | P0 | 3 |
+| RF-08 | ~~Carregar o CSV como tabela consultável no SQL playground~~ **SUPERADO PELA D11 (sem upload):** o SQL carrega o `.sql` do cenário escolhido | P0 | 3 |
 | RF-09 | Dataset de exemplo embutido e 5 exercícios guiados de SQL com verificação de resposta | P1 | 3 |
 | RF-10 | Exportar resultado como CSV | P1 | 3 |
 | RF-11 | Python playground com Pyodide (executar código, ver saída, erros) | P1 | 4 |

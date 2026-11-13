@@ -1,11 +1,10 @@
 # Bibliotecas de terceiros do Hub (T-301)
 
-Arquivos próprios, sem CDN (decisão D3b do Lucas). Cada arquivo abaixo é cópia **byte a byte** do pacote do registro npm.
+Arquivos próprios, sem CDN (decisão D3b do Lucas). **Papa Parse 5.7.1 foi removido em D11** (sem upload, nenhuma ferramenta lê CSV de arquivo do usuário; o explorador de dados lê os CSV embutidos com um leitor próprio de ~25 linhas em `hub/assets/js/csv.js` e o `csv-worker.js` foi apagado); a vendorização e a revisão de segurança dele ficam como histórico em `docs/`. Cada arquivo abaixo é cópia **byte a byte** do pacote do registro npm.
 
 | Biblioteca | Versão | Licença | Pacote de origem | Arquivos copiados |
 |---|---|---|---|---|
 | sql.js | **1.16.0** | MIT | `npm pack sql.js@1.16.0`, pasta `dist/` | `sqljs/sql-wasm.js`, `sqljs/sql-wasm.wasm`, `sqljs/LICENSE` |
-| Papa Parse | **5.7.1** | MIT | `npm pack papaparse@5.7.1` | `papaparse/papaparse.min.js`, `papaparse/LICENSE` |
 | Pyodide | **314.0.7** | MPL-2.0 | `npm pack pyodide@314.0.7` (D3c, D10) | `pyodide/pyodide.mjs`, `pyodide.asm.mjs`, `pyodide.asm.wasm`, `python_stdlib.zip`, `pyodide-lock.json`, `LICENSE-MPL-2.0.txt` |
 
 ## Como foi verificado (2026-11-12)
@@ -19,9 +18,7 @@ Arquivos próprios, sem CDN (decisão D3b do Lucas). Cada arquivo abaixo é cóp
 ```
 9b96118841c6edfdf53c6f388c1419d1f473cf469df6a6fc2864b386d60bdb5e  sqljs/sql-wasm.js
 43bbcdd44287e5a2db3b6b5af34b1a3485a7a441285d247976c1ebe3c61f8dbf  sqljs/sql-wasm.wasm
-e032656b2c709e9a756d5be817da9885d58b2313c43d432c414eb8534a752685  papaparse/papaparse.min.js
 60a3f6e4d7b29b4321359e683b36cf198d24f58e24582070f56e6fa89d5ee2be  sqljs/LICENSE
-99aa68e4b42758b09828a46515f70369e5463458ab7a990189f641af2b8d9b4e  papaparse/LICENSE
 ```
 
 ## Pesos
@@ -29,7 +26,6 @@ e032656b2c709e9a756d5be817da9885d58b2313c43d432c414eb8534a752685  papaparse/papa
 |---|---|---|
 | `sqljs/sql-wasm.wasm` | 688.197 | 336.356 |
 | `sqljs/sql-wasm.js` | 47.621 | 17.336 |
-| `papaparse/papaparse.min.js` | 19.012 | 6.898 |
 
 Carregam **sob demanda**, só nas páginas das ferramentas, e não entram no orçamento do shell (150 KB). Se o GitHub Pages serve `.wasm` comprimido não foi verificado.
 

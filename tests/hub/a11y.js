@@ -75,7 +75,7 @@ function contrastProbe() {
   // ---- TECLADO
   for (const p of L.PAGES) {
     const c = await L.ctx(br, { lang: 'en', theme: 'light', vp: 1280 }); const pg = await c.newPage(); await pg.goto(url(p));
-    const expected = await pg.evaluate(() => [...document.querySelectorAll('a[href],button,input,select,textarea,[tabindex]')].filter(e => e.tabIndex >= 0 && e.getBoundingClientRect().width > 0 && getComputedStyle(e).visibility !== 'hidden').map(e => e));
+    const expected = await pg.evaluate(() => [...document.querySelectorAll('a[href],button,input,select,textarea,[tabindex]')].filter(e => e.tabIndex >= 0 && e.getBoundingClientRect().width > 0 && getComputedStyle(e).visibility !== 'hidden' && !(e.type === 'radio' && !e.checked)).map(e => e));   // D11: um grupo de radios (seletor de cenario) e UMA parada de Tab (padrao nativo), as setas escolhem dentro do grupo
     const nExp = expected.length; const seq = []; const noFocus = [];
     const ids = new Set();
     for (let i = 0; i < nExp + 2; i++) { await pg.keyboard.press('Tab'); await pg.waitForTimeout(220);
@@ -128,7 +128,7 @@ function contrastProbe() {
     const cards = await pg.evaluate(() => [...document.querySelectorAll('.hub-card a')].map(a => a.getAttribute('href'))); L.rec('HUB-02 exatamente 3 cartoes ativos na home (csv, sql e python; Fase 4/T-402 ativou o de Python)', cards.join() === 'ferramentas/csv/,ferramentas/sql/,ferramentas/python/', JSON.stringify(cards));
     for (const p of ['hub/', 'hub/ferramentas/']) { await pg.goto(url(p)); const cd = await pg.evaluate(() => [...document.querySelectorAll('.hub-card')].map(c => ({ href: c.querySelector('a').getAttribute('href'), chip: !!c.querySelector('.chip') })));
       const csv = cd.find(x => /csv\/$/.test(x.href)), sql = cd.find(x => /sql\/$/.test(x.href));
-      await pg.click('.hub-card a[href$="csv/"]'); await pg.waitForLoadState('load'); const opensCsv = await pg.evaluate(() => !!document.getElementById('csvFile'));
+      await pg.click('.hub-card a[href$="csv/"]'); await pg.waitForLoadState('load'); const opensCsv = await pg.evaluate(() => !!document.getElementById('csvTool'));
       await pg.goto(url(p)); await pg.click('.hub-card a[href$="sql/"]'); await pg.waitForLoadState('load'); const opensSql = await pg.evaluate(() => !!document.getElementById('sqlEditor') && !document.querySelector('.empty'));
       const txt = await (async () => { await pg.goto(url(p)); return pg.evaluate(() => document.querySelector('main').innerText); })();
       const cpt = await L.ctx(br, { lang: 'pt', theme: 'light' }); const ppt = await cpt.newPage(); await ppt.goto(url(p)); const txtPt = await ppt.evaluate(() => document.querySelector('main').innerText); await cpt.close();

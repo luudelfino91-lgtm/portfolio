@@ -1,0 +1,338 @@
+id,funcionario_id,avaliador_id,periodo,nota,comentario
+1,2,1,2024,2,Atingiu as metas do periodo
+2,3,1,2024,4,
+3,4,1,2024,2,
+4,5,1,2024,4,Atingiu as metas do periodo
+5,6,1,2024,2,
+6,7,1,2024,3,Boa colaboracao com a equipe
+7,8,1,2024,4,
+8,9,8,2024,3,
+9,10,3,2024,2,
+10,11,4,2024,,
+11,12,3,2024,4,Boa colaboracao com a equipe
+12,13,8,2024,3,
+13,14,8,2024,2,Precisa de apoio em prazos
+14,15,5,2024,,
+15,16,8,2024,3,
+16,17,4,2024,4,
+17,18,8,2024,4,
+18,19,7,2024,,
+19,20,7,2024,,
+20,21,8,2024,1,Precisa de apoio em prazos
+21,22,7,2024,,
+22,23,3,2024,3,Boa colaboracao com a equipe
+23,24,5,2024,3,
+24,25,5,2024,3,Atingiu as metas do periodo
+25,26,4,2024,5,
+26,27,3,2024,,
+27,28,3,2024,3,Atingiu as metas do periodo
+28,29,8,2024,3,Atingiu as metas do periodo
+29,30,3,2024,3,
+30,31,15,2024,3,
+31,32,17,2024,3,Atingiu as metas do periodo
+32,33,13,2024,3,Boa colaboracao com a equipe
+33,34,17,2024,3,
+34,38,5,2024,3,Precisa de apoio em prazos
+35,39,9,2024,3,
+36,40,6,2024,4,Precisa de apoio em prazos
+37,41,23,2024,4,Atingiu as metas do periodo
+38,42,29,2024,3,
+39,43,9,2024,2,
+40,44,25,2024,3,
+41,46,24,2024,4,Precisa de apoio em prazos
+42,47,22,2024,,
+43,49,11,2024,4,
+44,50,18,2024,2,
+45,51,5,2024,,
+46,52,24,2024,1,Precisa de apoio em prazos
+47,53,11,2024,,
+48,54,18,2024,2,Precisa de apoio em prazos
+49,55,3,2024,,
+50,56,20,2024,,
+51,58,26,2024,3,Boa colaboracao com a equipe
+52,59,14,2024,1,Boa colaboracao com a equipe
+53,60,29,2024,3,
+54,61,26,2024,5,Boa colaboracao com a equipe
+55,62,15,2024,5,Precisa de apoio em prazos
+56,63,2,2024,3,Precisa de apoio em prazos
+57,64,16,2024,2,Boa colaboracao com a equipe
+58,65,21,2024,5,
+59,66,4,2024,3,Atingiu as metas do periodo
+60,69,23,2024,3,
+61,70,3,2024,5,
+62,71,17,2024,3,
+63,72,23,2024,5,
+64,74,18,2024,,
+65,75,6,2024,3,Boa colaboracao com a equipe
+66,76,6,2024,5,
+67,77,5,2024,3,Precisa de apoio em prazos
+68,78,4,2024,2,Precisa de apoio em prazos
+69,79,26,2024,3,
+70,80,11,2024,4,
+71,81,4,2024,4,
+72,83,11,2024,4,Boa colaboracao com a equipe
+73,85,22,2024,5,
+74,87,3,2024,3,
+75,88,9,2024,3,Atingiu as metas do periodo
+76,89,20,2024,4,
+77,90,6,2024,3,Boa colaboracao com a equipe
+78,91,27,2024,2,
+79,92,17,2024,,
+80,93,24,2024,,
+81,94,2,2024,4,
+82,95,23,2024,5,
+83,96,11,2024,3,Precisa de apoio em prazos
+84,98,11,2024,4,Precisa de apoio em prazos
+85,99,6,2024,2,Boa colaboracao com a equipe
+86,100,6,2024,4,Precisa de apoio em prazos
+87,101,6,2024,3,
+88,102,28,2024,3,Precisa de apoio em prazos
+89,103,2,2024,4,Boa colaboracao com a equipe
+90,104,3,2024,4,
+91,105,22,2024,5,
+92,106,27,2024,4,Boa colaboracao com a equipe
+93,107,6,2024,2,Boa colaboracao com a equipe
+94,109,14,2024,4,
+95,110,6,2024,3,Atingiu as metas do periodo
+96,111,9,2024,4,
+97,112,30,2024,3,
+98,113,11,2024,,
+99,114,13,2024,,
+100,115,22,2024,3,Precisa de apoio em prazos
+101,117,2,2024,4,
+102,118,20,2024,,
+103,120,26,2024,2,
+104,121,7,2024,4,
+105,122,11,2024,5,Atingiu as metas do periodo
+106,123,22,2024,5,
+107,124,6,2024,4,
+108,125,20,2024,3,Boa colaboracao com a equipe
+109,127,2,2024,,
+110,128,7,2024,3,Precisa de apoio em prazos
+111,129,6,2024,2,
+112,131,22,2024,4,
+113,132,17,2024,4,Precisa de apoio em prazos
+114,133,23,2024,3,Precisa de apoio em prazos
+115,134,15,2024,4,
+116,135,22,2024,3,
+117,139,4,2024,5,Atingiu as metas do periodo
+118,140,24,2024,3,Precisa de apoio em prazos
+119,141,17,2024,,
+120,142,19,2024,,
+121,143,11,2024,4,
+122,146,5,2024,5,
+123,147,25,2024,5,Precisa de apoio em prazos
+124,148,17,2024,5,
+125,149,28,2024,,
+126,150,8,2024,4,Precisa de apoio em prazos
+127,151,17,2024,3,Boa colaboracao com a equipe
+128,152,18,2024,3,Precisa de apoio em prazos
+129,153,6,2024,3,Precisa de apoio em prazos
+130,154,25,2024,3,Atingiu as metas do periodo
+131,155,11,2024,5,Atingiu as metas do periodo
+132,156,30,2024,3,Boa colaboracao com a equipe
+133,157,2,2024,3,
+134,158,15,2024,2,
+135,159,22,2024,,
+136,160,18,2024,4,Atingiu as metas do periodo
+137,161,29,2024,,
+138,162,22,2024,4,
+139,164,4,2024,3,
+140,167,22,2024,2,Boa colaboracao com a equipe
+141,170,11,2024,3,
+142,171,26,2024,3,Atingiu as metas do periodo
+143,172,22,2024,2,Atingiu as metas do periodo
+144,174,6,2024,3,
+145,175,5,2024,3,
+146,176,7,2024,5,
+147,177,28,2024,4,
+148,178,21,2024,3,
+149,179,9,2024,4,
+150,180,5,2024,4,Precisa de apoio em prazos
+151,181,7,2024,2,
+152,182,6,2024,,
+153,183,24,2024,5,Boa colaboracao com a equipe
+154,184,25,2024,,
+155,185,28,2024,3,
+156,186,21,2024,4,
+157,187,15,2024,4,Precisa de apoio em prazos
+158,188,27,2024,4,
+159,189,24,2024,4,
+160,190,21,2024,1,Precisa de apoio em prazos
+161,193,27,2024,,
+162,194,10,2024,4,Atingiu as metas do periodo
+163,195,8,2024,3,
+164,196,24,2024,3,
+165,197,23,2024,,
+166,198,20,2024,3,
+167,199,7,2024,3,Atingiu as metas do periodo
+168,200,24,2024,3,
+169,2,1,2025-S1,3,Boa colaboracao com a equipe
+170,3,1,2025-S1,3,
+171,4,1,2025-S1,3,Atingiu as metas do periodo
+172,5,1,2025-S1,3,
+173,6,1,2025-S1,4,
+174,7,1,2025-S1,3,
+175,8,1,2025-S1,3,Atingiu as metas do periodo
+176,9,8,2025-S1,2,Atingiu as metas do periodo
+177,10,3,2025-S1,4,
+178,11,4,2025-S1,3,
+179,12,3,2025-S1,4,Precisa de apoio em prazos
+180,13,8,2025-S1,3,
+181,14,8,2025-S1,4,
+182,15,5,2025-S1,4,
+183,16,8,2025-S1,1,
+184,17,4,2025-S1,3,Boa colaboracao com a equipe
+185,18,8,2025-S1,2,Boa colaboracao com a equipe
+186,19,7,2025-S1,,
+187,20,7,2025-S1,4,Boa colaboracao com a equipe
+188,21,8,2025-S1,4,
+189,22,7,2025-S1,3,Precisa de apoio em prazos
+190,23,3,2025-S1,4,
+191,24,5,2025-S1,3,
+192,25,5,2025-S1,5,
+193,26,4,2025-S1,3,
+194,27,3,2025-S1,3,
+195,28,3,2025-S1,3,
+196,29,8,2025-S1,5,
+197,30,3,2025-S1,3,
+198,31,15,2025-S1,4,Boa colaboracao com a equipe
+199,32,17,2025-S1,4,Boa colaboracao com a equipe
+200,33,13,2025-S1,5,
+201,34,17,2025-S1,,
+202,38,5,2025-S1,4,Atingiu as metas do periodo
+203,39,9,2025-S1,,
+204,40,6,2025-S1,3,Atingiu as metas do periodo
+205,41,23,2025-S1,2,
+206,42,29,2025-S1,5,
+207,43,9,2025-S1,4,
+208,44,25,2025-S1,5,Boa colaboracao com a equipe
+209,46,24,2025-S1,4,
+210,47,22,2025-S1,5,Precisa de apoio em prazos
+211,48,25,2025-S1,3,
+212,49,11,2025-S1,3,
+213,50,18,2025-S1,,
+214,51,5,2025-S1,3,
+215,52,24,2025-S1,5,
+216,53,11,2025-S1,4,Atingiu as metas do periodo
+217,54,18,2025-S1,5,
+218,56,20,2025-S1,4,
+219,58,26,2025-S1,4,Precisa de apoio em prazos
+220,59,14,2025-S1,3,
+221,60,29,2025-S1,3,
+222,61,26,2025-S1,4,
+223,62,15,2025-S1,2,
+224,63,2,2025-S1,3,
+225,64,16,2025-S1,3,Boa colaboracao com a equipe
+226,65,21,2025-S1,,
+227,66,4,2025-S1,4,Boa colaboracao com a equipe
+228,69,23,2025-S1,4,
+229,70,3,2025-S1,4,Boa colaboracao com a equipe
+230,71,17,2025-S1,4,
+231,72,23,2025-S1,3,
+232,75,6,2025-S1,2,
+233,76,6,2025-S1,4,Atingiu as metas do periodo
+234,77,5,2025-S1,,
+235,78,4,2025-S1,3,
+236,79,26,2025-S1,3,Precisa de apoio em prazos
+237,80,11,2025-S1,4,Atingiu as metas do periodo
+238,81,4,2025-S1,3,
+239,83,11,2025-S1,3,
+240,85,22,2025-S1,4,
+241,87,3,2025-S1,3,Boa colaboracao com a equipe
+242,88,9,2025-S1,1,Precisa de apoio em prazos
+243,89,20,2025-S1,5,Precisa de apoio em prazos
+244,90,6,2025-S1,3,
+245,91,27,2025-S1,2,
+246,92,17,2025-S1,4,
+247,93,24,2025-S1,4,Atingiu as metas do periodo
+248,94,2,2025-S1,3,
+249,95,23,2025-S1,3,
+250,98,11,2025-S1,3,
+251,99,6,2025-S1,4,Boa colaboracao com a equipe
+252,100,6,2025-S1,4,Precisa de apoio em prazos
+253,101,6,2025-S1,3,Atingiu as metas do periodo
+254,102,28,2025-S1,3,Boa colaboracao com a equipe
+255,103,2,2025-S1,1,
+256,104,3,2025-S1,3,Atingiu as metas do periodo
+257,105,22,2025-S1,3,
+258,106,27,2025-S1,,
+259,107,6,2025-S1,,
+260,109,14,2025-S1,,
+261,110,6,2025-S1,3,Atingiu as metas do periodo
+262,111,9,2025-S1,3,Boa colaboracao com a equipe
+263,112,30,2025-S1,5,Precisa de apoio em prazos
+264,113,11,2025-S1,4,
+265,114,13,2025-S1,4,Atingiu as metas do periodo
+266,115,22,2025-S1,4,
+267,117,2,2025-S1,4,
+268,118,20,2025-S1,5,
+269,119,25,2025-S1,3,
+270,120,26,2025-S1,3,
+271,121,7,2025-S1,4,Atingiu as metas do periodo
+272,122,11,2025-S1,4,Atingiu as metas do periodo
+273,123,22,2025-S1,3,
+274,124,6,2025-S1,2,Atingiu as metas do periodo
+275,125,20,2025-S1,1,Boa colaboracao com a equipe
+276,126,25,2025-S1,,
+277,127,2,2025-S1,,
+278,128,7,2025-S1,3,
+279,129,6,2025-S1,4,
+280,131,22,2025-S1,,
+281,132,17,2025-S1,3,
+282,133,23,2025-S1,3,
+283,134,15,2025-S1,4,
+284,135,22,2025-S1,2,
+285,139,4,2025-S1,5,
+286,140,24,2025-S1,2,Precisa de apoio em prazos
+287,141,17,2025-S1,1,
+288,142,19,2025-S1,5,Precisa de apoio em prazos
+289,143,11,2025-S1,3,
+290,145,17,2025-S1,4,Boa colaboracao com a equipe
+291,146,5,2025-S1,,
+292,147,25,2025-S1,4,
+293,148,17,2025-S1,3,
+294,149,28,2025-S1,3,Atingiu as metas do periodo
+295,150,8,2025-S1,3,Boa colaboracao com a equipe
+296,151,17,2025-S1,3,Atingiu as metas do periodo
+297,152,18,2025-S1,3,Atingiu as metas do periodo
+298,153,6,2025-S1,,
+299,154,25,2025-S1,4,
+300,155,11,2025-S1,4,
+301,156,30,2025-S1,4,Precisa de apoio em prazos
+302,157,2,2025-S1,3,
+303,158,15,2025-S1,3,Atingiu as metas do periodo
+304,159,22,2025-S1,4,
+305,160,18,2025-S1,2,
+306,161,29,2025-S1,3,Atingiu as metas do periodo
+307,162,22,2025-S1,3,
+308,164,4,2025-S1,4,
+309,167,22,2025-S1,4,
+310,170,11,2025-S1,2,
+311,171,26,2025-S1,3,
+312,172,22,2025-S1,4,
+313,174,6,2025-S1,2,Precisa de apoio em prazos
+314,175,5,2025-S1,4,Boa colaboracao com a equipe
+315,176,7,2025-S1,3,Atingiu as metas do periodo
+316,177,28,2025-S1,,
+317,178,21,2025-S1,3,Atingiu as metas do periodo
+318,179,9,2025-S1,3,Boa colaboracao com a equipe
+319,180,5,2025-S1,3,Precisa de apoio em prazos
+320,181,7,2025-S1,3,
+321,182,6,2025-S1,2,
+322,183,24,2025-S1,3,
+323,184,25,2025-S1,4,
+324,185,28,2025-S1,,
+325,186,21,2025-S1,3,Atingiu as metas do periodo
+326,187,15,2025-S1,3,
+327,188,27,2025-S1,1,Precisa de apoio em prazos
+328,189,24,2025-S1,3,
+329,190,21,2025-S1,3,
+330,193,27,2025-S1,4,Precisa de apoio em prazos
+331,194,10,2025-S1,3,
+332,195,8,2025-S1,4,
+333,196,24,2025-S1,3,Atingiu as metas do periodo
+334,197,23,2025-S1,2,Atingiu as metas do periodo
+335,198,20,2025-S1,4,Precisa de apoio em prazos
+336,199,7,2025-S1,4,Atingiu as metas do periodo
+337,200,24,2025-S1,3,

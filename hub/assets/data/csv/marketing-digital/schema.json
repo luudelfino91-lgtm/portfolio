@@ -1,0 +1,216 @@
+{
+ "slug": "marketing-digital",
+ "tables": [
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nome",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "tipo",
+     "pk": false,
+     "type": "TEXT"
+    }
+   ],
+   "name": "canais"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nome",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "objetivo",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "data_inicio",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "data_fim",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "orcamento",
+     "pk": false,
+     "type": "REAL"
+    }
+   ],
+   "name": "campanhas"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "campanhas.id",
+     "name": "campanha_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "canais.id",
+     "name": "canal_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nome",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "formato",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "status",
+     "pk": false,
+     "type": "TEXT"
+    }
+   ],
+   "name": "anuncios"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "anuncios.id",
+     "name": "anuncio_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "data",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "impressoes",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "cliques",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "custo",
+     "pk": false,
+     "type": "REAL"
+    },
+    {
+     "fk": "",
+     "name": "conversoes",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "receita",
+     "pk": false,
+     "type": "REAL"
+    }
+   ],
+   "name": "metricas_diarias"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "campanhas.id",
+     "name": "campanha_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "canais.id",
+     "name": "canal_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nome",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "email",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "criado_em",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "convertido_em",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "valor_contrato",
+     "pk": false,
+     "type": "REAL"
+    }
+   ],
+   "name": "leads"
+  }
+ ]
+}

@@ -5,13 +5,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title data-i="hub.title.sql">SQL playground · Data &amp; AI Community Hub</title>
-<meta name="description" content="Run SQL in your browser on tables made from your own CSV files. Nothing is uploaded." data-ia="content:hub.desc.sql">
+<meta name="description" content="Run SQL in your browser on five built-in sample databases. Nothing is uploaded." data-ia="content:hub.desc.sql">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../../assets/css/styles.css">
 <link rel="stylesheet" href="../../assets/css/hub.css">
 <link rel="stylesheet" href="../../assets/css/csv.css">
 <link rel="stylesheet" href="../../assets/css/sql.css">
+<link rel="stylesheet" href="../../assets/css/scenarios.css">
 <script src="../../assets/js/theme.js"></script>
 <script src="../../assets/js/i18n.js" defer></script>
 </head>
@@ -44,62 +45,30 @@
     <section class="hub-hero hub-hero--sub" aria-labelledby="h1">
       <h1 id="h1" data-i="hub.tool.sql.name">SQL playground</h1>
     </section>
-    <p class="lede csv-lede" data-i="hub.sql.lede">Write SQL and run it on a database that lives in this browser tab. You can load your own CSV files as tables. Nothing is uploaded: the files and the queries stay on this device.</p>
+    <p class="lede csv-lede" data-i="hub.sql.lede">Write SQL and run it on a sample database that lives in this browser tab. Pick one of five built-in scenarios (sales, digital marketing, logistics, HR or customer service). Nothing is uploaded: the data comes with the site and your queries stay on this device.</p>
 
     <p class="csv-note sql-exlink"><a href="#sqlExH" data-i="hub.sql.ex.link">Ready to practise? Go to the five guided exercises</a></p>
 
     <div class="csv-tool sql-tool" id="sqlTool" data-state="preparing">
       <section class="sql-sec" aria-labelledby="sqlSampleH">
-        <h2 id="sqlSampleH" data-i="hub.sql.sample.h">Sample database</h2>
-        <p data-i="hub.sql.sample.p">A made-up online shop with five related tables: clientes, categorias, produtos, pedidos and itens_pedido. All data is fictional. Use it to practise SELECT, JOINs and GROUP BY.</p>
+        <h2 id="sqlSampleH" data-i="hub.sql.sample.h">Sample databases</h2>
+        <p data-i="hub.sql.sample.p">Each scenario is a made-up database with related tables. All data is fictional. Choose a scenario, load it, and practise SELECT, JOINs and GROUP BY. The five guided exercises below use the Sales scenario.</p>
+        <div id="sqlPicker"></div>
         <div class="sql-actions">
-          <button class="btn btn-dark" id="sqlSampleBtn" type="button" disabled><span data-i="hub.sql.sample.btn">Load the sample database</span></button>
+          <button class="btn btn-dark" id="sqlSampleBtn" type="button" disabled><span data-i="hub.sql.sample.btn">Load the selected database</span></button>
         </div>
-        <p class="csv-note" data-i="hub.sql.sample.note">Loading it again replaces the five sample tables with a fresh copy (changes you made to them are lost). After Stop or a time limit it is reloaded automatically. Reset database removes everything.</p>
+        <p class="csv-note" data-i="hub.sql.sample.note">Loading replaces the tables of the sample databases that are in this tab (changes you made to them are lost); tables you created with other names are kept. After Stop or a time limit the loaded database is reloaded automatically. Reset database removes everything.</p>
         <h3 class="sql-sub" id="sqlSampleQH" data-i="hub.sql.sample.q.h">Sample queries</h3>
-        <p class="csv-note" data-i="hub.sql.sample.q.p">Choose a query to put it in the editor. It does not run by itself: read it, change it if you like, then press Run. Load the sample database first.</p>
+        <p class="csv-note" data-i="hub.sql.sample.q.p">Choose a query to put it in the editor. It does not run by itself: read it, change it if you like, then press Run. The queries follow the scenario selected above; load that scenario first.</p>
         <ul class="sql-samples" id="sqlSampleQ" aria-labelledby="sqlSampleQH"></ul>
       </section>
 
       <section class="sql-sec" aria-labelledby="sqlDataH">
         <h2 id="sqlDataH" data-i="hub.sql.data.h">Your tables</h2>
-        <div class="csv-opts">
-          <div class="sql-load">
-            <input class="csv-file" id="sqlFile" type="file" accept=".csv,.tsv,.txt,text/csv,text/plain,text/tab-separated-values">
-            <label class="btn btn-dark csv-pick" for="sqlFile"><span data-i="hub.sql.load.btn">Load a CSV file as a table</span></label>
-          </div>
-          <div class="csv-field">
-            <label for="sqlDelim" data-i="hub.csv.opt.delim">Delimiter</label>
-            <select id="sqlDelim">
-              <option value="auto" data-i="hub.csv.opt.auto">Automatic</option>
-              <option value="," data-i="hub.csv.opt.comma">Comma (,)</option>
-              <option value=";" data-i="hub.csv.opt.semicolon">Semicolon (;)</option>
-              <option value="&#9;" data-i="hub.csv.opt.tab">Tab</option>
-              <option value="|" data-i="hub.csv.opt.pipe">Pipe (|)</option>
-            </select>
-          </div>
-          <div class="csv-field">
-            <label for="sqlEnc" data-i="hub.csv.opt.enc">Encoding</label>
-            <select id="sqlEnc">
-              <option value="auto" data-i="hub.csv.opt.auto">Automatic</option>
-              <option value="utf-8" data-i="hub.csv.opt.utf8">UTF-8</option>
-              <option value="windows-1252" data-i="hub.csv.opt.w1252">Windows-1252 / ISO-8859-1 (Latin-1)</option>
-            </select>
-          </div>
-          <p class="csv-note" data-i="hub.sql.load.note">Limit: 10 MB per file. The table is named after the file, and names with spaces, accents or symbols are cleaned up so you can type them. The options above apply to the next file you load.</p>
-        </div>
-
-        <div class="csv-run" id="sqlLoadRun" hidden>
-          <progress id="sqlProg" max="100" value="0" aria-label="Loading progress" data-ia="aria-label:hub.sql.progress"></progress>
-          <span class="csv-pct" id="sqlPct" aria-hidden="true">0%</span>
-          <button class="btn btn-ghost" id="sqlLoadCancel" type="button"><span data-i="hub.sql.load.cancel">Cancel loading</span></button>
-        </div>
-
-        <p class="csv-note" id="sqlSchemaEmpty" data-i="hub.sql.schema.empty">No tables yet. Load a CSV file or create a table with CREATE TABLE.</p>
+        <p class="csv-note" id="sqlSchemaEmpty" data-i="hub.sql.schema.empty">No tables yet. Load a sample database above or create a table with CREATE TABLE.</p>
         <div class="csv-scroll sql-schema" id="sqlSchemaBox" role="region" tabindex="0" aria-label="Tables and columns" data-ia="aria-label:hub.sql.schema.label" hidden>
           <div id="sqlSchema"></div>
         </div>
-        <p class="csv-note" id="sqlTypeNote" data-i="hub.sql.schema.note" hidden>Types from CSV: whole numbers become INTEGER and decimals (with a point or a comma) become REAL. Dates, booleans and codes with leading zeros stay TEXT. Empty cells (or only spaces) become NULL.</p>
       </section>
 
       <section class="sql-sec" aria-labelledby="sqlEdH">
@@ -149,7 +118,7 @@
 
       <section class="sql-sec" aria-labelledby="sqlExH">
         <h2 id="sqlExH" data-i="hub.sql.ex.h">Exercises</h2>
-        <p data-i="hub.sql.ex.p">Five guided exercises on the sample database, from easy to harder. Write your query in the box, press Check, and the page tells you whether your result matches the expected one.</p>
+        <p data-i="hub.sql.ex.p">Five guided exercises on the Sales sample database, from easy to harder. Write your query in the box, press Check, and the page tells you whether your result matches the expected one. They work only with the Sales scenario; exercises for the other scenarios are planned.</p>
         <p class="csv-note" data-i="hub.sql.ex.rule">How it is checked: your result is compared with the expected result. Columns must match by position and name (upper or lower case does not matter). Numbers are equal when numerically equal (3 and 3.0 are the same; decimals allow a tiny tolerance) and NULL only equals NULL. Row order only matters when the exercise asks for ORDER BY. Your own tables are not touched: the check runs on a fresh private copy of the sample database. Progress lives only in this page and is lost when you reload.</p>
         <p class="csv-status sql-ex-prog" id="sqlExProg" role="status" aria-live="polite"></p>
         <div class="sql-actions"><button class="btn btn-ghost" id="sqlExStop" type="button" hidden><span data-i="hub.sql.stop">Stop</span></button></div>
@@ -169,6 +138,7 @@
   </footer>
 </div>
 <script src="../../assets/js/nav.js" defer></script>
+<script src="../../assets/js/scenarios.js" defer></script>
 <script src="../../assets/js/sql.js" defer></script>
 </body>
 </html>

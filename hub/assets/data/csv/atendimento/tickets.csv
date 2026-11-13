@@ -1,0 +1,321 @@
+id,cliente_id,agente_id,assunto,prioridade,canal,status,aberto_em,fechado_em
+1,43,18,Solicitacao de nova funcionalidade,media,chat,fechado,2025-01-06T13:17:00,2025-01-08T12:39:00
+2,44,9,Lentidao no sistema,alta,chat,resolvido,2025-01-06T21:23:00,2025-01-08T09:28:00
+3,59,13,Erro ao exportar relatorio,media,formulario,fechado,2025-01-12T22:13:00,2025-01-13T05:15:00
+4,50,18,Nao consigo acessar a conta,urgente,formulario,fechado,2025-01-13T02:49:00,2025-01-13T13:38:00
+5,96,18,Lentidao no sistema,alta,email,fechado,2025-01-14T11:19:00,2025-01-15T12:21:00
+6,83,2,Alteracao de dados cadastrais,baixa,formulario,fechado,2025-01-14T14:03:00,2025-01-16T20:58:00
+7,80,17,Lentidao no sistema,media,formulario,resolvido,2025-01-15T01:19:00,2025-01-17T10:14:00
+8,52,7,Erro ao exportar relatorio,media,formulario,fechado,2025-01-15T16:27:00,2025-01-17T01:27:00
+9,80,10,Problema com fatura,urgente,chat,fechado,2025-01-15T16:33:00,2025-01-15T18:46:00
+10,80,19,Pedido de cancelamento,media,email,fechado,2025-01-17T06:52:00,2025-01-20T01:36:00
+11,14,1,Alteracao de dados cadastrais,alta,chat,fechado,2025-01-19T02:35:00,2025-01-19T22:07:00
+12,12,12,Duvida sobre o plano,urgente,formulario,fechado,2025-01-19T15:58:00,2025-01-19T19:23:00
+13,2,7,Nao consigo acessar a conta,baixa,email,fechado,2025-01-20T12:31:00,2025-01-23T19:19:00
+14,44,13,Cobranca duplicada,media,email,em_andamento,2025-01-21T20:12:00,
+15,75,8,Alteracao de dados cadastrais,media,email,fechado,2025-01-25T09:34:00,2025-01-27T17:17:00
+16,49,19,Pedido de cancelamento,media,formulario,fechado,2025-01-25T11:28:00,2025-01-28T06:11:00
+17,63,3,Cobranca duplicada,media,formulario,em_andamento,2025-01-26T00:10:00,
+18,23,20,Duvida sobre o plano,media,formulario,fechado,2025-01-27T05:12:00,2025-01-27T14:51:00
+19,59,7,Erro ao exportar relatorio,baixa,email,fechado,2025-01-28T07:29:00,2025-01-29T23:21:00
+20,56,14,Lentidao no sistema,alta,email,fechado,2025-01-30T04:00:00,2025-01-30T20:43:00
+21,7,16,Erro ao exportar relatorio,alta,chat,fechado,2025-01-31T15:56:00,2025-02-01T21:44:00
+22,50,14,Cobranca duplicada,media,email,fechado,2025-02-02T16:11:00,2025-02-04T07:48:00
+23,83,5,Pedido de cancelamento,media,formulario,fechado,2025-02-03T19:11:00,2025-02-07T16:34:00
+24,36,9,Solicitacao de nova funcionalidade,media,telefone,em_andamento,2025-02-04T04:57:00,
+25,4,10,Recuperacao de senha,media,chat,fechado,2025-02-08T21:45:00,2025-02-11T04:21:00
+26,47,3,Problema com fatura,baixa,chat,fechado,2025-02-09T11:20:00,2025-02-10T10:42:00
+27,44,10,Lentidao no sistema,alta,formulario,fechado,2025-02-09T19:36:00,2025-02-11T04:45:00
+28,23,15,Lentidao no sistema,alta,formulario,fechado,2025-02-11T18:12:00,2025-02-13T16:06:00
+29,9,13,Nao consigo acessar a conta,media,telefone,fechado,2025-02-12T17:03:00,2025-02-12T23:24:00
+30,94,4,Nao consigo acessar a conta,baixa,chat,fechado,2025-02-13T17:31:00,2025-02-16T00:55:00
+31,69,8,Lentidao no sistema,baixa,email,fechado,2025-02-14T00:06:00,2025-02-16T07:21:00
+32,24,4,Solicitacao de nova funcionalidade,media,formulario,fechado,2025-02-15T20:06:00,2025-02-16T09:00:00
+33,78,18,Lentidao no sistema,media,chat,fechado,2025-02-15T22:51:00,2025-02-17T23:18:00
+34,5,9,Alteracao de dados cadastrais,urgente,formulario,fechado,2025-02-15T23:01:00,2025-02-16T07:17:00
+35,15,10,Problema com fatura,media,chat,fechado,2025-02-18T00:13:00,2025-02-18T09:07:00
+36,29,18,Problema com fatura,media,chat,fechado,2025-02-18T06:39:00,2025-02-18T21:57:00
+37,4,13,Pedido de cancelamento,baixa,formulario,fechado,2025-02-18T11:20:00,2025-02-20T13:48:00
+38,119,16,Pedido de cancelamento,media,telefone,fechado,2025-02-19T16:15:00,2025-02-19T19:55:00
+39,52,6,Recuperacao de senha,urgente,email,fechado,2025-02-22T16:07:00,2025-02-23T15:41:00
+40,65,,Problema com fatura,alta,formulario,aberto,2025-02-23T14:04:00,
+41,34,19,Duvida sobre o plano,alta,chat,resolvido,2025-02-23T15:17:00,2025-02-24T22:27:00
+42,119,17,Duvida sobre o plano,urgente,telefone,fechado,2025-02-23T19:06:00,2025-02-24T20:09:00
+43,75,9,Nao consigo acessar a conta,media,formulario,fechado,2025-02-24T01:15:00,2025-02-24T18:35:00
+44,27,12,Nao consigo acessar a conta,media,email,fechado,2025-02-24T05:24:00,2025-02-26T07:29:00
+45,90,18,Cobranca duplicada,media,email,resolvido,2025-02-24T06:11:00,2025-02-24T19:38:00
+46,19,16,Pedido de cancelamento,baixa,email,fechado,2025-02-24T14:52:00,2025-02-25T05:55:00
+47,43,16,Duvida sobre o plano,media,email,fechado,2025-02-26T04:58:00,2025-02-28T21:19:00
+48,72,19,Duvida sobre o plano,media,email,fechado,2025-02-27T17:18:00,2025-03-01T18:43:00
+49,71,1,Alteracao de dados cadastrais,media,chat,fechado,2025-03-01T11:19:00,2025-03-01T17:17:00
+50,18,18,Pedido de cancelamento,media,formulario,fechado,2025-03-03T22:59:00,2025-03-05T05:38:00
+51,48,15,Solicitacao de nova funcionalidade,media,telefone,fechado,2025-03-05T10:34:00,2025-03-07T01:22:00
+52,21,3,Erro ao exportar relatorio,media,chat,fechado,2025-03-05T18:47:00,2025-03-08T03:27:00
+53,99,7,Recuperacao de senha,baixa,chat,fechado,2025-03-06T11:34:00,2025-03-10T11:44:00
+54,46,5,Recuperacao de senha,urgente,email,em_andamento,2025-03-07T06:03:00,
+55,72,5,Lentidao no sistema,media,chat,fechado,2025-03-07T06:03:00,2025-03-09T07:22:00
+56,94,7,Lentidao no sistema,urgente,email,fechado,2025-03-07T11:59:00,2025-03-08T19:38:00
+57,90,10,Alteracao de dados cadastrais,alta,email,fechado,2025-03-08T09:38:00,2025-03-08T13:28:00
+58,107,11,Nao consigo acessar a conta,alta,email,fechado,2025-03-08T19:07:00,2025-03-09T20:19:00
+59,44,19,Lentidao no sistema,alta,chat,fechado,2025-03-09T03:18:00,2025-03-10T07:44:00
+60,68,13,Pedido de cancelamento,alta,formulario,fechado,2025-03-11T21:29:00,2025-03-12T11:27:00
+61,93,11,Lentidao no sistema,baixa,chat,em_andamento,2025-03-15T03:27:00,
+62,47,9,Problema com fatura,alta,chat,fechado,2025-03-15T14:43:00,2025-03-15T16:36:00
+63,32,9,Erro ao exportar relatorio,media,chat,fechado,2025-03-17T05:48:00,2025-03-18T06:57:00
+64,70,6,Duvida sobre o plano,media,formulario,fechado,2025-03-17T07:27:00,2025-03-18T07:45:00
+65,55,9,Alteracao de dados cadastrais,media,email,fechado,2025-03-17T12:54:00,2025-03-20T05:55:00
+66,72,20,Recuperacao de senha,alta,formulario,resolvido,2025-03-19T03:09:00,2025-03-19T21:25:00
+67,111,2,Erro ao exportar relatorio,media,formulario,fechado,2025-03-19T15:16:00,2025-03-21T08:10:00
+68,68,14,Nao consigo acessar a conta,media,email,fechado,2025-03-23T00:13:00,2025-03-24T21:33:00
+69,96,15,Pedido de cancelamento,baixa,email,fechado,2025-03-23T00:59:00,2025-03-27T06:47:00
+70,7,9,Problema com fatura,media,formulario,fechado,2025-03-23T03:25:00,2025-03-23T04:59:00
+71,50,11,Recuperacao de senha,alta,email,fechado,2025-03-26T22:12:00,2025-03-28T07:58:00
+72,15,1,Cobranca duplicada,baixa,email,fechado,2025-03-27T08:42:00,2025-03-28T19:39:00
+73,88,19,Nao consigo acessar a conta,media,email,fechado,2025-03-27T14:37:00,2025-03-30T15:03:00
+74,80,8,Problema com fatura,baixa,email,fechado,2025-03-27T22:57:00,2025-04-01T06:33:00
+75,59,17,Recuperacao de senha,alta,chat,fechado,2025-03-27T23:08:00,2025-03-30T01:26:00
+76,41,8,Cobranca duplicada,media,telefone,fechado,2025-03-29T23:54:00,2025-03-31T10:44:00
+77,116,6,Recuperacao de senha,media,chat,fechado,2025-03-30T10:48:00,2025-04-04T06:05:00
+78,69,2,Nao consigo acessar a conta,media,formulario,fechado,2025-03-30T19:31:00,2025-03-31T15:31:00
+79,5,16,Alteracao de dados cadastrais,media,formulario,fechado,2025-03-31T07:40:00,2025-03-31T13:08:00
+80,86,6,Lentidao no sistema,alta,formulario,resolvido,2025-03-31T21:45:00,2025-04-02T06:25:00
+81,55,14,Problema com fatura,urgente,chat,fechado,2025-04-04T04:39:00,2025-04-04T08:49:00
+82,8,8,Nao consigo acessar a conta,media,chat,fechado,2025-04-05T17:15:00,2025-04-07T02:52:00
+83,16,14,Erro ao exportar relatorio,media,chat,fechado,2025-04-06T00:47:00,2025-04-06T19:48:00
+84,12,1,Erro ao exportar relatorio,urgente,telefone,fechado,2025-04-06T21:45:00,2025-04-07T00:04:00
+85,55,13,Erro ao exportar relatorio,media,telefone,fechado,2025-04-07T14:13:00,2025-04-09T12:45:00
+86,32,16,Nao consigo acessar a conta,media,telefone,fechado,2025-04-08T21:57:00,2025-04-09T08:08:00
+87,104,1,Alteracao de dados cadastrais,alta,telefone,fechado,2025-04-10T10:05:00,2025-04-10T12:58:00
+88,16,15,Alteracao de dados cadastrais,baixa,chat,aberto,2025-04-11T03:31:00,
+89,68,15,Nao consigo acessar a conta,alta,chat,fechado,2025-04-14T11:48:00,2025-04-15T17:57:00
+90,68,7,Cobranca duplicada,media,email,fechado,2025-04-15T00:36:00,2025-04-15T18:24:00
+91,52,2,Solicitacao de nova funcionalidade,baixa,formulario,fechado,2025-04-16T11:15:00,2025-04-16T23:59:00
+92,115,3,Solicitacao de nova funcionalidade,baixa,telefone,fechado,2025-04-16T14:48:00,2025-04-18T05:46:00
+93,27,2,Lentidao no sistema,media,formulario,fechado,2025-04-17T22:25:00,2025-04-18T05:50:00
+94,60,7,Lentidao no sistema,alta,chat,fechado,2025-04-18T14:04:00,2025-04-18T23:21:00
+95,13,14,Lentidao no sistema,urgente,formulario,fechado,2025-04-22T05:18:00,2025-04-23T17:19:00
+96,80,8,Alteracao de dados cadastrais,alta,email,fechado,2025-04-22T07:46:00,2025-04-24T01:23:00
+97,58,16,Problema com fatura,media,telefone,fechado,2025-04-22T09:05:00,2025-04-24T12:31:00
+98,38,1,Recuperacao de senha,media,chat,fechado,2025-04-22T10:35:00,2025-04-23T17:01:00
+99,24,3,Recuperacao de senha,media,chat,fechado,2025-04-22T11:21:00,2025-04-22T19:36:00
+100,62,1,Problema com fatura,baixa,email,fechado,2025-04-23T04:42:00,2025-04-24T11:55:00
+101,12,19,Alteracao de dados cadastrais,media,email,fechado,2025-04-25T12:58:00,2025-04-25T18:06:00
+102,86,8,Erro ao exportar relatorio,media,formulario,fechado,2025-04-26T23:39:00,2025-04-29T09:47:00
+103,20,3,Cobranca duplicada,media,formulario,fechado,2025-04-27T01:40:00,2025-04-30T00:54:00
+104,88,15,Nao consigo acessar a conta,baixa,chat,fechado,2025-05-01T04:24:00,2025-05-05T11:01:00
+105,38,6,Lentidao no sistema,media,email,fechado,2025-05-06T01:58:00,2025-05-07T05:53:00
+106,35,6,Erro ao exportar relatorio,alta,formulario,fechado,2025-05-06T16:06:00,2025-05-09T23:43:00
+107,44,9,Alteracao de dados cadastrais,media,chat,fechado,2025-05-08T06:34:00,2025-05-08T17:04:00
+108,56,14,Erro ao exportar relatorio,alta,chat,resolvido,2025-05-09T07:04:00,2025-05-10T17:45:00
+109,29,1,Recuperacao de senha,media,email,fechado,2025-05-10T15:37:00,2025-05-11T06:08:00
+110,115,19,Nao consigo acessar a conta,baixa,formulario,fechado,2025-05-13T04:08:00,2025-05-17T06:21:00
+111,94,15,Alteracao de dados cadastrais,media,email,fechado,2025-05-13T10:13:00,2025-05-15T14:41:00
+112,95,9,Problema com fatura,media,chat,resolvido,2025-05-15T14:55:00,2025-05-15T22:03:00
+113,15,4,Recuperacao de senha,media,chat,fechado,2025-05-17T00:16:00,2025-05-17T08:36:00
+114,120,3,Lentidao no sistema,media,telefone,fechado,2025-05-17T01:55:00,2025-05-18T02:13:00
+115,74,9,Lentidao no sistema,media,email,fechado,2025-05-17T17:07:00,2025-05-18T23:57:00
+116,103,14,Erro ao exportar relatorio,baixa,email,resolvido,2025-05-18T15:24:00,2025-05-20T17:16:00
+117,36,12,Alteracao de dados cadastrais,alta,telefone,resolvido,2025-05-19T03:04:00,2025-05-21T05:06:00
+118,69,10,Duvida sobre o plano,media,formulario,fechado,2025-05-19T10:47:00,2025-05-21T10:13:00
+119,92,15,Duvida sobre o plano,baixa,chat,fechado,2025-05-19T19:04:00,2025-05-23T02:53:00
+120,19,8,Pedido de cancelamento,media,email,fechado,2025-05-21T09:19:00,2025-05-22T04:45:00
+121,91,16,Pedido de cancelamento,alta,telefone,fechado,2025-05-22T06:34:00,2025-05-22T20:47:00
+122,61,19,Alteracao de dados cadastrais,media,email,fechado,2025-05-22T07:35:00,2025-05-24T07:38:00
+123,72,8,Alteracao de dados cadastrais,alta,telefone,fechado,2025-05-23T01:07:00,2025-05-23T14:12:00
+124,72,13,Cobranca duplicada,media,formulario,fechado,2025-05-23T01:11:00,2025-05-24T16:54:00
+125,76,10,Problema com fatura,media,chat,fechado,2025-05-23T09:59:00,2025-05-25T12:14:00
+126,10,20,Solicitacao de nova funcionalidade,baixa,chat,resolvido,2025-05-24T05:37:00,2025-05-27T11:37:00
+127,92,4,Problema com fatura,media,chat,resolvido,2025-05-24T15:14:00,2025-05-27T14:26:00
+128,6,1,Pedido de cancelamento,alta,chat,resolvido,2025-05-24T15:32:00,2025-05-25T19:41:00
+129,47,4,Cobranca duplicada,alta,chat,fechado,2025-05-25T09:44:00,2025-05-26T17:46:00
+130,34,17,Solicitacao de nova funcionalidade,urgente,email,fechado,2025-05-26T23:38:00,2025-05-27T20:15:00
+131,92,8,Recuperacao de senha,baixa,formulario,fechado,2025-05-27T09:29:00,2025-05-29T22:48:00
+132,73,16,Nao consigo acessar a conta,media,email,fechado,2025-05-28T00:12:00,2025-05-29T02:08:00
+133,119,6,Alteracao de dados cadastrais,baixa,chat,fechado,2025-05-29T09:17:00,2025-06-06T05:23:00
+134,120,16,Pedido de cancelamento,media,email,fechado,2025-05-29T23:52:00,2025-05-30T11:29:00
+135,77,10,Nao consigo acessar a conta,media,formulario,fechado,2025-05-30T18:33:00,2025-06-01T00:56:00
+136,28,4,Erro ao exportar relatorio,alta,email,fechado,2025-05-31T07:42:00,2025-05-31T20:20:00
+137,66,19,Solicitacao de nova funcionalidade,urgente,formulario,fechado,2025-05-31T13:06:00,2025-06-01T18:17:00
+138,72,18,Problema com fatura,baixa,email,fechado,2025-06-01T01:33:00,2025-06-02T08:30:00
+139,15,5,Recuperacao de senha,media,formulario,fechado,2025-06-01T06:12:00,2025-06-06T21:58:00
+140,101,10,Duvida sobre o plano,alta,chat,fechado,2025-06-01T11:54:00,2025-06-01T22:29:00
+141,19,8,Nao consigo acessar a conta,alta,email,resolvido,2025-06-04T02:38:00,2025-06-05T18:07:00
+142,56,10,Alteracao de dados cadastrais,baixa,email,fechado,2025-06-04T04:51:00,2025-06-08T15:15:00
+143,12,4,Pedido de cancelamento,baixa,email,fechado,2025-06-06T18:25:00,2025-06-08T10:14:00
+144,31,15,Alteracao de dados cadastrais,media,telefone,fechado,2025-06-08T05:47:00,2025-06-08T14:11:00
+145,74,8,Erro ao exportar relatorio,baixa,formulario,fechado,2025-06-09T09:56:00,2025-06-13T11:53:00
+146,80,19,Alteracao de dados cadastrais,media,formulario,fechado,2025-06-09T21:01:00,2025-06-12T04:27:00
+147,48,7,Solicitacao de nova funcionalidade,media,chat,fechado,2025-06-10T06:40:00,2025-06-12T09:49:00
+148,65,3,Duvida sobre o plano,baixa,email,fechado,2025-06-13T01:49:00,2025-06-14T15:58:00
+149,36,7,Problema com fatura,media,formulario,fechado,2025-06-13T17:47:00,2025-06-13T19:48:00
+150,103,17,Pedido de cancelamento,media,chat,fechado,2025-06-13T18:04:00,2025-06-14T12:36:00
+151,60,14,Pedido de cancelamento,alta,telefone,fechado,2025-06-14T19:04:00,2025-06-15T19:11:00
+152,46,5,Nao consigo acessar a conta,media,email,fechado,2025-06-15T03:46:00,2025-06-15T21:48:00
+153,104,14,Pedido de cancelamento,media,formulario,fechado,2025-06-15T10:35:00,2025-06-16T13:33:00
+154,64,5,Nao consigo acessar a conta,baixa,email,resolvido,2025-06-20T03:47:00,2025-06-25T22:52:00
+155,4,4,Recuperacao de senha,alta,email,fechado,2025-06-21T05:05:00,2025-06-22T07:15:00
+156,26,6,Alteracao de dados cadastrais,media,formulario,fechado,2025-06-21T17:42:00,2025-06-23T04:24:00
+157,114,7,Erro ao exportar relatorio,alta,email,fechado,2025-06-22T05:47:00,2025-06-22T06:41:00
+158,88,9,Lentidao no sistema,media,email,fechado,2025-06-22T23:57:00,2025-06-23T03:20:00
+159,63,14,Lentidao no sistema,alta,telefone,fechado,2025-06-23T00:29:00,2025-06-24T11:20:00
+160,2,17,Nao consigo acessar a conta,urgente,formulario,fechado,2025-06-23T22:35:00,2025-06-25T04:34:00
+161,16,20,Pedido de cancelamento,media,email,fechado,2025-06-25T08:36:00,2025-06-26T19:59:00
+162,72,9,Nao consigo acessar a conta,media,email,fechado,2025-06-25T17:55:00,2025-06-28T09:40:00
+163,92,19,Nao consigo acessar a conta,media,formulario,fechado,2025-06-26T04:19:00,2025-06-28T18:50:00
+164,107,5,Solicitacao de nova funcionalidade,media,chat,resolvido,2025-06-27T20:26:00,2025-07-03T14:42:00
+165,68,9,Lentidao no sistema,alta,formulario,fechado,2025-06-30T00:32:00,2025-07-01T18:13:00
+166,29,6,Solicitacao de nova funcionalidade,media,email,fechado,2025-07-01T02:53:00,2025-07-06T10:37:00
+167,111,19,Recuperacao de senha,media,chat,fechado,2025-07-01T06:34:00,2025-07-04T01:23:00
+168,116,20,Pedido de cancelamento,urgente,chat,fechado,2025-07-01T17:56:00,2025-07-03T05:01:00
+169,18,2,Recuperacao de senha,media,telefone,fechado,2025-07-01T18:47:00,2025-07-02T20:43:00
+170,100,10,Recuperacao de senha,urgente,email,fechado,2025-07-02T16:17:00,2025-07-03T04:10:00
+171,79,19,Recuperacao de senha,baixa,chat,fechado,2025-07-02T20:40:00,2025-07-04T21:37:00
+172,31,18,Cobranca duplicada,urgente,email,fechado,2025-07-03T20:02:00,2025-07-05T05:24:00
+173,32,9,Solicitacao de nova funcionalidade,baixa,email,fechado,2025-07-06T14:41:00,2025-07-07T17:09:00
+174,119,11,Solicitacao de nova funcionalidade,baixa,formulario,fechado,2025-07-06T15:14:00,2025-07-10T07:18:00
+175,24,12,Problema com fatura,alta,chat,fechado,2025-07-06T18:42:00,2025-07-06T21:01:00
+176,103,6,Pedido de cancelamento,baixa,email,fechado,2025-07-07T00:42:00,2025-07-07T02:54:00
+177,59,19,Cobranca duplicada,alta,email,fechado,2025-07-07T10:50:00,2025-07-09T08:54:00
+178,59,18,Solicitacao de nova funcionalidade,baixa,chat,fechado,2025-07-08T12:16:00,2025-07-10T18:41:00
+179,99,12,Cobranca duplicada,urgente,chat,resolvido,2025-07-08T19:24:00,2025-07-09T20:10:00
+180,54,19,Pedido de cancelamento,media,email,resolvido,2025-07-09T00:46:00,2025-07-11T07:56:00
+181,71,12,Pedido de cancelamento,baixa,chat,fechado,2025-07-09T19:38:00,2025-07-14T01:21:00
+182,96,18,Erro ao exportar relatorio,media,email,fechado,2025-07-11T23:18:00,2025-07-13T16:42:00
+183,4,10,Duvida sobre o plano,media,chat,fechado,2025-07-12T12:55:00,2025-07-13T16:22:00
+184,71,1,Lentidao no sistema,alta,chat,fechado,2025-07-13T08:58:00,2025-07-14T00:31:00
+185,35,20,Duvida sobre o plano,media,chat,fechado,2025-07-13T20:01:00,2025-07-16T09:03:00
+186,36,9,Solicitacao de nova funcionalidade,media,formulario,fechado,2025-07-14T23:36:00,2025-07-16T19:56:00
+187,31,8,Lentidao no sistema,alta,email,fechado,2025-07-15T06:30:00,2025-07-15T12:29:00
+188,24,12,Alteracao de dados cadastrais,alta,telefone,fechado,2025-07-15T22:22:00,2025-07-17T06:06:00
+189,7,2,Lentidao no sistema,media,email,fechado,2025-07-16T04:01:00,2025-07-17T13:15:00
+190,30,19,Duvida sobre o plano,media,email,fechado,2025-07-16T07:10:00,2025-07-16T20:04:00
+191,39,12,Problema com fatura,alta,email,fechado,2025-07-16T16:32:00,2025-07-17T14:00:00
+192,15,4,Lentidao no sistema,urgente,telefone,fechado,2025-07-17T19:46:00,2025-07-17T21:56:00
+193,39,7,Lentidao no sistema,media,email,fechado,2025-07-17T23:12:00,2025-07-18T22:58:00
+194,79,7,Cobranca duplicada,media,chat,resolvido,2025-07-18T15:19:00,2025-07-21T06:40:00
+195,36,17,Erro ao exportar relatorio,media,email,fechado,2025-07-18T20:17:00,2025-07-21T01:35:00
+196,104,6,Alteracao de dados cadastrais,media,telefone,fechado,2025-07-21T02:05:00,2025-07-23T11:51:00
+197,80,4,Erro ao exportar relatorio,media,formulario,fechado,2025-07-22T00:37:00,2025-07-24T18:15:00
+198,94,13,Alteracao de dados cadastrais,alta,email,fechado,2025-07-23T15:16:00,2025-07-25T12:47:00
+199,55,1,Duvida sobre o plano,media,chat,fechado,2025-07-24T18:15:00,2025-07-26T04:01:00
+200,48,13,Pedido de cancelamento,alta,chat,fechado,2025-07-25T00:30:00,2025-07-25T19:38:00
+201,35,13,Erro ao exportar relatorio,media,telefone,fechado,2025-07-29T07:28:00,2025-07-31T00:00:00
+202,86,16,Duvida sobre o plano,media,email,fechado,2025-07-29T19:34:00,2025-07-30T17:07:00
+203,115,20,Problema com fatura,baixa,telefone,fechado,2025-08-02T09:23:00,2025-08-03T13:41:00
+204,100,19,Lentidao no sistema,media,telefone,resolvido,2025-08-03T09:29:00,2025-08-05T16:43:00
+205,115,15,Duvida sobre o plano,urgente,formulario,fechado,2025-08-04T14:13:00,2025-08-05T16:55:00
+206,20,17,Duvida sobre o plano,alta,email,em_andamento,2025-08-04T21:37:00,
+207,32,9,Erro ao exportar relatorio,media,telefone,fechado,2025-08-05T23:42:00,2025-08-07T04:00:00
+208,25,11,Duvida sobre o plano,baixa,chat,fechado,2025-08-06T04:32:00,2025-08-07T17:42:00
+209,87,15,Lentidao no sistema,media,chat,fechado,2025-08-06T05:01:00,2025-08-08T07:01:00
+210,36,14,Cobranca duplicada,media,telefone,fechado,2025-08-06T13:41:00,2025-08-08T14:26:00
+211,74,2,Recuperacao de senha,media,formulario,resolvido,2025-08-06T21:38:00,2025-08-08T17:21:00
+212,38,5,Duvida sobre o plano,media,formulario,fechado,2025-08-07T12:34:00,2025-08-13T18:45:00
+213,24,20,Erro ao exportar relatorio,urgente,email,fechado,2025-08-07T20:50:00,2025-08-08T13:13:00
+214,23,16,Recuperacao de senha,media,chat,fechado,2025-08-09T17:41:00,2025-08-09T21:47:00
+215,107,14,Nao consigo acessar a conta,alta,formulario,fechado,2025-08-11T08:50:00,2025-08-12T13:53:00
+216,40,9,Solicitacao de nova funcionalidade,media,formulario,resolvido,2025-08-11T12:23:00,2025-08-13T18:08:00
+217,118,6,Lentidao no sistema,media,formulario,fechado,2025-08-12T01:12:00,2025-08-14T18:10:00
+218,114,11,Alteracao de dados cadastrais,baixa,email,resolvido,2025-08-13T00:23:00,2025-08-14T10:50:00
+219,85,1,Erro ao exportar relatorio,media,formulario,fechado,2025-08-15T13:05:00,2025-08-15T13:23:00
+220,104,19,Recuperacao de senha,media,telefone,fechado,2025-08-16T01:23:00,2025-08-18T02:52:00
+221,55,,Alteracao de dados cadastrais,media,email,aberto,2025-08-16T18:16:00,
+222,44,9,Erro ao exportar relatorio,urgente,email,fechado,2025-08-19T08:00:00,2025-08-19T17:03:00
+223,49,11,Alteracao de dados cadastrais,media,email,fechado,2025-08-19T12:38:00,2025-08-20T07:13:00
+224,89,,Duvida sobre o plano,media,chat,aberto,2025-08-22T02:48:00,
+225,96,20,Problema com fatura,alta,formulario,fechado,2025-08-22T15:56:00,2025-08-23T00:00:00
+226,58,9,Alteracao de dados cadastrais,media,email,fechado,2025-08-23T15:23:00,2025-08-24T19:31:00
+227,86,10,Alteracao de dados cadastrais,media,formulario,fechado,2025-08-24T14:15:00,2025-08-25T08:35:00
+228,25,5,Lentidao no sistema,baixa,formulario,fechado,2025-08-25T07:12:00,2025-08-26T18:40:00
+229,8,13,Duvida sobre o plano,media,email,fechado,2025-08-25T09:50:00,2025-08-26T19:58:00
+230,100,15,Problema com fatura,baixa,formulario,fechado,2025-08-25T17:43:00,2025-08-27T23:26:00
+231,84,8,Lentidao no sistema,baixa,formulario,resolvido,2025-08-26T01:42:00,2025-08-26T09:09:00
+232,4,15,Solicitacao de nova funcionalidade,baixa,email,fechado,2025-08-26T07:56:00,2025-08-30T00:12:00
+233,55,5,Cobranca duplicada,media,chat,fechado,2025-08-26T21:27:00,2025-08-27T14:05:00
+234,30,10,Erro ao exportar relatorio,media,email,fechado,2025-08-27T11:24:00,2025-08-29T22:56:00
+235,94,6,Nao consigo acessar a conta,alta,formulario,fechado,2025-08-27T21:43:00,2025-08-29T01:18:00
+236,114,14,Duvida sobre o plano,baixa,chat,fechado,2025-08-29T12:14:00,2025-08-31T00:27:00
+237,92,15,Pedido de cancelamento,media,formulario,fechado,2025-08-29T18:35:00,2025-08-30T05:18:00
+238,47,19,Solicitacao de nova funcionalidade,media,telefone,fechado,2025-08-30T05:52:00,2025-08-31T03:00:00
+239,84,20,Cobranca duplicada,baixa,chat,fechado,2025-09-01T06:25:00,2025-09-03T04:41:00
+240,19,3,Lentidao no sistema,alta,telefone,fechado,2025-09-01T10:28:00,2025-09-01T18:02:00
+241,120,18,Recuperacao de senha,media,email,fechado,2025-09-01T13:31:00,2025-09-03T03:24:00
+242,44,10,Solicitacao de nova funcionalidade,alta,formulario,fechado,2025-09-02T06:19:00,2025-09-04T04:07:00
+243,30,8,Duvida sobre o plano,urgente,telefone,fechado,2025-09-02T17:58:00,2025-09-02T19:47:00
+244,31,18,Lentidao no sistema,alta,email,fechado,2025-09-03T23:23:00,2025-09-05T05:24:00
+245,56,1,Problema com fatura,media,email,resolvido,2025-09-04T09:46:00,2025-09-05T14:14:00
+246,54,18,Pedido de cancelamento,alta,email,fechado,2025-09-06T00:43:00,2025-09-06T03:47:00
+247,102,9,Duvida sobre o plano,media,chat,fechado,2025-09-06T19:36:00,2025-09-08T17:43:00
+248,51,20,Alteracao de dados cadastrais,alta,formulario,fechado,2025-09-08T21:26:00,2025-09-09T12:17:00
+249,92,19,Alteracao de dados cadastrais,media,formulario,fechado,2025-09-09T14:41:00,2025-09-11T05:49:00
+250,65,12,Erro ao exportar relatorio,media,formulario,fechado,2025-09-09T16:27:00,2025-09-10T15:22:00
+251,105,20,Nao consigo acessar a conta,alta,email,fechado,2025-09-11T06:47:00,2025-09-13T02:33:00
+252,1,10,Cobranca duplicada,media,chat,fechado,2025-09-11T10:26:00,2025-09-12T04:59:00
+253,109,8,Problema com fatura,media,formulario,fechado,2025-09-11T13:21:00,2025-09-12T21:41:00
+254,92,17,Solicitacao de nova funcionalidade,media,email,fechado,2025-09-12T06:02:00,2025-09-14T15:12:00
+255,18,4,Recuperacao de senha,media,email,fechado,2025-09-14T13:55:00,2025-09-16T22:05:00
+256,32,17,Alteracao de dados cadastrais,baixa,email,fechado,2025-09-14T22:27:00,2025-09-17T05:00:00
+257,94,10,Solicitacao de nova funcionalidade,media,email,fechado,2025-09-15T22:54:00,2025-09-17T03:32:00
+258,79,7,Cobranca duplicada,urgente,email,fechado,2025-09-16T02:45:00,2025-09-17T09:39:00
+259,108,10,Alteracao de dados cadastrais,baixa,formulario,resolvido,2025-09-17T11:22:00,2025-09-21T06:28:00
+260,108,3,Alteracao de dados cadastrais,media,telefone,fechado,2025-09-17T23:38:00,2025-09-18T08:03:00
+261,77,3,Erro ao exportar relatorio,baixa,formulario,fechado,2025-09-18T09:11:00,2025-09-19T23:27:00
+262,51,10,Duvida sobre o plano,media,telefone,fechado,2025-09-19T03:38:00,2025-09-20T22:08:00
+263,39,1,Erro ao exportar relatorio,urgente,chat,fechado,2025-09-19T21:50:00,2025-09-20T13:07:00
+264,52,5,Erro ao exportar relatorio,baixa,formulario,fechado,2025-09-21T05:22:00,2025-09-23T21:19:00
+265,114,19,Lentidao no sistema,alta,chat,fechado,2025-09-21T13:38:00,2025-09-23T13:51:00
+266,21,14,Solicitacao de nova funcionalidade,media,chat,fechado,2025-09-22T08:30:00,2025-09-22T09:34:00
+267,80,4,Solicitacao de nova funcionalidade,baixa,formulario,fechado,2025-09-22T08:51:00,2025-09-26T06:48:00
+268,68,13,Problema com fatura,baixa,chat,fechado,2025-09-24T05:51:00,2025-09-24T12:24:00
+269,79,19,Alteracao de dados cadastrais,alta,chat,resolvido,2025-09-24T22:43:00,2025-09-26T10:20:00
+270,11,18,Problema com fatura,media,email,fechado,2025-09-25T05:33:00,2025-09-27T17:28:00
+271,104,20,Alteracao de dados cadastrais,alta,email,fechado,2025-09-25T09:35:00,2025-09-25T13:51:00
+272,112,5,Cobranca duplicada,baixa,chat,fechado,2025-09-25T13:23:00,2025-09-29T02:47:00
+273,95,16,Duvida sobre o plano,media,email,fechado,2025-09-26T07:39:00,2025-09-26T21:16:00
+274,5,4,Pedido de cancelamento,alta,chat,fechado,2025-09-27T08:00:00,2025-09-28T20:52:00
+275,6,3,Lentidao no sistema,alta,email,fechado,2025-09-27T21:11:00,2025-09-28T20:18:00
+276,79,4,Cobranca duplicada,media,email,fechado,2025-09-28T12:44:00,2025-09-30T22:47:00
+277,27,3,Lentidao no sistema,media,chat,fechado,2025-09-30T15:24:00,2025-10-03T14:26:00
+278,55,11,Nao consigo acessar a conta,media,email,aberto,2025-09-30T22:22:00,
+279,8,1,Solicitacao de nova funcionalidade,media,email,fechado,2025-10-01T01:30:00,2025-10-01T23:15:00
+280,35,9,Alteracao de dados cadastrais,baixa,chat,fechado,2025-10-01T10:03:00,2025-10-03T04:07:00
+281,59,3,Erro ao exportar relatorio,media,formulario,fechado,2025-10-01T23:19:00,2025-10-04T12:14:00
+282,60,17,Erro ao exportar relatorio,media,email,fechado,2025-10-02T18:28:00,2025-10-02T21:08:00
+283,87,6,Lentidao no sistema,baixa,email,fechado,2025-10-04T00:47:00,2025-10-11T21:01:00
+284,88,4,Duvida sobre o plano,media,chat,fechado,2025-10-06T09:54:00,2025-10-06T22:27:00
+285,90,10,Nao consigo acessar a conta,media,email,fechado,2025-10-06T18:49:00,2025-10-08T03:27:00
+286,3,18,Recuperacao de senha,media,email,fechado,2025-10-08T16:25:00,2025-10-09T04:04:00
+287,115,6,Pedido de cancelamento,media,email,fechado,2025-10-10T13:53:00,2025-10-14T10:04:00
+288,43,4,Erro ao exportar relatorio,baixa,formulario,fechado,2025-10-12T17:25:00,2025-10-15T10:26:00
+289,111,14,Solicitacao de nova funcionalidade,alta,formulario,resolvido,2025-10-12T19:22:00,2025-10-12T22:41:00
+290,10,5,Erro ao exportar relatorio,media,formulario,fechado,2025-10-14T16:33:00,2025-10-21T07:47:00
+291,107,15,Nao consigo acessar a conta,baixa,formulario,resolvido,2025-10-15T11:29:00,2025-10-19T03:24:00
+292,79,8,Erro ao exportar relatorio,alta,formulario,fechado,2025-10-16T00:36:00,2025-10-16T03:45:00
+293,10,11,Recuperacao de senha,alta,email,aberto,2025-10-16T00:57:00,
+294,62,13,Erro ao exportar relatorio,alta,email,fechado,2025-10-16T07:53:00,2025-10-17T04:29:00
+295,58,7,Problema com fatura,baixa,email,fechado,2025-10-16T14:22:00,2025-10-19T16:52:00
+296,10,1,Pedido de cancelamento,baixa,telefone,fechado,2025-10-19T00:01:00,2025-10-21T03:54:00
+297,108,4,Recuperacao de senha,baixa,chat,fechado,2025-10-19T12:45:00,2025-10-19T21:33:00
+298,81,19,Cobranca duplicada,media,telefone,fechado,2025-10-19T14:15:00,2025-10-21T02:08:00
+299,81,1,Duvida sobre o plano,media,email,fechado,2025-10-20T11:27:00,2025-10-21T01:01:00
+300,59,9,Problema com fatura,alta,formulario,fechado,2025-10-21T04:11:00,2025-10-22T21:52:00
+301,7,12,Recuperacao de senha,media,chat,fechado,2025-10-21T04:59:00,2025-10-22T01:08:00
+302,51,6,Pedido de cancelamento,media,email,aberto,2025-10-21T11:08:00,
+303,43,7,Cobranca duplicada,media,email,fechado,2025-10-21T23:27:00,2025-10-24T23:10:00
+304,112,,Alteracao de dados cadastrais,media,chat,aberto,2025-10-22T09:37:00,
+305,87,12,Erro ao exportar relatorio,media,chat,fechado,2025-10-22T23:18:00,2025-10-25T18:33:00
+306,80,5,Lentidao no sistema,alta,email,fechado,2025-10-24T09:07:00,2025-10-24T15:42:00
+307,75,4,Nao consigo acessar a conta,media,email,fechado,2025-10-25T16:06:00,2025-10-27T17:09:00
+308,64,5,Nao consigo acessar a conta,baixa,formulario,resolvido,2025-10-26T20:25:00,2025-11-03T10:24:00
+309,19,8,Duvida sobre o plano,media,email,fechado,2025-10-27T16:14:00,2025-10-30T03:50:00
+310,23,17,Alteracao de dados cadastrais,alta,formulario,fechado,2025-10-27T20:57:00,2025-10-28T07:55:00
+311,44,14,Solicitacao de nova funcionalidade,media,telefone,em_andamento,2025-10-28T03:33:00,
+312,24,10,Solicitacao de nova funcionalidade,baixa,email,fechado,2025-10-28T23:24:00,2025-11-01T07:31:00
+313,6,9,Recuperacao de senha,media,telefone,fechado,2025-10-30T02:49:00,2025-10-31T10:14:00
+314,41,6,Problema com fatura,baixa,email,fechado,2025-10-31T02:38:00,2025-11-03T09:44:00
+315,115,2,Nao consigo acessar a conta,media,chat,fechado,2025-10-31T09:53:00,2025-10-31T21:02:00
+316,31,9,Lentidao no sistema,media,formulario,resolvido,2025-10-31T20:19:00,2025-11-03T02:05:00
+317,108,11,Lentidao no sistema,alta,chat,fechado,2025-10-31T20:49:00,2025-10-31T23:35:00
+318,29,11,Nao consigo acessar a conta,alta,chat,fechado,2025-11-01T00:10:00,2025-11-01T04:18:00
+319,83,4,Lentidao no sistema,media,chat,aberto,2025-11-01T14:59:00,
+320,108,15,Cobranca duplicada,alta,chat,fechado,2025-11-02T06:35:00,2025-11-04T05:25:00

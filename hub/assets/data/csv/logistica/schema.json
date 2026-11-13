@@ -1,0 +1,221 @@
+{
+ "slug": "logistica",
+ "tables": [
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nome",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "cidade",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "capacidade_diaria",
+     "pk": false,
+     "type": "INTEGER"
+    }
+   ],
+   "name": "centros_distribuicao"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nome",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "email_contato",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "ativa",
+     "pk": false,
+     "type": "INTEGER"
+    }
+   ],
+   "name": "transportadoras"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "transportadoras.id",
+     "name": "transportadora_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "codigo",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "tipo",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "capacidade_kg",
+     "pk": false,
+     "type": "INTEGER"
+    }
+   ],
+   "name": "veiculos"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "centros_distribuicao.id",
+     "name": "centro_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "destino",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "distancia_km",
+     "pk": false,
+     "type": "REAL"
+    }
+   ],
+   "name": "rotas"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "rotas.id",
+     "name": "rota_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "veiculos.id",
+     "name": "veiculo_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "data_prevista",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "data_realizada",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "status",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "atraso_dias",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "peso_kg",
+     "pk": false,
+     "type": "REAL"
+    },
+    {
+     "fk": "",
+     "name": "custo",
+     "pk": false,
+     "type": "REAL"
+    }
+   ],
+   "name": "entregas"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "entregas.id",
+     "name": "entrega_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "tipo",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "data_ocorrencia",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "descricao",
+     "pk": false,
+     "type": "TEXT"
+    }
+   ],
+   "name": "ocorrencias"
+  }
+ ]
+}

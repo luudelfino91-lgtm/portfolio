@@ -1,5 +1,7 @@
 # Project Status Report: Fase 3 (leitor de CSV e SQL playground)
 
+> **Atualização D11 (sem upload):** o leitor de CSV virou explorador dos cenários embutidos (sem Papa Parse, sem Worker de CSV, sem arquivo do usuário), e T-302, T-305 e o item (a) de T-306 foram superados. As linhas abaixo descrevem o estado antes da D11. Ver `docs/status/no-upload-status.md`.
+
 **Data:** 2026-11-13. **Branch:** `feat/phase-3-csv-sql` (PR #6). **Commit verificado:** e377ca0 (revisão independente final: APROVAR, sem achados críticos/altos/médios; a905171 foi o commit anterior (suíte reexecutada em 2026-11-13 por mim e pelo revisor independente, com as portas de teste livres; as alterações deste ajuste de documentação e de `tests/hub/lib.js` vêm depois e foram reverificadas na reexecução registrada na seção 3).
 **Status:** `IN REVIEW`, com **revisão independente: APROVADA** na reavaliação final (a primeira foi REJEITADA e as correções foram reverificadas). **Não pronta para produção.** Itens MVP abertos: T-301 (parcial), T-306 (parcial), T-310 (parcial), T-312 (relatório de segurança em elaboração) e a verificação fora do Chrome.
 

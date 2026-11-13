@@ -58,7 +58,7 @@ const counts = async pg => { await run(pg, TABLES.map(t => `SELECT '${t}' AS t, 
   for (const [base, label] of [[L.BASE, 'raiz /hub/'], [L.SUB, 'subpasta /portfolio/hub/']]) for (const lang of ['pt', 'en']) {
     const { c, pg, log, dialogs } = await open(br, base, lang, 'light'); const tag = `(${label}, ${lang})`;
     let g = await grab(pg);
-    L.rec(`SAMPLE-10 ${tag} botao do banco de exemplo habilitado e rotulado no idioma`, (await pg.isEnabled('#sqlSampleBtn')) && (await pg.textContent('#sqlSampleBtn')) === (lang === 'pt' ? 'Carregar banco de exemplo' : 'Load the sample database') && g.schema.length === 0, `rotulo="${await pg.textContent('#sqlSampleBtn')}"`);
+    L.rec(`SAMPLE-10 ${tag} botao do banco de exemplo habilitado e rotulado no idioma`, (await pg.isEnabled('#sqlSampleBtn')) && (await pg.textContent('#sqlSampleBtn')) === (lang === 'pt' ? 'Carregar o banco selecionado' : 'Load the selected database') && g.schema.length === 0, `rotulo="${await pg.textContent('#sqlSampleBtn')}"`);
     const nBtn = await pg.locator('#sqlSampleQ button').count();
     await pg.click('#sqlSampleBtn'); await pg.waitForFunction(() => document.getElementById('sqlTool').dataset.state === 'loading' || /(loaded|carregado)/.test(document.getElementById('sqlStatus').textContent), null, { timeout: 5000 }).catch(() => {}); await ready(pg);
     g = await grab(pg);
@@ -108,33 +108,26 @@ const counts = async pg => { await run(pg, TABLES.map(t => `SELECT '${t}' AS t, 
     await run(pg, 'DELETE FROM itens_pedido; DELETE FROM pedidos; INSERT INTO categorias (nome) VALUES (\'extra\')');
     await loadSample(pg); g = await grab(pg); const cn = await counts(pg);
     L.rec('SAMPLE-41 carregar de novo substitui (aviso, 5 tabelas, sem duplicar, alteracoes do usuario descartadas, contagens do oraculo)', /replaced/.test(g.warn) && g.schema.length === 5 && JSON.stringify(cn) === JSON.stringify(E.counts), `aviso="${g.warn}" tabelas=${g.schema.length} contagens=${JSON.stringify(cn)}`);
-    // CSV + amostra coexistem; CSV com o nome de uma tabela de exemplo a substitui
-    await pg.setInputFiles('#sqlFile', path.join(FX, 'basic.csv')); await ready(pg);
+    // tabela criada por SQL e banco de exemplo coexistem (D11: nao ha mais CSV de usuario)
     await run(pg, 'CREATE TABLE so_sql(a); INSERT INTO so_sql VALUES (1)');
     g = await grab(pg);
-    L.rec('SAMPLE-42 CSV e banco de exemplo coexistem (5 + basic + so_sql)', g.schema.length === 7, g.schema.map(t => t.cap.split(' ')[0]).join());
+    L.rec('SAMPLE-42 tabela criada por SQL e banco de exemplo coexistem (5 + so_sql)', g.schema.length === 6, g.schema.map(t => t.cap.split(' ')[0]).join());
     // Parar (SQL-32 path)
     const slow = 'WITH RECURSIVE c(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM c WHERE x < 1000000000) SELECT count(*) FROM c';
     const reqs0 = log.requests.filter(u => /loja-exemplo/.test(u)).length;
     await pg.fill('#sqlEditor', slow); await pg.click('#sqlRun'); await pg.waitForSelector('#sqlStop:not([hidden])', { timeout: 8000 }); await pg.click('#sqlStop'); await ready(pg);
     await pg.waitForFunction(() => /(recreated|Reloaded)/.test(document.getElementById('sqlStatus').textContent) || !document.getElementById('sqlErr').hidden, null, { timeout: 30000 });
-    g = await grab(pg); const cn2 = await counts(pg); await run(pg, 'SELECT COUNT(*) FROM basic'); const bc = (await grab(pg)).body[0][0];
+    g = await grab(pg); const cn2 = await counts(pg);
     await run(pg, 'SELECT * FROM so_sql'); const lost = await grab(pg);
     await run(pg, 'SELECT * FROM clientes c LEFT JOIN pedidos p ON p.cliente_id = c.id WHERE p.id IS NULL'); const lj = await grab(pg);
-    L.rec('SAMPLE-50 apos Parar: banco de exemplo recarregado automaticamente (5 tabelas, contagens do oraculo, LEFT JOIN funciona), CSV recarregado, tabela criada por SQL perdida, sem novo fetch',
-      g.schema.filter(t => /sample database$/.test(t.cap)).length === 5 && JSON.stringify(cn2) === JSON.stringify(E.counts) && bc === '10000' && lost.errVisible && /no such table/.test(lost.errM) && lj.body.length === E.clientes_sem_pedidos.length && log.requests.filter(u => /loja-exemplo/.test(u)).length === reqs0 && log.pageerrors.length === 0,
-      `tabelas=${JSON.stringify(g.schema.map(t => t.cap.split(' ')[0]))} contagens=${JSON.stringify(cn2)} basic=${bc} so_sql="${lost.errM}" leftjoin=${lj.body.length} fetches=${reqs0}->${log.requests.filter(u => /loja-exemplo/.test(u)).length}`);
+    L.rec('SAMPLE-50 apos Parar: banco de exemplo recarregado automaticamente (5 tabelas, contagens do oraculo, LEFT JOIN funciona), tabela criada por SQL perdida, sem novo fetch',
+      g.schema.filter(t => /sample database$/.test(t.cap)).length === 5 && JSON.stringify(cn2) === JSON.stringify(E.counts) && lost.errVisible && /no such table/.test(lost.errM) && lj.body.length === E.clientes_sem_pedidos.length && log.requests.filter(u => /loja-exemplo/.test(u)).length === reqs0 && log.pageerrors.length === 0,
+      `tabelas=${JSON.stringify(g.schema.map(t => t.cap.split(' ')[0]))} contagens=${JSON.stringify(cn2)} so_sql="${lost.errM}" leftjoin=${lj.body.length} fetches=${reqs0}->${log.requests.filter(u => /loja-exemplo/.test(u)).length}`);
     // tempo limite
     await pg.selectOption('#sqlTimeout', '5'); await pg.fill('#sqlEditor', slow); await pg.click('#sqlRun');
     await pg.waitForFunction(() => document.getElementById('sqlTool').dataset.state !== 'running', null, { timeout: 20000 }); await ready(pg);
     const cn3 = await counts(pg);
     L.rec('SAMPLE-51 apos o tempo limite: banco de exemplo recarregado e consultavel', JSON.stringify(cn3) === JSON.stringify(E.counts), JSON.stringify(cn3));
-    // CSV com nome de tabela de exemplo: substitui; a ordem da recarga (exemplo antes dos CSV) preserva isso
-    const pedCsv = path.join(os.tmpdir(), 'pedidos.csv'); fs.writeFileSync(pedCsv, 'id,x\n1,a\n2,b\n3,c\n');
-    await pg.setInputFiles('#sqlFile', pedCsv); await ready(pg); await run(pg, 'SELECT COUNT(*) FROM pedidos'); const pc = (await grab(pg)).body[0][0];
-    await pg.fill('#sqlEditor', slow); await pg.click('#sqlRun'); await pg.waitForFunction(() => document.getElementById('sqlTool').dataset.state !== 'running', null, { timeout: 20000 }); await ready(pg);
-    await run(pg, 'SELECT COUNT(*) FROM pedidos'); const pc2 = (await grab(pg)).body[0][0]; fs.rmSync(pedCsv);
-    L.rec('SAMPLE-52 CSV chamado pedidos.csv substitui a tabela de exemplo e continua assim apos o reinicio (sem duplicar nem voltar ao exemplo)', pc === '3' && pc2 === '3', `antes=${pc} depois=${pc2}`);
     await pg.click('#sqlReset'); await ready(pg); g = await grab(pg);
     L.rec('SAMPLE-60 Reiniciar banco remove tudo, inclusive o exemplo', g.schema.length === 0, `tabelas=${g.schema.length} status="${g.status}"`);
     await pg.fill('#sqlEditor', slow); await pg.click('#sqlRun'); await pg.waitForFunction(() => document.getElementById('sqlTool').dataset.state !== 'running', null, { timeout: 20000 }); await ready(pg); g = await grab(pg);

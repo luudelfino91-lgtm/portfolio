@@ -1,0 +1,25 @@
+id,nome,objetivo,data_inicio,data_fim,orcamento
+1,Verao 01,conversao,2025-07-31,2025-09-25,38000.0
+2,Volta as aulas 01,reconhecimento,2025-01-21,2025-05-18,66000.0
+3,Dia das maes 01,reconhecimento,2025-01-08,2025-02-28,71000.0
+4,Black week 01,trafego,2025-04-15,2025-07-28,39000.0
+5,Lancamento 01,conversao,2025-05-07,2025-07-06,19000.0
+6,Fim de ano 01,conversao,2025-09-10,2025-10-25,38000.0
+7,Reativacao 01,reconhecimento,2025-04-25,2025-08-21,28000.0
+8,Aniversario 01,reconhecimento,2025-08-20,,60000.0
+9,Frete gratis 01,reconhecimento,2025-05-18,2025-07-06,37000.0
+10,Liquidacao 01,conversao,2025-08-25,2025-11-20,37000.0
+11,Clube de beneficios 01,conversao,2025-07-18,2025-11-03,26000.0
+12,Novidades 01,conversao,2025-01-30,2025-05-04,61000.0
+13,Verao 02,captacao,2025-09-12,2026-01-05,66000.0
+14,Volta as aulas 02,trafego,2025-06-13,2025-09-29,51000.0
+15,Dia das maes 02,conversao,2025-02-09,2025-03-29,72000.0
+16,Black week 02,conversao,2025-04-06,,54000.0
+17,Lancamento 02,trafego,2025-05-09,2025-07-30,19000.0
+18,Fim de ano 02,conversao,2025-08-03,2025-11-14,54000.0
+19,Reativacao 02,conversao,2025-02-07,2025-05-23,60000.0
+20,Aniversario 02,conversao,2025-07-05,2025-10-16,40000.0
+21,Frete gratis 02,trafego,2025-08-01,2025-09-15,40000.0
+22,Liquidacao 02,trafego,2025-07-24,2025-09-20,16000.0
+23,Clube de beneficios 02,captacao,2025-02-02,2025-05-15,65000.0
+24,Novidades 02,conversao,2025-06-15,,50000.0
