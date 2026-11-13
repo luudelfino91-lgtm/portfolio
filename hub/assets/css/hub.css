@@ -6,8 +6,10 @@
    ===================================================================== */
 
 /* ---- Fontes locais (D3a): mesmos nomes de família do styles.css ---- */
-@font-face{font-family:"Bricolage Grotesque";font-style:normal;font-weight:200 800;font-display:swap;src:url("../fonts/bricolage-grotesque-latin-wght-normal.woff2") format("woff2")}
-@font-face{font-family:"Figtree";font-style:normal;font-weight:300 900;font-display:swap;src:url("../fonts/figtree-latin-wght-normal.woff2") format("woff2")}
+@font-face{font-family:"Poppins";font-style:normal;font-weight:400;font-display:swap;src:url("../fonts/poppins-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Poppins";font-style:normal;font-weight:500;font-display:swap;src:url("../fonts/poppins-latin-500-normal.woff2") format("woff2")}
+@font-face{font-family:"Poppins";font-style:normal;font-weight:600;font-display:swap;src:url("../fonts/poppins-latin-600-normal.woff2") format("woff2")}
+@font-face{font-family:"Poppins";font-style:normal;font-weight:700;font-display:swap;src:url("../fonts/poppins-latin-700-normal.woff2") format("woff2")}
 @font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:400;font-display:swap;src:url("../fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2")}
 @font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:500;font-display:swap;src:url("../fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2")}
 
@@ -43,7 +45,7 @@
 /* Hero */
 .hub-hero{padding-block:44px 28px}
 .hub-hero--sub{padding-block:20px 24px}
-.hub-hero h1{font-size:clamp(34px,5.2vw,60px);font-weight:750;margin-top:20px}
+.hub-hero h1{font-size:clamp(34px,5.2vw,60px);font-weight:700;margin-top:20px}
 .hub-hero--sub h1{font-size:clamp(30px,4.2vw,46px);margin-top:0}
 .hub-hero .lede{font-size:18px;color:var(--ink-2);max-width:60ch;margin-top:18px}
 .hub-hero .ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
@@ -51,7 +53,7 @@
 
 /* Seções */
 .hub-sec{padding-block:36px 8px}
-.hub-sec h2{font-size:clamp(26px,3.4vw,38px);font-weight:750}
+.hub-sec h2{font-size:clamp(26px,3.4vw,38px);font-weight:700}
 .hub-sec-p{color:var(--ink-2);max-width:60ch;margin-top:10px;font-size:17px}
 
 /* Cartões (hub-ux 8.11): um só link por cartão, esticado por ::after */
@@ -74,7 +76,7 @@
 /* Estado vazio (hub-ux 8.10) */
 .empty{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:var(--r-lg);padding:40px 24px}
 .empty svg{width:32px;height:32px;color:var(--ink-3)}
-.empty h2{font-size:20px;font-weight:650}
+.empty h2{font-size:20px;font-weight:600}
 .empty p{color:var(--ink-2);max-width:56ch}
 
 /* Migalhas (hub-ux 8.16) */
