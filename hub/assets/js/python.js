@@ -21,8 +21,10 @@
      CSV na mesma origem (fetch relativo, sem credenciais; por isso a CSP desta pagina tem connect-src 'self') e os
      entrega por postMessage ao iframe, que os grava em /data/<tabela>.csv no sistema de arquivos virtual. O iframe nao
      tem rede nem origem para buscar nada. Os arquivos sao reenviados a CADA execucao (cada Run comeca com /data intacto).
-   - EXTENSAO FUTURA (pandas, outro agente): pacotes seriam carregados DENTRO do Worker (ver o ponto de extensao em
-     python-worker-src.js) com wheels hospedados no proprio site; esta pagina nao muda: os CSV em /data/ ja servem de entrada.
+   - numpy e pandas (D12): carregados SO pelo Worker, sob demanda, quando o AST do codigo importa um deles (lista fechada de 5
+     pacotes, wheels do proprio site; ver python-worker-src.js). Esta pagina so mostra o aviso de download extra (status 'pkgs'),
+     arma um tempo limite proprio para o download e exibe dicas ao fim da execucao (ModuleNotFoundError, falha de pacote).
+     Zero requisicao de pacote antes do clique e zero para codigo que nao importa pandas/numpy (PRV-14).
    - Dados do usuario nunca saem do navegador: sem telemetria, nada gravado (nem localStorage; so ld-lang/ld-theme
      do Hub, em outros arquivos). O unico fetch e o dos CSV do cenario, da mesma origem.
    - FLAG UNICA do fallback B2 (Worker de blob na propria pagina, sem isolamento
@@ -38,17 +40,45 @@
   var CAP_LINES = 2000, CAP_BYTES = 262144;
   var T_MIN = 5, T_MAX = 120, T_DEFAULT = 30;
   var LOAD_TIMEOUT_MS = 120000;          // carregar Pyodide + canario
+  var PKG_TIMEOUT_MS = 120000;           // baixar numpy/pandas (D12); nao conta no tempo limite do usuario
   var RUNNER_URL = new URL('runner.html', location.href).href;   // mesma pasta desta pagina
 
   function $(id) { return document.getElementById(id); }
   var tool = $('pyTool'), editor = $('pyEditor'), runBtn = $('pyRun'), stopBtn = $('pyStop'), clearBtn = $('pyClear');
-  var timeoutIn = $('pyTimeout'), dataFiles = $('pyDataFiles'), dataNote = $('pyDataNote');
+  var exBtn = $('pyExample'), timeoutIn = $('pyTimeout'), dataFiles = $('pyDataFiles'), dataNote = $('pyDataNote');
   var picker = null;
   var statusEl = $('pyStatus'), errBox = $('pyErr'), errT = $('pyErrT'), errM = $('pyErrM'), warnBox = $('pyWarn');
   var outEl = $('pyOut'), outEmpty = $('pyOutEmpty'), outNone = $('pyOutNone');
   if (!tool || !editor) return;
   function t(k, v) { return window.Hub.t(k, v); }
   function nf(n) { return new Intl.NumberFormat(window.Hub.lang === 'pt' ? 'pt-BR' : 'en-US').format(n); }
+
+  // Exemplos de pandas (D12): um por cenario (merge + groupby), executados de verdade nos testes contra sqlite3. Comentarios PT/EN.
+  var EXAMPLES = {
+    'loja-exemplo': { en: '# Revenue per category (merge + groupby)\n', pt: '# Receita por categoria (merge + groupby)\n', code:
+      'import pandas as pd\n\nitens = pd.read_csv("/data/itens_pedido.csv")\nprodutos = pd.read_csv("/data/produtos.csv")\ncategorias = pd.read_csv("/data/categorias.csv")\n\n' +
+      'itens["receita"] = itens["quantidade"] * itens["preco_unitario"]\n' +
+      'df = (itens\n      .merge(produtos.rename(columns={"id": "produto_id"})[["produto_id", "categoria_id"]], on="produto_id")\n      .merge(categorias.rename(columns={"id": "categoria_id", "nome": "categoria"}), on="categoria_id"))\n\n' +
+      'res = df.groupby("categoria")["receita"].agg(itens="count", receita="sum").sort_values("receita", ascending=False)\nprint(res.round(2))\n' },
+    'marketing-digital': { en: '# Cost, revenue and ROAS per channel (merge + groupby)\n', pt: '# Custo, receita e ROAS por canal (merge + groupby)\n', code:
+      'import pandas as pd\n\ncanais = pd.read_csv("/data/canais.csv")\nanuncios = pd.read_csv("/data/anuncios.csv")\nmetricas = pd.read_csv("/data/metricas_diarias.csv")\n\n' +
+      'df = (metricas\n      .merge(anuncios.rename(columns={"id": "anuncio_id"})[["anuncio_id", "canal_id"]], on="anuncio_id")\n      .merge(canais.rename(columns={"id": "canal_id", "nome": "canal"})[["canal_id", "canal"]], on="canal_id"))\n\n' +
+      'res = df.groupby("canal")[["custo", "receita"]].sum()\nres["roas"] = res["receita"] / res["custo"]\nprint(res.sort_values("roas", ascending=False).round(2))\n' },
+    'logistica': { en: '# Deliveries and average delay (days) per carrier (merge + groupby)\n', pt: '# Entregas e atraso médio (dias) por transportadora (merge + groupby)\n', code:
+      'import pandas as pd\n\nentregas = pd.read_csv("/data/entregas.csv")\nveiculos = pd.read_csv("/data/veiculos.csv")\ntransportadoras = pd.read_csv("/data/transportadoras.csv")\n\n' +
+      'df = (entregas\n      .merge(veiculos.rename(columns={"id": "veiculo_id"})[["veiculo_id", "transportadora_id"]], on="veiculo_id")\n      .merge(transportadoras.rename(columns={"id": "transportadora_id", "nome": "transportadora"})[["transportadora_id", "transportadora"]], on="transportadora_id"))\n\n' +
+      'res = df.groupby("transportadora").agg(entregas=("id", "size"), atraso_medio=("atraso_dias", "mean")).sort_values("atraso_medio", ascending=False)\nprint(res.round(2))\n' },
+    'rh': { en: '# Latest recorded salary: average per department (merge + groupby)\n', pt: '# Último salário registrado: média por departamento (merge + groupby)\n', code:
+      'import pandas as pd\n\nhist = pd.read_csv("/data/salarios_historico.csv")\nfunc = pd.read_csv("/data/funcionarios.csv")\ndep = pd.read_csv("/data/departamentos.csv")\n\n' +
+      'atual = hist.sort_values("data_inicio").groupby("funcionario_id").tail(1)\n' +
+      'df = (atual\n      .merge(func.rename(columns={"id": "funcionario_id"})[["funcionario_id", "departamento_id"]], on="funcionario_id")\n      .merge(dep.rename(columns={"id": "departamento_id", "nome": "departamento"})[["departamento_id", "departamento"]], on="departamento_id"))\n\n' +
+      'res = df.groupby("departamento")["salario"].agg(pessoas="count", media="mean").sort_values("media", ascending=False)\nprint(res.round(2))\n' },
+    'atendimento': { en: '# Average satisfaction score (empty = no answer) per team (merge + groupby)\n', pt: '# Nota média de satisfação (vazio = sem resposta) por equipe (merge + groupby)\n', code:
+      'import pandas as pd\n\npesq = pd.read_csv("/data/pesquisas_satisfacao.csv")\ntickets = pd.read_csv("/data/tickets.csv")\nagentes = pd.read_csv("/data/agentes.csv")\n\n' +
+      'df = (pesq\n      .merge(tickets.rename(columns={"id": "ticket_id"})[["ticket_id", "agente_id"]], on="ticket_id")\n      .merge(agentes.rename(columns={"id": "agente_id"})[["agente_id", "equipe"]], on="agente_id"))\n\n' +
+      'res = df.groupby("equipe")["nota"].agg(respostas="count", nota_media="mean").sort_values("nota_media", ascending=False)\nprint(res.round(2))\n' }
+  };
+  function exampleFor(slug) { var e = EXAMPLES[slug]; return (window.Hub.lang === 'pt' ? e.pt : e.en) + e.code; }
 
   var frame = null, runId = 0, state = 'idle', engineReady = false;
   var loadTimer = 0, runTimer = 0, startedAt = 0;
@@ -58,13 +88,14 @@
   var lastErr = null;
   var pendingCode = '', pendingSecs = T_DEFAULT, pendingSlug = SC.defaultSlug;
 
-  function setState(s) { state = s; tool.dataset.state = s; runBtn.disabled = s !== 'idle'; stopBtn.disabled = s === 'idle'; if (picker) picker.setDisabled(s !== 'idle'); }
+  function setState(s) { state = s; tool.dataset.state = s; runBtn.disabled = s !== 'idle'; exBtn.disabled = s !== 'idle'; stopBtn.disabled = s === 'idle'; if (picker) picker.setDisabled(s !== 'idle'); }
   function vv(v) { return typeof v === 'function' ? v() : v; }   // vars podem ser funcao: refeitas ao trocar de idioma
   function setStatus(key, vars) { lastStatus = key ? [key, vars] : null; statusEl.textContent = key ? t(key, vv(vars)) : ''; }
   function showErr(tk, mk, vars) { lastErr = [tk, mk, vars]; errT.textContent = t(tk); errM.textContent = t(mk, vars); errBox.hidden = false; }
   function hideErr() { lastErr = null; errBox.hidden = true; }
-  function showWarn(key, vars) { warnBox.textContent = ''; var p = document.createElement('p'); p.textContent = t(key, vars); warnBox.appendChild(p); warnBox.dataset.k = key; warnBox.hidden = false; }
-  function hideWarn() { warnBox.hidden = true; delete warnBox.dataset.k; warnBox.textContent = ''; }
+  var warnVars;
+  function showWarn(key, vars) { warnVars = vars; warnBox.textContent = ''; var p = document.createElement('p'); p.textContent = t(key, vars); warnBox.appendChild(p); warnBox.dataset.k = key; warnBox.hidden = false; }
+  function hideWarn() { warnBox.hidden = true; delete warnBox.dataset.k; warnBox.textContent = ''; warnVars = undefined; }
 
   // ---- saida
   function clearOutput() {
@@ -124,6 +155,16 @@
     setStatus(statusKey, vars);
   }
 
+  function refuse(reason) {
+    killFrame(); setState('idle'); setStatus('hub.py.status.refused');
+    showErr('hub.py.err.refused.t', 'hub.py.err.refused.m', { why: reason === 'eval' ? t('hub.py.err.refused.eval') : t('hub.py.err.refused.net') });
+    tool.dataset.engine = 'refused';
+  }
+  function pkgTimeout() {
+    killFrame(); setState('idle'); tool.dataset.engine = 'none'; setStatus('hub.py.status.failed');
+    showErr('hub.py.err.fatal.t', 'hub.py.err.fatal.m', { detail: 'timeout' });
+  }
+
   function onMessage(e) {
     if (!frame || e.source !== frame.contentWindow) return;   // so o nosso iframe
     var d = e.data;
@@ -135,11 +176,7 @@
         else if (d.s === 'loading') setStatus('hub.py.status.loading');
         else if (d.s === 'ready') { engineReady = true; clearTimeout(loadTimer); tool.dataset.engine = 'ready'; }
         break;
-      case 'refused':
-        killFrame(); setState('idle'); setStatus('hub.py.status.refused');
-        showErr('hub.py.err.refused.t', 'hub.py.err.refused.m', { why: d.reason === 'eval' ? t('hub.py.err.refused.eval') : t('hub.py.err.refused.net') });
-        tool.dataset.engine = 'refused';
-        break;
+      case 'refused': refuse(d.reason); break;
       case 'fatal':
         killFrame(); setState('idle'); setStatus('hub.py.status.failed'); tool.dataset.engine = 'none';
         showErr('hub.py.err.fatal.t', 'hub.py.err.fatal.m', { detail: String(d.detail || '').slice(0, 300) });
@@ -152,11 +189,25 @@
         break;
       case 'out': if (d.id === runId && Array.isArray(d.parts)) appendOut(d.parts); break;
       case 'truncated': if (d.id === runId) markTruncated(); break;
+      case 'pkgs':   // D12: o Worker vai baixar/instalar numpy/pandas por causa dos imports do codigo (lista fechada)
+        if (d.id !== runId || state !== 'loading') return;
+        if (d.s === 'loading') {
+          clearTimeout(loadTimer); loadTimer = setTimeout(pkgTimeout, PKG_TIMEOUT_MS);
+          var mb = Math.max(1, Math.round((Number(d.bytes) || 0) / 1e6)), names = (Array.isArray(d.names) ? d.names : []).slice(0, 5).join(', ');
+          tool.dataset.packages = 'loading';
+          setStatus('hub.py.status.pkgs', { pkgs: names, mb: nf(mb) });
+        } else { tool.dataset.packages = 'ready'; setStatus('hub.py.status.starting'); }
+        break;
       case 'done':
-        if (d.id !== runId || state !== 'running') return;
+        if (d.id !== runId || (state !== 'running' && state !== 'loading')) return;
+        // falhas na fase de pacotes (antes de 'started'): o codigo do usuario nao rodou
+        if (d.hint && d.hint.k === 'isolation') { refuse('net'); return; }   // o canario repetido depois dos pacotes falhou
+        if (d.hint && d.hint.k === 'pkgfail') { killFrame(); tool.dataset.engine = 'none'; setState('idle'); setStatus('hub.py.status.failed'); showErr('hub.py.err.pkg.t', 'hub.py.err.pkg.m'); return; }   // sessao encerrada: uma falha parcial de loadPackage deixa o Worker em estado incerto (medido), o proximo Executar recomeca limpo
+        if (state !== 'running') return;
         var ms = Math.round(performance.now() - startedAt);
         var nl = lines;
         finishRun(d.ok ? 'hub.py.status.done' : 'hub.py.status.error', function () { return { ms: nf(ms), lines: t(nl === 1 ? 'hub.py.lines.one' : 'hub.py.lines.other', { n: nf(nl) }) }; });
+        if (!d.ok && d.hint && d.hint.k === 'nomodule') showWarn('hub.py.warn.nomodule', { name: String(d.hint.name).slice(0, 60) });
         break;
     }
   }
@@ -184,7 +235,7 @@
     if (size > MAX_CODE) { showErr('hub.py.err.size.t', 'hub.py.err.size.m', { n: nf(size) }); editor.focus(); return; }
     var raw = timeoutIn.value.trim(), secs = Number(raw);
     if (!/^\d+$/.test(raw) || secs < T_MIN || secs > T_MAX) { showErr('hub.py.err.timeoutval.t', 'hub.py.err.timeoutval.m', { min: T_MIN, max: T_MAX }); timeoutIn.focus(); return; }
-    clearOutput();
+    clearOutput(); delete tool.dataset.packages;
     runId++;
     var id = runId, slug = picker.get();
     pendingCode = code; pendingSecs = secs; pendingSlug = slug;
@@ -233,13 +284,18 @@
   runBtn.addEventListener('click', run);
   stopBtn.addEventListener('click', stop);
   clearBtn.addEventListener('click', function () { clearOutput(); });
+  exBtn.addEventListener('click', function () {
+    if (state !== 'idle') return;
+    editor.value = exampleFor(picker.get()); editor.focus(); editor.setSelectionRange(0, 0); editor.scrollTop = 0;
+    hideErr(); setStatus('hub.py.ex.loaded');
+  });
   editor.addEventListener('keydown', function (e) { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); run(); } });
 
   // idioma: refaz os textos dinamicos
   window.Hub.onLang.push(function () {
     if (lastStatus) statusEl.textContent = t(lastStatus[0], vv(lastStatus[1]));
     if (lastErr) { errT.textContent = t(lastErr[0]); errM.textContent = t(lastErr[1], lastErr[2]); }
-    if (warnBox.dataset.k) { var k = warnBox.dataset.k; showWarn(k, k === 'hub.py.out.trunc' ? { lines: nf(CAP_LINES), kib: '256' } : undefined); }
+    if (warnBox.dataset.k) { var k = warnBox.dataset.k; showWarn(k, k === 'hub.py.out.trunc' ? { lines: nf(CAP_LINES), kib: '256' } : warnVars); }
     if (frame) frame.setAttribute('title', t('hub.py.frame.title'));
     renderData();
   });

@@ -55,7 +55,7 @@
         <label class="sql-label" for="pyEditor" data-i="hub.py.ed.label">Python editor</label>
         <textarea class="sql-editor" id="pyEditor" rows="10" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-describedby="pyEdHint pyLoadNote">print(1 + 1)</textarea>
         <p class="csv-note" id="pyEdHint" data-i="hub.py.ed.hint">Press Ctrl+Enter (Cmd+Enter on a Mac) to run. The Tab key moves focus out of the editor.</p>
-        <p class="csv-note" id="pyLoadNote" data-i="hub.py.load.note">Python is not downloaded until you press Run. The first run downloads about 6 MB (again each time you open this page, because the isolated frame cannot reuse the browser cache) and takes a few seconds.</p>
+        <p class="csv-note" id="pyLoadNote" data-i="hub.py.load.note">Python is not downloaded until you press Run. The first run downloads about 6 MB (again each time you open this page, because the isolated frame cannot reuse the browser cache) and takes a few seconds. If your code imports numpy or pandas, that Run also downloads the package files from this site: about 3 MB for numpy, about 8 MB for pandas (numpy included). Code that does not import them downloads nothing extra.</p>
         <div class="sql-actions">
           <button class="btn btn-accent" id="pyRun" type="button"><span data-i="hub.py.run">Run</span></button>
           <button class="btn btn-ghost" id="pyStop" type="button" disabled><span data-i="hub.py.stop">Stop</span></button>
@@ -72,7 +72,11 @@
         <h2 id="pyDataH" data-i="hub.py.data.h">Data</h2>
         <div id="pyPicker"></div>
         <p class="csv-status" id="pyDataFiles"></p>
-        <p class="csv-note" id="pyDataNote" data-i="hub.py.data.note">Each table is a CSV file in /data/ with a header row; read it with open() or the csv module (for example open("{example}")). An empty cell is a missing value (NULL). The files are copied from this site into Python when you press Run, and there is no way to add other files. pandas is not included.</p>
+        <p class="csv-note" id="pyDataNote" data-i="hub.py.data.note">Each table is a CSV file in /data/ with a header row; read it with open() or the csv module (for example open("{example}")). An empty cell is a missing value (NULL). The files are copied from this site into Python when you press Run, and there is no way to add other files. numpy and pandas are available: pd.read_csv("{example}") loads a table into a DataFrame.</p>
+        <div class="sql-actions">
+          <button class="btn btn-ghost" id="pyExample" type="button" aria-describedby="pyExNote"><span data-i="hub.py.ex.btn">Load the pandas example for this scenario</span></button>
+        </div>
+        <p class="csv-note" id="pyExNote" data-i="hub.py.ex.note">The example joins tables with merge and summarizes with groupby. It replaces the text in the editor. Running it downloads numpy and pandas (about 8 MB).</p>
       </section>
 
       <p class="csv-status" id="pyStatus" role="status" aria-live="polite"></p>

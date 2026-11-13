@@ -26,6 +26,15 @@
 
   function up(m) { try { parentWin.postMessage(m, '*'); } catch (e) {} }
   function str(v, n) { return typeof v === 'string' ? v.slice(0, n) : ''; }
+  var PKG_NAMES = ['numpy', 'pandas', 'python-dateutil', 'pytz', 'six'];   // D12: lista fechada (a mesma do Worker)
+  // dica opcional no fim da execucao: so formatos conhecidos (o Python pode forjar; o pior efeito e a propria sessao)
+  function cleanHint(h) {
+    if (!h || typeof h !== 'object') return null;
+    if (h.k === 'nomodule' && typeof h.name === 'string' && /^[A-Za-z0-9_]{1,60}$/.test(h.name)) return { k: 'nomodule', name: h.name };
+    if (h.k === 'pkgfail') return { k: 'pkgfail' };
+    if (h.k === 'isolation') return { k: 'isolation' };
+    return null;
+  }
 
   function flushOut() {
     timer = 0;
@@ -68,9 +77,16 @@
         case 'fatal': if (workerReady) break; up({ t: 'fatal', detail: str(d.detail, 600) }); break;
         case 'started': if (d.id === curId) up({ t: 'started', id: curId }); break;
         case 'out': if (d.id === curId) { if (Array.isArray(d.parts)) addOut(d.parts); if (d.truncated === true) { trunc = true; schedule(); } } break;
+        case 'pkgs':
+          // D12: aviso informativo de download de pacotes; so com execucao em andamento; nomes so da lista fechada
+          if (running && d.id === curId && (d.s === 'loading' || d.s === 'ready') && Array.isArray(d.names)) {
+            var nm = d.names.filter(function (n) { return PKG_NAMES.indexOf(n) >= 0; });
+            up({ t: 'pkgs', id: curId, s: d.s, names: nm, bytes: typeof d.bytes === 'number' && d.bytes > 0 && d.bytes < 2e7 ? d.bytes : 0 });
+          }
+          break;
         case 'done':
           // uma vez por execucao, so com a execucao em andamento e ok booleano (o Python pode forjar)
-          if (running && d.id === curId && typeof d.ok === 'boolean') { running = false; if (timer) clearTimeout(timer); flushOut(); up({ t: 'done', id: curId, ok: d.ok }); }
+          if (running && d.id === curId && typeof d.ok === 'boolean') { running = false; if (timer) clearTimeout(timer); flushOut(); up({ t: 'done', id: curId, ok: d.ok, hint: cleanHint(d.hint) }); }
           break;
       }
     };
