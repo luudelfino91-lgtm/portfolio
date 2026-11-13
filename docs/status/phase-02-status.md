@@ -1,7 +1,7 @@
 # Project Status Report: Fase 2 (casca do Hub)
 
 **Data:** 2026-11-12. **Branch:** `feat/phase-2-hub-shell` (empilhada sobre a Fase 1). **Commit verificado:** `3bec59f`.
-**Status:** `IN REVIEW`. **Não pronta para produção.** Itens MVP abertos: T-208 (parcial) e T-213.
+**Status:** `PUBLICADA` em 2026-11-12 (PRs #1, #2 e #3 mesclados na `main` por merge commit, `48a65a9`). Itens MVP ainda abertos: T-208 (parcial). T-213 executado em parte, ver seção 8.
 
 ## 1. O que existe
 `hub/` com 5 páginas (home, ferramentas, privacidade, e placeholders de CSV e SQL), `hub.css`, `theme.js`, `i18n.js`, `nav.js`, 4 fontes woff2 locais (OFL) e READMEs. O portfólio não foi alterado: `git diff origin/main...HEAD` só toca `.claude/`, `docs/`, `hub/` e `tests/`.
@@ -41,3 +41,17 @@ BUG-01 (média, nome acessível da marca) e BUG-02 (baixa, Tab no menu móvel): 
 - Responder RNF-03.
 - G1-c (link do portfólio para o Hub) e G1-d (`--ink-3`) seguem sem aprovação.
 - Depois do merge, rodo T-213 e o que falta de T-208 contra o Pages real. A Fase 3 (CSV e SQL) pode começar em paralelo, pois depende só de D3b (arquivos próprios para sql.js e Papa Parse).
+
+## 8. Atualização pós-merge: T-213 no GitHub Pages real (2026-11-12)
+
+Executado pelo Tech Lead no Chrome do Lucas, em `https://luudelfino91-lgtm.github.io/portfolio/hub/`.
+
+| Verificação | Resultado |
+|---|---|
+| 5 páginas do Hub (`hub/`, `ferramentas/`, `ferramentas/csv/`, `ferramentas/sql/`, `privacidade/`) | **200** em todas |
+| `hub.css`, 3 JS e 4 woff2 | **200**; bytes das fontes iguais aos do repositório (41.344 + 20.156 + 21.168 + 21.832 = 104.500) |
+| `index.html`, `certificacoes.html` e `assets/css/styles.css` do portfólio | **200**; tamanhos idênticos aos de antes (16.601, 58.998 e 23.212 B): portfólio intacto |
+| Requisições no carregamento da home do Hub | **12, todas para `luudelfino91-lgtm.github.io`**; nenhuma para Google Fonts ou terceiros |
+| Aparência | Home abre com tema escuro (preferência do sistema do Lucas), 2 cartões "Em construção", seletor EN/PT, link para a política de privacidade |
+
+**Ainda NÃO verificado no site real:** compressão (gzip/brotli) e cabeçalhos HTTP do Pages, 404 de página inexistente, URL em maiúsculas/minúsculas, PT/EN e tema claro na versão publicada, Lighthouse, Firefox e Edge. A leitura de `cookie` e `localStorage` foi bloqueada pela ferramenta do navegador, então a ausência de cookies no site real **não** foi reconfirmada aqui (continua verificada só nos testes locais).
