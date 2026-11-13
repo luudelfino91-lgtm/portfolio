@@ -203,8 +203,8 @@
         // falhas na fase de pacotes (antes de 'started'): o codigo do usuario nao rodou
         if (d.hint && d.hint.k === 'isolation') { refuse('net'); return; }   // o canario repetido depois dos pacotes falhou
         if (d.hint && d.hint.k === 'pkgfail') { killFrame(); tool.dataset.engine = 'none'; setState('idle'); setStatus('hub.py.status.failed'); showErr('hub.py.err.pkg.t', 'hub.py.err.pkg.m'); return; }   // sessao encerrada: uma falha parcial de loadPackage deixa o Worker em estado incerto (medido), o proximo Executar recomeca limpo
-        if (d.hint && d.hint.k === 'toodeep') { clearTimeout(loadTimer); clearTimeout(runTimer); setState('idle'); setStatus('hub.py.status.failed'); showErr('hub.py.err.deep.t', 'hub.py.err.deep.m'); return; }   // nada rodou; a sessao segue
-        if (d.hint && d.hint.k === 'dead') { killFrame(); tool.dataset.engine = 'none'; setState('idle'); setStatus('hub.py.status.failed'); showErr('hub.py.err.dead.t', 'hub.py.err.dead.m'); return; }   // Pyodide morreu: iframe removido, o proximo Executar recria
+        if (d.hint && d.hint.k === 'toodeep') { clearTimeout(loadTimer); clearTimeout(runTimer); setState('idle'); setStatus('hub.py.status.notrun'); showErr('hub.py.err.deep.t', 'hub.py.err.deep.m'); return; }   // nada rodou; a sessao segue
+        if (d.hint && d.hint.k === 'dead') { killFrame(); tool.dataset.engine = 'none'; setState('idle'); setStatus('hub.py.status.crashed'); showErr('hub.py.err.dead.t', 'hub.py.err.dead.m'); return; }   // Pyodide morreu: iframe removido, o proximo Executar recria
         if (state !== 'running') return;
         var ms = Math.round(performance.now() - startedAt);
         var nl = lines;

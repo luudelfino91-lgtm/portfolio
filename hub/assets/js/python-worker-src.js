@@ -84,20 +84,42 @@
       return pk;
     }
     // M2: o parser/AST do CPython no WebAssembly estoura a pilha (fatal, o Pyodide morre) em expressoes de ~1000 niveis: parenteses,
-    // operadores unarios, cadeias de atributos ou de operadores binarios. Barreira barata e linear ANTES de ast.parse e antes de
-    // executar. Limites bem abaixo do estouro (medido: ate 800 niveis passa; ~1000 mata; limites: 150 colchetes, 600 em cadeias). Nao cobre toda forma possivel de
-    // aninhamento: o que escapar e tratado como "Pyodide morto" (ver run()).
+    // operadores unarios, cadeias de atributos ou de operadores binarios (medido: ate 800 niveis passam). Barreira barata e linear ANTES
+    // de ast.parse e de executar, aplicada ao codigo SEM literais de texto e SEM comentarios (maskLiterals), para nao bloquear dados
+    // legitimos (base64, divisores de hifens, textos com parenteses). Conservadora: em duvida NAO bloqueia; o que escapar (elif/lambda
+    // encadeados, exec de texto gerado...) mata o Pyodide e cai na recuperacao (sonda de vida em run(): hint 'dead').
+    function maskLiterals(code) {
+      var out = [], i = 0, n = code.length;
+      while (i < n) {
+        var c = code[i];
+        if (c === '#') { while (i < n && code[i] !== '\n') i++; out.push(' '); continue; }
+        if (c === '"' || c === "'") {
+          var q = code.substr(i, 3) === c + c + c ? c + c + c : c, ql = q.length;
+          i += ql;
+          while (i < n) {
+            if (code[i] === '\\') { i += 2; continue; }
+            if (code.substr(i, ql) === q) { i += ql; break; }
+            if (ql === 1 && code[i] === '\n') break;   // literal simples sem fechar: para na quebra de linha
+            i++;
+          }
+          out.push(' '); continue;
+        }
+        out.push(c); i++;
+      }
+      return out.join('');
+    }
     function tooComplex(code) {
+      code = maskLiterals(code);
       var depth = 0, max = 0;
       for (var i = 0; i < code.length; i++) {
         var ch = code.charCodeAt(i);
         if (ch === 40 || ch === 91 || ch === 123) { if (++depth > max) max = depth; }
         else if (ch === 41 || ch === 93 || ch === 125) { if (depth > 0) depth--; }
       }
-      if (max > 150) return 'more than 150 nested brackets';
-      if (/(?:[-+~][ \t]*){601,}/.test(code) || /(?:\bnot[ \t]+){601,}/.test(code)) return 'more than 600 chained unary operators';
-      if (/(?:\.[ \t]*[A-Za-z_][A-Za-z_0-9]*[ \t]*){601,}/.test(code)) return 'more than 600 chained attribute accesses';
-      if (/(?:[-+*\/%|&^][ \t]*[A-Za-z_0-9.]+[ \t]*){601,}/.test(code)) return 'more than 600 chained operators in one expression';
+      if (max > 140) return 'more than 140 nested brackets';
+      if (/(?:[-+~][ \t]*){751,}/.test(code) || /(?:\bnot[ \t]+){751,}/.test(code)) return 'more than 750 chained unary operators';
+      if (/(?:\.[ \t]*[A-Za-z_][A-Za-z_0-9]*[ \t]*){751,}/.test(code)) return 'more than 750 chained attribute accesses';
+      if (/(?:[-+*\/%|&^][ \t]*[A-Za-z_0-9.]+[ \t]*){751,}/.test(code)) return 'more than 750 chained operators in one expression';
       return null;
     }
     function closure(names) {
@@ -204,17 +226,21 @@
       realLoad = pyodide.loadPackage.bind(pyodide);
       var off = function () { throw new Error('Package loading is disabled in this playground.'); };
       try { pyodide.loadPackage = off; pyodide.loadPackagesFromImports = off; } catch (e) {}
-      // A API interna (pyodide_js._api.packageManager) tambem e alcancavel pelo Python, inclusive pelo prototipo
-      // (Reflect.apply(proto.loadPackage...), constructor.prototype, deleteProperty na instancia). Fechamento (A1): os metodos que
-      // carregam (loadPackage, loadPackageInner) sao SUBSTITUIDOS NO PROTOTIPO por uma versao com portao (so abre dentro de
-      // ensurePackages), o prototipo e CONGELADO (nao da para trocar de volta) e o lock em memoria (lockfile_packages) e CONGELADO
-      // (nao da para registrar pacote novo). Nao da para congelar a instancia (o Pyodide grava callbacks nela). Limite honesto: as
-      // outras funcoes internas do gerenciador continuam chamaveis, mas sem entrada no lock so alcancam os 5 wheels do mesmo site;
-      // a defesa real continua sendo CSP + sandbox de origem opaca + sha256 de cada wheel.
+      // A API interna (pyodide_js._api.packageManager) e alcancavel pelo Python. Fechado e PROVADO (PD-08): os metodos do PROTOTIPO que
+      // resolvem, baixam e instalam pacotes (loadPackage, loadPackageInner, addPackageToLoad, recursiveDependencies, downloadPackage,
+      // installPackage, downloadAndInstall) foram substituidos por versoes com portao (so abrem dentro de ensurePackages), o prototipo
+      // e o lock em memoria (lockfile_packages) foram congelados. NAO fechado: a instancia (nao congela: o Pyodide grava nela) e o
+      // objeto _api podem ser SUBSTITUIDOS pelo codigo do usuario (ex.: pm._lock, api.packageManager = {...}); isso so afeta a PROPRIA
+      // sessao (descartavel) e nao da acesso a nada que a CSP nao permita. A defesa real e CSP + sandbox de origem opaca + sha256 dos
+      // wheels: 0 hits para fora, nenhuma requisicao a outra origem. O portao e defesa em profundidade, nao fronteira.
       try {
         var api = pyodide._api, pm = api && api.packageManager, PR = pm && Object.getPrototypeOf(pm);
         if (PR) {
-          ['loadPackage', 'loadPackageInner'].forEach(function (k) {
+          // TODOS os metodos do prototipo que baixam, instalam ou resolvem pacotes (lista inspecionada no Chrome: constructor, loadPackage,
+          // loadPackageInner, addPackageToLoad, recursiveDependencies, downloadPackage, installPackage, downloadAndInstall, flushBuffers,
+          // getLoadedPackageChannel, setCallbacks, logStdout, logStderr; os 5 primeiros de acao + os 3 de baixar/instalar ganham portao;
+          // os demais so mexem em buffers de log/callbacks e nao instalam nada)
+          ['loadPackage', 'loadPackageInner', 'addPackageToLoad', 'recursiveDependencies', 'downloadPackage', 'installPackage', 'downloadAndInstall'].forEach(function (k) {
             var orig = PR[k]; if (typeof orig !== 'function') return;
             Object.defineProperty(PR, k, { configurable: false, writable: false, value: function () {
               if (!gateOpen) throw new Error('Package loading is disabled in this playground.');

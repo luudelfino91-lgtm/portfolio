@@ -196,9 +196,13 @@ function cmpFrame(out, rows) {
 
   // ===== PD-02b (M2): barreira de profundidade antes do ast.parse + Pyodide morto =====
   if (want('PD-02|PD-02b')) {
-    const m = /function tooComplex\(code\) \{[\s\S]*?\n    \}\n/.exec(WORKER); const tooComplex = vm.runInNewContext('(' + m[0].replace('function tooComplex', 'function') + ')');
-    const REJ = [['"(" x151', '('.repeat(151) + ')'.repeat(151)], ['"-" x601', '-'.repeat(601) + '1'], ['"not " x601', 'not '.repeat(601) + '1'], ['a + ".b" x601', 'a' + '.b'.repeat(601)], ['1 + "+1" x601', '1' + '+1'.repeat(601)], ['100000 parenteses', '('.repeat(100000) + ')'.repeat(100000)], ['45000 "not " (160 KB, perto do teto de 200 KB)', 'not '.repeat(45000) + '1'], ['100000 "-"', '-'.repeat(100000) + '1'], ['100000 ".b"', 'a' + '.b'.repeat(100000)], ['100000 "+1"', '1' + '+1'.repeat(100000)], ['100000 colchetes', '['.repeat(100000) + ']'.repeat(100000)], ['100000 chaves', '{'.repeat(100000)]];
-    const ACC = [['150 parenteses', 'x = ' + '('.repeat(150) + '1' + ')'.repeat(150)], ['"-" x600', 'x = ' + '-'.repeat(600) + '1'], ['a + ".b" x600', 'a' + '.b'.repeat(600)], ['codigo normal', 'import pandas as pd\ndf = pd.read_csv("/data/x.csv")\nprint(df.groupby("a")["b"].sum())\nprint("-" * 80, "=" * 80)'], ['linha de 300 numeros decimais', 'x = [' + Array.from({ length: 300 }, (_, i) => i + '.5').join(', ') + ']'], ['divisor de comentario com 100 hifens', '# ' + '-'.repeat(100) + '\nprint(1)'], ['', '']];
+    const m = /function maskLiterals\(code\) \{[\s\S]*?\n    function tooComplex\(code\) \{[\s\S]*?\n    \}\n/.exec(WORKER); const tooComplex = vm.runInNewContext('(function () {' + m[0] + ' return tooComplex; })()');
+    const REJ = [['"(" x141', '('.repeat(141) + ')'.repeat(141)], ['"-" x751', '-'.repeat(751) + '1'], ['"not " x751', 'not '.repeat(751) + '1'], ['a + ".b" x751', 'a' + '.b'.repeat(751)], ['1 + "+1" x751', '1' + '+1'.repeat(751)], ['100000 parenteses', '('.repeat(100000) + ')'.repeat(100000)], ['45000 "not " (160 KB, perto do teto de 200 KB)', 'not '.repeat(45000) + '1'], ['100000 "-"', '-'.repeat(100000) + '1'], ['100000 ".b"', 'a' + '.b'.repeat(100000)], ['100000 "+1"', '1' + '+1'.repeat(100000)], ['100000 colchetes', '['.repeat(100000) + ']'.repeat(100000)], ['100000 chaves', '{'.repeat(100000)]];
+    const B64 = Array.from({ length: 4000 }, (_, i) => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'[(i * 7) % 64]).join('');
+    // falsos positivos apontados na reconferencia: literais e comentarios NAO contam
+    const TQ = '"' + '"' + '"';
+    const FP = [['700 hifens dentro de string', 'x = "' + '-'.repeat(700) + '"\nprint(len(x))', '700'], ['string base64 de 4000 chars', "x = '" + B64 + "'\nprint(len(x))", '4000'], ['"a.b" x700 dentro de string', 'x = "' + 'a.b'.repeat(700) + '"\nprint(len(x))', '2100'], ['200 "(" dentro de string', 'x = "' + '('.repeat(200) + '"\nprint(len(x))', '200'], ['650 termos 1+1+... no codigo', 'x = ' + Array(650).fill('1').join('+') + '\nprint(x)', '650'], ['comentario com 700 hifens', '# ' + '-'.repeat(700) + '\nprint("ok")', 'ok'], ['docstring tripla com 300 "(" e 800 "-"', 'def f():\n    ' + TQ + '('.repeat(300) + '-'.repeat(800) + TQ + '\n    return 1\nprint(f())', '1'], ['f-string e bytes com cadeias', 'x = f"{1}' + '-'.repeat(900) + '"\ny = b"' + '+'.repeat(900) + '"\nprint(len(x), len(y))', '901 900']];
+    const ACC = [['140 parenteses', 'x = ' + '('.repeat(140) + '1' + ')'.repeat(140)], ['"-" x750', 'x = ' + '-'.repeat(750) + '1'], ['a + ".b" x750', 'a' + '.b'.repeat(750)], ['codigo normal', 'import pandas as pd\ndf = pd.read_csv("/data/x.csv")\nprint(df.groupby("a")["b"].sum())\nprint("-" * 80, "=" * 80)'], ['linha de 300 numeros decimais', 'x = [' + Array.from({ length: 300 }, (_, i) => i + '.5').join(', ') + ']'], ['divisor de comentario com 100 hifens', '# ' + '-'.repeat(100) + '\nprint(1)'], ['', ''], ...FP.map(f => [f[0], f[1]])];
     const badR = REJ.filter(([, c]) => !tooComplex(c)).map(x => x[0]), badA = ACC.filter(([, c]) => tooComplex(c)).map(x => x[0] + ': ' + tooComplex(x[1]));
     L.rec(`PD-02b barreira linear antes do ast.parse: ${REJ.length} codigos patologicos (parenteses/colchetes/chaves/not/menos unario/cadeia de atributos/cadeia de + ate 100.000 termos) recusados; ${ACC.length} validos (limites exatos, linhas longas de dados, divisores) aceitos`, badR.length === 0 && badA.length === 0, JSON.stringify({ badR, badA }));
     for (const lang of ['en', 'pt']) {
@@ -218,6 +222,20 @@ function cmpFrame(out, rows) {
       L.rec(`PD-02b (${lang}) depois de o Pyodide morrer, o proximo Executar recria o iframe e funciona (inclusive com pandas)`, g2.out === 'sessao nova 3.0.2\n' && !g2.errVisible && g2.frames === 1, JSON.stringify(g2.out));
       await c.close();
     }
+    for (const lang of ['en', 'pt']) {   // os falsos positivos EXECUTAM de verdade (nao so passam na funcao)
+      const { c, pg, log } = await open(br, SITE, lang, 'light'); const bad = [];
+      for (const [name, code, exp] of FP) { await run(pg, code, { secs: 30 }); const g = await grab(pg); if (g.errVisible || g.out.trim() !== exp) bad.push(`${name}: ${g.out.slice(0, 60)} ${g.errT}`); }
+      L.rec(`PD-02b (${lang}) ${FP.length} codigos legitimos que a versao anterior bloqueava (hifens, base64, "a.b" x700, 200 "(" em texto, 650 termos 1+1+..., comentario, docstring, f-string/bytes) EXECUTAM e dao a saida esperada`, bad.length === 0 && log.pageerrors.length === 0, bad.join(' | ') || 'todos executaram');
+      await c.close();
+    }
+    { // patologicos que a barreira nao reconhece: recusados OU recuperados; a UI nunca fica presa e a sessao seguinte funciona
+      const { c, pg, log } = await open(br, SITE, 'en', 'light'); const res = [];
+      const PATH = [['elif x3000', 'x = 0\nif x == 1:\n    pass\n' + 'elif x == 2:\n    pass\n'.repeat(3000) + 'print("fim")'], ['lambda x5000', 'f = ' + 'lambda: '.repeat(5000) + '1\nprint("fim")'], ['"(" x1000', '('.repeat(1000) + ')'.repeat(1000)], ['if/else x3000 em expressao', 'x = ' + '1 if 0 else '.repeat(3000) + '2\nprint(x)'], ['exec de 1000 "("', 'exec("(" * 1000 + ")" * 1000)']];
+      for (const [name, code] of PATH) { const t0 = Date.now(); await pg.evaluate(c => { document.getElementById('pyEditor').value = c; }, code); await pg.click('#pyRun'); let stuck = false; /* value direto: o fill do Playwright leva ~55 s com 3000 linhas (artefato do teste) */ try { await idle(pg, 90000); } catch (e) { stuck = true; } const g = await grab(pg);
+        res.push({ name, ms: Date.now() - t0, stuck, state: g.state, engine: g.engine, frames: g.frames, err: g.errT, tail: g.out.trim().slice(-40) }); if (stuck) { await pg.click('#pyStop'); await idle(pg, 5000); } }
+      await run(pg, 'print("sessao seguinte ok")'); const g2 = await grab(pg);
+      L.rec('PD-02b patologicos reais fora da barreira (elif x3000, lambda x5000, "(" x1000, if/else x3000, exec de "(" x1000): nenhum prende a UI (todos voltam a idle), cada um termina executando, recusado ou com recuperacao de Pyodide morto, e a execucao seguinte funciona. Resultado por caso na evidencia', res.every(r => !r.stuck && r.state === 'idle') && g2.out === 'sessao seguinte ok\n' && log.pageerrors.length === 0, JSON.stringify(res) + ' ' + JSON.stringify(g2.out));
+      await c.close(); }
     // caminho quente travado (Worker nao responde): estado "loading" e o Parar funciona; o timer do caminho quente dispara
     { opts.instrument = ["else if (d.t === 'run' && pyodide) {", "else if (d.t === 'run' && pyodide && !self.__ignoreRun) {"];
       const { c, pg } = await open(br, SITE, 'en', 'light'); await run(pg, 'print("quente")');
@@ -423,6 +441,51 @@ except ModuleNotFoundError as e:
       let r4 = {}; try { r4 = JSON.parse(g4.out.split('\n').filter(l => l.startsWith('{"'))[0]); } catch (e) {}
       const open4 = Object.entries(r4).filter(([k, v]) => /^(Reflect\.apply|constructor|loadPackageInner|deleteProperty|redefinir|Reflect\.set|defineProperty|delete lock)/.test(k) && !/^(Error|JsException|TypeError)|recusado/.test(v) && !/disabled/.test(v));
       L.rec('PD-08/A1 caminhos que o revisor achou (Reflect.apply no prototipo, constructor.prototype.loadPackage.call, loadPackageInner, deleteProperty + chamar, redefinir o prototipo, mutar/definir/apagar no lock em memoria) para scipy E six: todos recusados; prototipo e lock estao congelados; "import scipy" continua falhando; 0 hits fora; nenhuma requisicao a scipy/wheel nova', open4.length === 0 && r4['lock frozen'] === true && r4['prototipo frozen'] === true && r4['lock tem scipy?'] === false && /scipy: No module named 'scipy'/.test(g4.out) && !/SCIPY IMPORTOU/.test(g4.out) && outHits.length === 0 && !served.slice(s2).some(u => /scipy/.test(u)) && wheels(s2).length === 0, JSON.stringify(r4) + ' hits=' + JSON.stringify(outHits) + ' abertos=' + JSON.stringify(open4));
+      { // reconferencia: installPackage com bytes proprios, downloadPackage de URL da mesma origem/de fora, downloadAndInstall
+        outHits.length = 0; const s3 = served.length;
+        const inst = `
+import js, pyodide_js, asyncio, zipfile, io, json
+from pyodide.ffi import to_js
+pm = pyodide_js._api.packageManager
+proto = js.Object.getPrototypeOf(pm)
+b = io.BytesIO()
+with zipfile.ZipFile(b, "w") as z:
+    z.writestr("evilpkg/__init__.py", "X = 42")
+    z.writestr("evilpkg-1.0.dist-info/METADATA", "Metadata-Version: 2.1\\nName: evilpkg\\nVersion: 1.0\\n")
+    z.writestr("evilpkg-1.0.dist-info/WHEEL", "Wheel-Version: 1.0\\nRoot-Is-Purelib: true\\nTag: py3-none-any\\n")
+    z.writestr("evilpkg-1.0.dist-info/RECORD", "")
+buf = to_js(b.getvalue())
+def conv(d): return to_js(d, dict_converter=js.Object.fromEntries)
+meta = conv({"normalizedName": "evilpkg", "name": "evilpkg", "channel": "user", "packageData": {"file_name": "evilpkg-1.0-py3-none-any.whl", "install_dir": "site"}})
+res = {}
+def a(name, f):
+    try:
+        r = f()
+        res[name] = 'CHAMADA ACEITA (promise)' if hasattr(r, 'then') else 'CHAMADA ACEITA'
+    except BaseException as e:
+        res[name] = type(e).__name__ + ': ' + str(e)[:50]
+a('installPackage(wheel proprio)', lambda: pm.installPackage(meta, buf.buffer))
+a('Reflect.apply(proto.installPackage)', lambda: js.Reflect.apply(proto.installPackage, pm, js.Array.of(meta, buf.buffer)))
+a('downloadPackage(manifest do site)', lambda: pm.downloadPackage(conv({"normalizedName": "x", "name": "x", "channel": "${SITE}/hub/assets/vendor/manifest.json"}), False))
+a('downloadPackage(URL de fora)', lambda: pm.downloadPackage(conv({"normalizedName": "x", "name": "x", "channel": "${OUT}/evil"}), False))
+a('downloadAndInstall', lambda: pm.downloadAndInstall(conv({"normalizedName": "x", "name": "x", "channel": "${OUT}/evil2"}), conv({}), False, js.Array.new()))
+a('addPackageToLoad(scipy)', lambda: pm.addPackageToLoad("scipy", js.Map.new(), js.Map.new(), js.Map.new()))
+a('recursiveDependencies(scipy)', lambda: pm.recursiveDependencies(js.Array.of("scipy"), js.Map.new(), js.Map.new(), js.Map.new()))
+res['metodos do prototipo'] = sorted(js.Object.getOwnPropertyNames(proto))
+print(json.dumps(res))
+`;
+        await run(pg, inst); const gi = await grab(pg); let ri = {}; try { ri = JSON.parse(gi.out.split('\n').filter(l => l.startsWith('{"'))[0]); } catch (e) {}
+        await pg.waitForTimeout(3000);
+        await run(pg, `import sys
+try:
+    import evilpkg
+    print('IMPORTOU')
+except ModuleNotFoundError:
+    print('evilpkg ausente')
+print('evilpkg' in sys.modules)`); const g7 = await grab(pg);
+        const gated = ['installPackage(wheel proprio)', 'Reflect.apply(proto.installPackage)', 'downloadPackage(manifest do site)', 'downloadPackage(URL de fora)', 'downloadAndInstall', 'addPackageToLoad(scipy)', 'recursiveDependencies(scipy)'].every(k => /disabled/.test(ri[k] || ''));
+        L.rec('PD-08/A1+ installPackage (wheel de bytes proprios), Reflect.apply no prototipo, downloadPackage (manifest.json do site e URL de fora), downloadAndInstall, addPackageToLoad e recursiveDependencies: todos lancam "disabled" (portao do prototipo); "import evilpkg" falha depois de esperar 3 s; 0 hits no servidor de fora; nenhuma requisicao ao manifest.json do site', gated && /evilpkg ausente\nFalse/.test(g7.out) && outHits.length === 0 && !served.slice(s3).some(u => /manifest\.json/.test(u)), JSON.stringify(ri) + ' import: ' + JSON.stringify(g7.out) + ' hits=' + JSON.stringify(outHits));
+      }
       await run(pg, 'import numpy as np\nimport pandas as pd\nprint("ok depois do endurecimento", pd.__version__)'); const g5 = await grab(pg);
       L.rec('PD-08/A1 o endurecimento nao quebra o carregamento legitimo: na mesma sessao numpy/pandas continuam importaveis', g5.out === 'ok depois do endurecimento 3.0.2\n', JSON.stringify(g5.out));
       const f = await open(br, SITE, 'en', 'light'); await run(f.pg, 'import six\nprint(six.__version__)'); const g6 = await grab(f.pg);
