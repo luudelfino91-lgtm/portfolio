@@ -1,5 +1,5 @@
 {
-  "_nota": "Verificar com: cd hub/assets/vendor && sha256sum -c SHA256SUMS. Origem: pacotes npm sql.js e papaparse (integridade conferida contra o registro npm na vendorizacao, T-301). Advisories de seguranca: ver docs/security/phase-3-review.md.",
+  "_nota": "Verificar com: cd hub/assets/vendor && sha256sum -c SHA256SUMS. Origem: pacotes npm sql.js, papaparse e pyodide (integridade conferida contra o registro npm na vendorizacao, T-301). Advisories de seguranca: ver docs/security/phase-3-review.md.",
   "files": [
     {
       "path": "sqljs/sql-wasm.js",
@@ -40,6 +40,54 @@
       "license": "MIT",
       "bytes": 1079,
       "sha256": "99aa68e4b42758b09828a46515f70369e5463458ab7a990189f641af2b8d9b4e"
+    },
+    {
+      "path": "pyodide/pyodide.mjs",
+      "package": "pyodide",
+      "version": "314.0.7",
+      "license": "MPL-2.0",
+      "bytes": 17931,
+      "sha256": "6f1d60f7bf529beb300f0f47983c921d3982363640ba20af0e38efdddbc66109"
+    },
+    {
+      "path": "pyodide/pyodide.asm.mjs",
+      "package": "pyodide",
+      "version": "314.0.7",
+      "license": "MPL-2.0",
+      "bytes": 1250344,
+      "sha256": "f7cdc8ece80678ceb712f8e65ebe6d3a83203a180c399865f49612a051693635"
+    },
+    {
+      "path": "pyodide/pyodide.asm.wasm",
+      "package": "pyodide",
+      "version": "314.0.7",
+      "license": "MPL-2.0",
+      "bytes": 9598218,
+      "sha256": "cc36e3cab04fdfc9a63ff13eb52eae2b911bf46c025cc7b281f394bd3de1d5e6"
+    },
+    {
+      "path": "pyodide/python_stdlib.zip",
+      "package": "pyodide",
+      "version": "314.0.7",
+      "license": "MPL-2.0 (pyodide); a stdlib do CPython segue a licenca PSF",
+      "bytes": 2545637,
+      "sha256": "fa1957e5777068fc4f7437f96d860ae2fbe9c19732ba06c84e004ec16dd7dd7a"
+    },
+    {
+      "path": "pyodide/pyodide-lock.json",
+      "package": "pyodide",
+      "version": "314.0.7",
+      "license": "MPL-2.0",
+      "bytes": 119077,
+      "sha256": "5dc2fc119108bc148c7457dc86e7675b5c87e1cafd420b9c34c1eaef7b36c010"
+    },
+    {
+      "path": "pyodide/LICENSE-MPL-2.0.txt",
+      "package": "pyodide (texto da licenca, nao vem do tarball)",
+      "version": "314.0.7",
+      "license": "MPL-2.0 (texto padrao; o tarball npm nao traz LICENSE)",
+      "bytes": 16726,
+      "sha256": "fab3dd6bdab226f1c08630b1dd917e11fcb4ec5e1e020e2c16f83a0a13863e85"
     }
   ]
 }

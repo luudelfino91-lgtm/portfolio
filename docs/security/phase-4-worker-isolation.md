@@ -109,7 +109,7 @@ Desenho:
 1. A página da ferramenta (Hub) não carrega Pyodide. No clique em "Executar", cria `<iframe sandbox="allow-scripts" src=".../runner.html">` (documento próprio, mesma pasta, com `<meta>` CSP).
 2. CSP do `runner.html` (via `<meta>`; a diretiva `sandbox` não vale em `<meta>`, por isso o atributo fica no iframe): `default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'` (ou o prefixo absoluto do vendor, ver 6.3); `worker-src data:; base-uri 'none'; form-action 'none'; object-src 'none'`. A página pai precisa de `frame-src 'self'`.
 3. O runner cria o Worker módulo a partir de `data:` com a fonte embutida em um `<script src>` externo, carrega o Pyodide **por URL absoluta** do vendor, com a lista fechada de pacotes.
-4. **Teste canário antes de rodar código do usuário**: o Worker tenta `eval('1')` e um `fetch` para uma URL de fora (por exemplo uma URL inexistente em outro domínio); se `eval` funcionar ou o evento `securitypolicyviolation` não ocorrer, a ferramenta **recusa executar** e mostra mensagem. Isso cobre o modo de falha aberta se um navegador não herdar a CSP (Firefox e Safari não testados). A parte "eval bloqueado no Worker" foi medida; o canário em si não foi implementado nem testado como recurso.
+4. **Teste canário antes de rodar código do usuário**: o Worker tenta `eval('1')` e um `fetch` para uma URL de fora (por exemplo uma URL inexistente em outro domínio); se `eval` funcionar ou o evento `securitypolicyviolation` não ocorrer, a ferramenta **recusa executar** e mostra mensagem. Isso cobre o modo de falha aberta se um navegador não herdar a CSP (Firefox e Safari não testados). A parte "eval bloqueado no Worker" foi medida; o canário em si foi implementado depois (T-402) e testado só no Chrome (PY-09); ver seção 9.
 5. Comunicação pai <-> iframe só por `postMessage`; o pai valida `event.source === iframe.contentWindow` (a origem das mensagens é `"null"`) e trata tudo o que vem como texto não confiável (`textContent`, sem HTML). Arquivos do usuário vão por `postMessage` (transferível) para o iframe, que os grava no sistema virtual.
 6. **Limites impostos pela página**: botão Parar (`terminate()` do Worker e remoção do iframe), tempo limite padrão (a decidir; teste usou 3 s), saída em lotes com teto de linhas e bytes, tamanho máximo do arquivo carregado, e aviso de memória (teto de 4 GiB do WASM, não configurável).
 7. Sem `micropip`; lista fechada de pacotes autohospedados; `pyodide-lock.json` filtrado; nenhum `loadPackage` de URL.
@@ -169,5 +169,13 @@ Eu recomendo; não autorizo integração externa nem a decisão de arquitetura.
 - Carregamento de numpy/pandas e seus wheels; `micropip`; `urllib`; WebTransport; `<iframe csp>`.
 - Entrega dos arquivos do Pyodide pela página pai para contornar o cache de origem opaca.
 - Memória real em celular; tempo de carga fora do localhost.
-- O canário (descrito, não implementado).
+- ~~O canário (descrito, não implementado).~~ **Atualização (T-402, 2026-11-13):** o canário está implementado (`hub/assets/js/python-worker-src.js`) e testado no Chrome (`tests/hub/python.js`, PY-09: duas simulações de falha recusam sem baixar o Pyodide nem executar código; caminho feliz passa). **Continua não verificado** em Firefox, Safari e Pages real: se o navegador não herdar a CSP ou não emitir `securitypolicyviolation` no Worker, o canário recusa (falha fechada), mas isso só foi simulado, nunca observado em outro navegador. O canário não cobre `WebTransport` (SEC-P4-11).
 - Scripts dos testes em `/tmp/p4/scripts/` (fora do repositório, não preservados). Os servidores de teste usaram só as portas 8191 a 8194.
+
+
+## 10. Atualização T-402 (implementação e revisão)
+
+- Implementação: D3 (iframe `sandbox="allow-scripts"` + Worker módulo `data:`), `docs/status/phase-04-status.md`. Testes: `tests/hub/python.js` (PY-07 a PY-22), só Chrome.
+- **M3 (runner fora do sandbox):** `python-runner.js` recusa iniciar (sem listener de `run`, sem Worker) se `window.origin`/`self.origin` não forem `"null"` ou se for a página de topo; coberto por PY-21 (runner como topo e emoldurado sem sandbox por página atacante). Observação: `location.origin` **não** serve para isso (devolve a origem da URL, não a do documento).
+- **B1:** depois de pronto, o runner ignora `status`, `refused` e `fatal` vindos do Worker, e aceita `done` uma vez por execução, com `ok` booleano (PY-20, PY-22). O Python do usuário ainda pode forjar um `done` válido e encerrar a **própria** execução; isso não afeta outras sessões nem a página.
+- Continuam **não verificados**: Firefox, Safari, Pages real (CORS, cache, MIME), celular, memória, WebTransport, advisories/licenças do conteúdo do `.wasm`.
