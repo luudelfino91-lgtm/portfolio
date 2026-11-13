@@ -11,22 +11,17 @@ Fonte única de verdade para decisões do projeto. Novas decisões entram no fim
 | D2 | 2026-11-12 | Hospedagem: GitHub Pages. | Lucas Delfino ("Corrija e prossiga", 16:54), conforme recomendação do relatório da Fase 1 | Aprovada (leitura do Tech Lead; custo US$ 0 segue condicionado aos termos do Pages, não verificados) |
 | D3a | 2026-11-12 | Fontes locais no Hub (sem Google Fonts nas páginas do Hub). | Idem | Aprovada. D3 para sql.js/Papa Parse (Fase 3) e Pyodide (Fase 4) segue pendente |
 | C10 | 2026-11-12 | Adendo C10: Worker de CSV/SQL no MVP; sem Apoie/PIX na casca; limite de CSV de 10 MB. | Idem | Aprovada (leitura do Tech Lead) |
+| D3b | 2026-11-12 | sql.js e Papa Parse em arquivos próprios, com versão fixada (sem CDN). | Lucas Delfino (resposta no chat, 21:4x) | Aprovada. D3 para Pyodide (Fase 4) segue pendente |
+| RNF-03 | 2026-11-12 | Hub sem cookies de rastreamento e sem analytics de terceiros. | Lucas Delfino | Confirmada (PRV-06 e PRV-08 passam a definitivas) |
+| G1-b | 2026-11-12 | Chip "Em construção" nos 2 cartões ativos permanece até a Fase 3 entregar as ferramentas. | Lucas Delfino | Aprovada (desvio da C10.2 aceito) |
+| G1-c | 2026-11-12 | Link Portfólio para Hub em `index.html`, em PR separado. | Lucas Delfino | Aprovada |
+| G1-d | 2026-11-12 | Correção do contraste de `--ink-3` no tema claro, em PR separado. | Lucas Delfino | Aprovada |
 
 ## Pendentes
 
 | ID | Decisão | Recomendação |
 |---|---|---|
-| D3b | CDN versus arquivos próprios para `sql.js`, Papa Parse (Fase 3) e `Pyodide` (Fase 4) | Arquivos próprios com versão fixada |
+| D3c | CDN versus arquivos próprios para `Pyodide` (Fase 4) | Arquivos próprios com versão fixada |
 | D5 | Chave PIX e formato de exibição | QR estático e copia-e-cola, sem coleta de dados |
 | D8 | Backend do roadmap legado (formulário, blog) | Descartar; usar alternativas estáticas |
 | D9 | Equipe | Manter as 9 definições, acionadas sob demanda |
-
-## Não aprovados (exigem decisão própria do Lucas)
-- G1-c: link do portfólio para o Hub em `index.html` (altera o portfólio).
-- G1-d: correção global de `--ink-3` no tema claro (altera o portfólio).
-- Cartões "Em breve" na casca (G1-b): fora do escopo da Fase 2 até decisão.
-
-## Desvios da Fase 2 aguardando o Lucas
-- **Chip "Em construção" nos 2 cartões ativos (CSV, SQL):** C10.2 pede 2 cartões ativos; a home os mostra navegáveis, mas com o chip "Em construção", e as páginas de destino dizem que a ferramenta ainda não está disponível. Não é o chip "Em breve" dos cartões proibidos. Precisa de aceite do Lucas ou o chip sai.
-- **i18n próprio do Hub** (mesma chave `ld-lang`, 4 KB) em vez de reusar o `i18n.js` do portfólio.
-- **Bricolage Grotesque sem o eixo `opsz`** (com ele só a fonte pesaria 77 KB e estouraria o orçamento de 120 KB). Falta checagem visual dos títulos grandes.
