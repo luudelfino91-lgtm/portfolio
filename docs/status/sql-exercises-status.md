@@ -1,0 +1,35 @@
+# Status: exercícios guiados do SQL playground (T-307, parte restante)
+
+**Branch:** `feat/sql-exercises` (base `origin/main` 9222afc). **Estado:** Implementado e testado no Chrome (suíte `tests/hub/exercises.js`, incluída em `tests/hub/run-all.sh`). Sem commit feito por este agente. Números na seção 4.
+
+## 1. O que foi entregue
+- Seção "Exercícios" em `hub/ferramentas/sql/index.html` (depois do resultado, para não alterar o caminho de teclado do editor; um link no topo da página leva a ela). 5 exercícios em ordem de dificuldade, cada um com enunciado, colunas pedidas, dica (`details`), caixa de consulta própria, botões Verificar, "Testar no editor" e "Ver solução" (com painel de confirmação, não `window.confirm`):
+  1. SELECT/WHERE/ORDER BY (ordenado, 4 linhas); 2. INNER JOIN (9); 3. LEFT JOIN + IS NULL (5, inclui NULL); 4. GROUP BY + HAVING (9); 5. subconsulta correlacionada (10).
+- Regra de comparação documentada **antes** em `hub/assets/data/exercicios.md` e no código (`sql-worker.js`, bloco "REGRA DE COMPARACAO" sobre `sqVerify`): colunas por posição e nome (sem diferenciar caixa), NULL só igual a NULL, inteiro = real se numericamente iguais, REAL com tolerância `1e-9 * max(1,|a|,|b|)`, texto exato, ordem só importa no exercício com ORDER BY (senão multiconjunto).
+- Mensagens de falha dizem o que difere (número de colunas, posição/nome da coluna, número de linhas, "valor diferente na linha N, coluna X" e mensagem de ordem só no exercício ordenado, "o conjunto de linhas difere" nos demais) sem mostrar valor esperado nem SQL de referência.
+- Resultado esperado: a consulta de referência (constante `EXERCISES` em `sql.js`) roda no Worker, a cada verificação. A SQL de referência só entra no DOM depois do acerto ou de "Ver solução" confirmado.
+- Isolamento: a verificação (mensagem `verify` do Worker) roda num **banco novo e descartável** (`new SQL.Database()` + texto do banco de exemplo), com a referência antes do SQL do usuário; o banco do playground nunca é tocado. Escolhido em vez de SAVEPOINT/ROLLBACK porque o SQL do usuário pode conter COMMIT/ROLLBACK/RELEASE. Consequência: a verificação julga contra os dados originais do exemplo mesmo que o usuário tenha alterado as tabelas.
+- Mesmo Worker, mesmo limite de tempo, Parar próprio na seção (aparece depois de 3 s); depois de Parar/tempo limite o motor é recriado e o exemplo recarregado, e a mensagem aparece no exercício.
+- Exige o banco de exemplo: sem ele, Verificar avisa e oferece "Carregar o banco de exemplo e verificar".
+- Progresso (resolvidos) só em memória da página; nenhum `localStorage`/cookie/`sessionStorage`/IndexedDB além de idioma e tema. Tudo via `textContent`. CSP inalterada.
+- A11y: resultado em `role="status" aria-live="polite"` por exercício (e para o progresso), foco preservado no botão após verificar, confirmação com foco no "Sim", dica por teclado, estado textual "Resolvido/Solved".
+- i18n: 55 chaves `hub.sql.ex.*` (cada uma em PT e EN); `docs/testing/check-i18n-keys.js` sai 0.
+- Arquivos: `hub/assets/js/sql.js`, `sql-worker.js`, `i18n.js`, `hub/ferramentas/sql/index.html`, `hub/assets/css/sql.css`, `hub/assets/data/exercicios.md` (novo), `hub/assets/data/README.md`, `docs/testing/fixtures/compute_exercises_expected.py` (novo), `tests/hub/exercises.js` (novo), `tests/hub/run-all.sh`, `docs/roadmap/backlog.md`, este arquivo.
+
+## 2. Oráculo
+`docs/testing/fixtures/compute_exercises_expected.py` calcula as 5 respostas em Python puro (laços sobre as linhas lidas com sqlite3 do `loja-exemplo.sql`), sem reutilizar a SQL do Hub. Os testes conferem que (a) a SQL de referência revelada pelo Hub e (b) a solução escrita no teste, ambas executadas no playground, igualam o oráculo (colunas, linhas e, no exercício 1, a ordem).
+
+## 3. Limitações e itens abertos
+- A solução de referência não é secreta: está em `sql.js`, que é público (recurso didático, não proteção). Dá para "acertar" devolvendo valores literais (`SELECT 1 AS id, ...`); a regra compara resultado, não a forma da consulta.
+- Só o Chrome foi executado (Playwright). **Não executado:** Firefox, Edge, WebKit/Safari; leitor de tela (NVDA, VoiceOver, JAWS) não verificado, só atributos ARIA e foco por teste automatizado; Pages real (MIME, caminho `/portfolio/hub/`) só em servidor estático local (raiz e subpasta simulada); celular real.
+- Empate no ORDER BY do exercício 1 é resolvido pelo enunciado (preço decrescente e nome); outra escolha de desempate falha por regra.
+- Limite de 20.000 linhas lidas por consulta na verificação (acima disso conta como "linhas diferentes").
+- Correções fora do escopo: nenhuma. O cálculo de contagem de Tab do teste SQL-51 do `sql.js` motivou posicionar a seção depois do resultado.
+
+## 4. Verificação (Chrome, Playwright; `sh tests/hub/run-all.sh` completo, rc=0, depois da última alteração de código e de teste)
+- reg 16 PASS, shell 6, i18n_theme_privacy 26 PASS + 1 N/A, a11y 17, budget_file 5, csv 47, sql 139, sample 63, **exercises 63 PASS, 0 FAIL**; `docs/testing/check-i18n-keys.js` exit 0 (EN = PT = 313 chaves, 55 delas `hub.sql.ex.*`).
+- exercises cobre: regra documentada em doc e código; oráculo Python; PT/EN em raiz e subpasta; banco exigido e "carregar e verificar"; uma solução correta por exercício; 19 falhas com mensagem esperada (colunas, nomes, linhas, ordem, valor, conjunto, NULL vs texto, caixa do texto); não revelação da resposta; erro de SQL/vazio/sem resultado; 11 soluções equivalentes (JOIN x subconsulta x NOT EXISTS x NOT IN, REAL x INTEGER, tolerância 1e-9, caixa dos nomes, ordem livre); consultas destrutivas (4 variantes) sem corromper o banco nem a verificação seguinte; solução oculta/confirmação/teclado; só idioma e tema em storage, zero requisição externa; tempo limite e Parar; 360px sem rolagem horizontal; axe sem violações (claro e escuro, PT/EN, 360 e 1280); aria-live; reduced-motion.
+- Histórico: nas primeiras execuções completas houve 2 falhas causadas por esta mudança e corrigidas antes da execução final: `landmark-unique` do axe (regiões `pre` com o mesmo rótulo; agora o rótulo inclui o número do exercício) e foco depois de Parar (botão ainda `disabled` ao receber foco). Outra falha (SQL-51, limite de 40 Tab) e SQL-41 (nenhum `a` dentro de `#sqlTool`) levaram a seção para depois do resultado e o link para fora de `#sqlTool`. Um log de `sql` foi sobrescrito por outra execução concorrente em outro worktree (nomes `/tmp/hub-*.log` compartilhados), por isso a suíte foi rodada de novo isolada.
+
+## Revisão independente (2026-11-13)
+Veredicto: aprovado, sem achados críticos ou altos. Ressalvas abertas: (M1) a verificação compara resultado, não a forma da consulta, então valores literais passam; (M2) a tolerância de 1e-9 não é transitiva na ordenação (sem impacto nos 5 exercícios); (B3) o botão Parar fica longe dos exercícios finais; o tempo limite cobre o caso. Suíte completa reexecutada pelo orquestrador (portas 8181-8183): reg 16, shell 6, i18n 26+1 N/A, a11y 17, budget 5, csv 47, sql 139, sample 63, exercises 63, check-i18n-keys 0. Só Chrome.

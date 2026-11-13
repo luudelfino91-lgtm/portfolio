@@ -12,6 +12,10 @@
    - Banco de exemplo (T-307): carregado no Worker (mensagem 'sample'); também é
      recarregado depois de Parar/tempo limite, antes dos CSV. As consultas de
      exemplo só colocam o SQL no editor (o texto SQL é igual em PT e EN).
+   - Exercícios guiados (T-307): 5 exercícios com verificação automática no MESMO Worker (mensagem 'verify'), com o mesmo
+     limite de tempo e o mesmo Parar. A regra de comparação está em hub/assets/data/exercicios.md e em sql-worker.js (sqVerify).
+     A verificação roda num banco novo e descartável (o banco do playground nunca é tocado). O progresso (quais foram
+     resolvidos) fica só em memória desta página: nada vai para localStorage/cookies.
    - Textos: chaves hub.sql.* (e hub.csv.* reaproveitadas) em i18n.js (PT/EN).
    ===================================================================== */
 (function () {
@@ -38,6 +42,17 @@
     { id: 'semana', sql: "SELECT strftime('%w', data_pedido) AS dia_semana, COUNT(*) AS pedidos\nFROM pedidos\nGROUP BY dia_semana\nORDER BY dia_semana;" },
     { id: 'mes', sql: "SELECT strftime('%Y-%m', pe.data_pedido) AS mes,\n       COUNT(DISTINCT pe.id) AS pedidos,\n       ROUND(" + Q_ITEMS + ", 2) AS receita\nFROM pedidos pe\nJOIN itens_pedido ip ON ip.pedido_id = pe.id\nWHERE pe.status <> 'cancelado'\nGROUP BY mes\nORDER BY mes;" }
   ];
+
+  // Exercícios guiados (T-307). A consulta de referência é a DEFINIÇÃO do resultado esperado: executada no Worker, num banco novo,
+  // a cada verificação; só é mostrada depois do acerto ou de "Ver solução". Textos em hub.sql.ex.<id>.t/.q/.hint (PT/EN).
+  // ordered = o enunciado pede ORDER BY (a ordem das linhas conta); senão compara como multiconjunto.
+  var EXERCISES = [
+    { id: 'filtro', ordered: true, cols: ['nome', 'preco', 'estoque'], ref: 'SELECT nome, preco, estoque\nFROM produtos\nWHERE estoque < 20\nORDER BY preco DESC, nome;' },
+    { id: 'join', ordered: false, cols: ['pedido_id', 'cliente', 'data_pedido'], ref: "SELECT p.id AS pedido_id, c.nome AS cliente, p.data_pedido\nFROM pedidos p\nINNER JOIN clientes c ON c.id = p.cliente_id\nWHERE p.status = 'enviado';" },
+    { id: 'leftjoin', ordered: false, cols: ['id', 'nome', 'cidade'], ref: 'SELECT c.id, c.nome, c.cidade\nFROM clientes c\nLEFT JOIN pedidos p ON p.cliente_id = c.id\nWHERE p.id IS NULL;' },
+    { id: 'grupo', ordered: false, cols: ['cliente_id', 'pedidos'], ref: "SELECT cliente_id, COUNT(*) AS pedidos\nFROM pedidos\nWHERE status <> 'cancelado'\nGROUP BY cliente_id\nHAVING COUNT(*) >= 8;" },
+    { id: 'sub', ordered: false, cols: ['nome', 'preco', 'categoria_id'], ref: 'SELECT nome, preco, categoria_id\nFROM produtos p\nWHERE preco > (SELECT AVG(preco) FROM produtos WHERE categoria_id = p.categoria_id);' }
+  ];
   var $ = function (id) { return document.getElementById(id); };
   var t = function (k, v) { return Hub.t(k, v); };
 
@@ -47,11 +62,12 @@
   var statusEl = $('sqlStatus'), errBox = $('sqlErr'), errT = $('sqlErrT'), errM = $('sqlErrM'), errH = $('sqlErrH'), retryBtn = $('sqlRetry'), warnBox = $('sqlWarn');
   var resBox = $('sqlResBox'), resMsg = $('sqlResMsg'), resNote = $('sqlResNote'), resTable = $('sqlResTable'), resCap = $('sqlResCap'), resSec = $('sqlResult');
   var sampleBtn = $('sqlSampleBtn'), sampleQ = $('sqlSampleQ');
+  var exList = $('sqlExList'), exProg = $('sqlExProg'), exStop = $('sqlExStop');
   var schemaBox = $('sqlSchemaBox'), schemaEl = $('sqlSchema'), schemaEmpty = $('sqlSchemaEmpty'), typeNote = $('sqlTypeNote');
 
   var worker = null, gen = 0, jobSeq = 0, curId = 0;
   var engine = 'preparing';     // preparing | ready | failed
-  var busy = null;              // null | 'run' | 'load'
+  var busy = null;              // null | 'run' | 'load' | 'verify'
   var stopShown = false, stopTimer = 0, limitTimer = 0;
   var version = '';
   var loaded = [];              // [{file, name, opts, meta}] tabelas de CSV (para recarregar após reinício)
@@ -63,6 +79,8 @@
   var edited = false;
   var pending = null;           // CSV em leitura {file,name,opts}
   var readyMsg = 'hub.sql.status.ready';
+  var ex = {};                  // por exercício: {li, ta, fb, ..., solved, fb:{code,vars,seq}, sol:'hidden'|'confirm'|'shown'}; só em memória
+  var exSeq = 0, curEx = null, pendingEx = null, refocusEx = null, exBuilt = false;
   var refocus = false;          // devolve o foco ao Executar quando o motor volta (Parar/Cancelar apagam o botão em foco)
 
   function locale() { return Hub.lang === 'pt' ? 'pt-BR' : 'en-US'; }
@@ -80,13 +98,14 @@
   function say(key, vars) { statusKey = key ? { key: key, vars: vars } : null; renderStatus(); }
   function renderStatus() { statusEl.textContent = statusKey ? t(statusKey.key, statusKey.vars) : ''; }
 
-  function stateName() { return engine !== 'ready' ? engine : (busy === 'run' ? 'running' : busy === 'load' ? 'loading' : 'ready'); }
+  function stateName() { return engine !== 'ready' ? engine : (busy === 'run' || busy === 'verify' ? 'running' : busy === 'load' ? 'loading' : 'ready'); }
   function applyState() {
     tool.setAttribute('data-state', stateName());
     runBtn.disabled = engine !== 'ready';
     if (busy) runBtn.setAttribute('aria-disabled', 'true'); else runBtn.removeAttribute('aria-disabled');
-    runT.textContent = engine === 'preparing' ? t('hub.sql.run.wait') : busy === 'run' ? t('hub.sql.run.running') : t('hub.sql.run.label');
+    runT.textContent = engine === 'preparing' ? t('hub.sql.run.wait') : busy === 'run' || busy === 'verify' ? t('hub.sql.run.running') : t('hub.sql.run.label');
     stopBtn.hidden = !(busy === 'run' && stopShown);
+    exStop.hidden = !(busy === 'verify' && stopShown);
     loadRun.hidden = busy !== 'load';
     fileIn.disabled = engine !== 'ready' || !!busy;
     sampleBtn.disabled = engine !== 'ready';
@@ -255,7 +274,138 @@
     editor.focus();
   }
 
-  function renderAll() { applyState(); renderStatus(); renderError(); renderWarnings(); renderLimits(); renderSamples(); renderResult(); renderSchema(); }
+
+  // ---------- exercícios guiados ----------
+  function mk(tag, cls, parent) { var e = document.createElement(tag); if (cls) e.className = cls; if (parent) parent.appendChild(e); return e; }
+  function buildExercises() {
+    EXERCISES.forEach(function (d, i) {
+      var s = ex[d.id] = { def: d, solved: false, fb: null, shown: null, sol: 'hidden' };
+      var li = s.li = mk('li', 'sql-ex-item', exList);
+      var h = mk('h3', '', li); s.h = mk('span', '', h); s.state = mk('span', 'sql-ex-state', h); s.state.id = 'sqlExState-' + d.id;
+      s.q = mk('p', '', li); s.cols = mk('p', 'sql-ex-cols', li); s.order = mk('p', 'sql-ex-cols', li);
+      var det = s.det = mk('details', 'sql-ex-hint', li); s.sum = mk('summary', '', det); s.hint = mk('p', '', det);
+      s.lbl = mk('label', 'sql-label', li); s.lbl.htmlFor = 'sqlExTa-' + d.id;
+      s.ta = mk('textarea', 'sql-editor', li); s.ta.id = 'sqlExTa-' + d.id; s.ta.rows = 4;
+      s.ta.setAttribute('spellcheck', 'false'); s.ta.setAttribute('autocomplete', 'off'); s.ta.setAttribute('autocapitalize', 'off'); s.ta.setAttribute('autocorrect', 'off');
+      var act = mk('div', 'sql-actions', li);
+      s.vbtn = mk('button', 'btn btn-accent', act); s.vbtn.type = 'button'; s.vbtn.id = 'sqlExV-' + d.id; s.vspan = mk('span', '', s.vbtn);
+      s.tbtn = mk('button', 'btn btn-ghost', act); s.tbtn.type = 'button'; s.tbtn.id = 'sqlExT-' + d.id; s.tspan = mk('span', '', s.tbtn);
+      s.sbtn = mk('button', 'btn btn-ghost', act); s.sbtn.type = 'button'; s.sbtn.id = 'sqlExS-' + d.id; s.sspan = mk('span', '', s.sbtn);
+      s.live = mk('div', '', li); s.live.id = 'sqlExFb-' + d.id; s.live.setAttribute('role', 'status'); s.live.setAttribute('aria-live', 'polite');
+      s.conf = mk('div', 'sql-ex-confirm', li); s.conf.id = 'sqlExConf-' + d.id; s.conf.hidden = true; s.confQ = mk('p', '', s.conf);
+      var ca = mk('div', 'sql-actions', s.conf);
+      s.yes = mk('button', 'btn btn-dark', ca); s.yes.type = 'button'; s.yes.id = 'sqlExYes-' + d.id; s.yesT = mk('span', '', s.yes);
+      s.no = mk('button', 'btn btn-ghost', ca); s.no.type = 'button'; s.no.id = 'sqlExNo-' + d.id; s.noT = mk('span', '', s.no);
+      s.solBox = mk('div', 'sql-ex-sol', li); s.solBox.hidden = true; s.solH = mk('h4', '', s.solBox);
+      s.pre = mk('pre', '', s.solBox); s.pre.id = 'sqlExSol-' + d.id; s.pre.tabIndex = 0; s.pre.setAttribute('role', 'region'); s.code = mk('code', '', s.pre);
+      s.vbtn.addEventListener('click', function () { verifyEx(d.id); });
+      s.tbtn.addEventListener('click', function () { editor.value = s.ta.value; edited = true; say('hub.sql.ex.status.copied'); editor.focus(); });
+      s.sbtn.addEventListener('click', function () { s.sol = 'confirm'; renderEx(); s.yes.focus(); });
+      s.no.addEventListener('click', function () { s.sol = s.solved ? 'shown' : 'hidden'; renderEx(); s.sbtn.focus(); });
+      s.yes.addEventListener('click', function () { s.sol = 'shown'; renderEx(); s.pre.focus(); });
+    });
+    exBuilt = true;
+  }
+
+  function fbText(fb) {
+    var v = fb.vars || {};
+    switch (fb.code) {
+      case 'pass': return t('hub.sql.ex.fb.pass');
+      case 'cols': return t('hub.sql.ex.fb.cols', { got: num(v.got), want: num(v.want) });
+      case 'names': return t('hub.sql.ex.fb.names', { pos: num(v.pos), got: v.got });
+      case 'rows': return t('hub.sql.ex.fb.rows', { got: typeof v.got === 'number' ? num(v.got) : v.got, want: num(v.want) });
+      case 'value': return t('hub.sql.ex.fb.value', { row: num(v.row), col: num(v.col), name: v.name });
+      case 'order': return t('hub.sql.ex.fb.order', { row: num(v.row) });
+      case 'set': return t('hub.sql.ex.fb.set');
+      case 'sql': return t('hub.sql.ex.fb.sql', { n: num(v.statement || 1), message: v.message || '' });
+      case 'empty': return t('hub.sql.ex.fb.empty');
+      case 'noresult': return t('hub.sql.ex.fb.noresult');
+      case 'needsample': return t('hub.sql.ex.fb.needsample');
+      case 'timeout': return t('hub.sql.ex.fb.timeout', { s: num(v.s) });
+      case 'stopped': return t('hub.sql.ex.fb.stopped');
+      case 'crash': return t('hub.sql.ex.fb.crash');
+      default: return t('hub.sql.ex.fb.internal', { detail: v.message || '' });
+    }
+  }
+
+  function renderEx() {
+    if (!exBuilt) buildExercises();
+    var solvedN = 0, can = engine === 'ready';
+    EXERCISES.forEach(function (d, i) {
+      var s = ex[d.id];
+      if (s.solved) solvedN++;
+      s.li.classList.toggle('is-solved', s.solved);
+      s.h.textContent = t('hub.sql.ex.n', { n: i + 1 }) + ' · ' + t('hub.sql.ex.' + d.id + '.t');
+      s.state.textContent = t(s.solved ? 'hub.sql.ex.state.solved' : 'hub.sql.ex.state.todo');
+      s.q.textContent = t('hub.sql.ex.' + d.id + '.q');
+      s.cols.textContent = t('hub.sql.ex.cols', { cols: d.cols.join(', ') });
+      s.order.textContent = t(d.ordered ? 'hub.sql.ex.order.yes' : 'hub.sql.ex.order.no');
+      s.sum.textContent = t('hub.sql.ex.hint');
+      s.hint.textContent = t('hub.sql.ex.' + d.id + '.hint');
+      s.lbl.textContent = t('hub.sql.ex.label', { n: i + 1 });
+      s.vspan.textContent = busy === 'verify' && curEx === d.id ? t('hub.sql.ex.verifying') : t('hub.sql.ex.verify');
+      s.tspan.textContent = t('hub.sql.ex.try');
+      s.sspan.textContent = t('hub.sql.ex.sol.show');
+      s.vbtn.disabled = !can;
+      if (busy) s.vbtn.setAttribute('aria-disabled', 'true'); else s.vbtn.removeAttribute('aria-disabled');
+      s.sbtn.hidden = s.sol !== 'hidden';
+      s.conf.hidden = s.sol !== 'confirm';
+      s.confQ.textContent = t('hub.sql.ex.sol.confirm');
+      s.yesT.textContent = t('hub.sql.ex.sol.yes'); s.noT.textContent = t('hub.sql.ex.sol.no');
+      s.solBox.hidden = s.sol !== 'shown';
+      s.solH.textContent = t('hub.sql.ex.sol.h');
+      s.pre.setAttribute('aria-label', t('hub.sql.ex.sol.h') + ' · ' + t('hub.sql.ex.n', { n: i + 1 }));
+      s.code.textContent = s.sol === 'shown' ? d.ref : '';
+      // feedback: só reescreve quando há resultado novo (seq) ou o idioma mudou, para a região viva não repetir o anúncio
+      var key = s.fb ? s.fb.seq + '|' + Hub.lang : '';
+      if (s.shown !== key) {
+        s.shown = key; s.live.textContent = '';
+        if (s.fb) {
+          var box = mk('div', 'notice sql-ex-fb' + (s.fb.code === 'pass' ? ' is-pass' : ''), s.live);
+          var p = mk('p', '', box);
+          p.textContent = s.fb.code === 'pass' ? fbText(s.fb) : t('hub.sql.ex.fb.no') + ' ' + fbText(s.fb);
+          if (s.fb.code === 'needsample') {
+            var lb = mk('button', 'btn btn-dark', box); lb.type = 'button'; mk('span', '', lb).textContent = t('hub.sql.ex.fb.needsample.btn');
+            lb.addEventListener('click', function () { loadSampleThenVerify(d.id); });
+            s.loadBtn = lb;
+          }
+        }
+      }
+    });
+    var pt = t('hub.sql.ex.prog', { n: num(solvedN), total: num(EXERCISES.length) });
+    if (exProg.textContent !== pt) exProg.textContent = pt;
+  }
+  function setFb(id, code, vars) { var s = ex[id]; if (s) s.fb = { code: code, vars: vars || {}, seq: ++exSeq }; }
+
+  function verifyEx(id) {
+    if (engine !== 'ready' || busy) return;
+    var s = ex[id], d = s.def;
+    if (s.ta.value.trim() === '') { setFb(id, 'empty'); renderEx(); return; }
+    if (!sample.on || sample.text === null) { setFb(id, 'needsample'); renderEx(); return; }
+    err = null; warns = [];
+    busy = 'verify'; stopShown = false; curEx = id;
+    curId = ++jobSeq;
+    var secs = timeoutSecs();
+    clearTimeout(stopTimer); clearTimeout(limitTimer);
+    stopTimer = setTimeout(function () { stopShown = true; applyState(); }, STOP_AFTER_MS);
+    limitTimer = setTimeout(function () { restart({ kind: 'timeout', s: secs }); }, secs * 1000);
+    say('hub.sql.ex.status.verifying');
+    renderAll();
+    worker.postMessage({ type: 'verify', id: curId, sample: sample.text, ref: d.ref, user: s.ta.value, ordered: d.ordered });
+  }
+  function loadSampleThenVerify(id) {
+    if (engine !== 'ready' || busy) return;
+    pendingEx = id; loadSample();
+  }
+  function onVerified(m) {
+    clearTimers(); busy = null;
+    var id = curEx; curEx = null;
+    if (m.ok) { ex[id].solved = true; ex[id].sol = 'shown'; }
+    setFb(id, m.code, m.vars);
+    say(null); renderAll();
+  }
+
+  function renderAll() { applyState(); renderStatus(); renderError(); renderWarnings(); renderLimits(); renderSamples(); renderEx(); renderResult(); renderSchema(); }
 
   // ---------- motor (Worker) ----------
   function stopWorker() {
@@ -295,6 +445,7 @@
       applyState();
       if (refocus && (!document.activeElement || document.activeElement === document.body)) runBtn.focus();
       refocus = false;
+      if (refocusEx) { var rb = ex[refocusEx] && ex[refocusEx].vbtn; refocusEx = null; if (rb && (!document.activeElement || document.activeElement === document.body)) { rb.disabled = false; rb.focus(); } }
       if (err && err.kind === 'init') err = null;
       if (reload && reload.queue.length) { nextReload(); return; }
       if (reload) { finishReload(); return; }
@@ -305,6 +456,7 @@
     else if (m.type === 'result') onResult(m);
     else if (m.type === 'loaded') onLoaded(m);
     else if (m.type === 'sample') onSample(m);
+    else if (m.type === 'verified') onVerified(m);
     else if (m.type === 'error') onError(m);
   }
 
@@ -334,15 +486,19 @@
   }
 
   function onError(m) {
+    var wasVerify = busy === 'verify', vid = curEx;
     clearTimers(); busy = null;
     if (m.schema) schema = m.schema;
+    if (wasVerify) curEx = null;
+    if (wasVerify && m.code !== 'crash') { setFb(vid, 'internal', { message: m.message }); say(null); renderAll(); return; }
+    if (wasVerify) setFb(vid, 'crash');
     if (m.code === 'crash') {
       // arquivo que derruba o motor na recarga sai da lista (evita laço de reinícios)
       if (reload && reload.current) { if (reload.current.sample) sample.on = false; else loaded = loaded.filter(function (x) { return x !== reload.current; }); }
       pending = null; restart({ kind: 'crash' }); return;
     }
     if (m.code === 'sql' || m.code === 'worker') { stale = !!res; err = { kind: 'sql', message: m.message, statement: m.statement || 1 }; }
-    else if (m.code === 'sample') { err = { kind: 'sample', detail: m.message }; if (reload && reload.current && reload.current.sample) sample.on = false; }
+    else if (m.code === 'sample') { pendingEx = null; err = { kind: 'sample', detail: m.message }; if (reload && reload.current && reload.current.sample) sample.on = false; }
     else if (m.code === 'load') err = { kind: 'load', code: 'parse', vars: { detail: m.message } };
     else if (m.code === 'cols') err = { kind: 'load', code: 'cols', vars: { n: num(+m.detail), max: num(2000) } };
     else err = { kind: 'load', code: m.code, vars: {} };
@@ -353,6 +509,7 @@
 
   // ---------- reiniciar o motor (terminate) ----------
   function restart(why) {
+    if (busy === 'verify' && curEx) { setFb(curEx, why.kind, { s: why.s }); if (document.activeElement === exStop) refocusEx = curEx; curEx = null; }
     clearTimers();
     var hadFocus = document.activeElement === stopBtn || document.activeElement === loadCancel;
     stale = !!res; schema = []; warns = [];
@@ -457,7 +614,7 @@
       worker.postMessage({ type: 'sample', id: job, sql: txt });
     }, function (e) {
       if (g !== gen || curId !== job) return;
-      busy = null; err = { kind: 'sample', detail: String(e && e.message || e) };
+      busy = null; pendingEx = null; err = { kind: 'sample', detail: String(e && e.message || e) };
       say(null); renderAll();
     });
   }
@@ -473,10 +630,12 @@
     if (!edited) editor.value = 'SELECT * FROM clientes LIMIT 10;';
     say('hub.sql.status.sample', { n: num(m.tables.length), rows: num(m.rows) });
     renderAll();
+    if (pendingEx) { var pid = pendingEx; pendingEx = null; verifyEx(pid); }
   }
 
   function cancelLoad() {
     if (busy !== 'load') return;
+    pendingEx = null;
     if (reload) { loaded = []; sample.on = false; reload = null; }
     pending = null; stale = !!res; schema = []; warns = []; err = null;
     // terminate: o banco é recriado; as tabelas de CSV anteriores são recarregadas
@@ -489,6 +648,7 @@
   }
 
   function resetDb() {
+    pendingEx = null; curEx = null;
     clearTimers(); loaded = []; sample.on = false; sample.tables = []; reload = null; pending = null; res = null; stale = false; schema = []; warns = []; err = null;
     readyMsg = 'hub.sql.status.reset';
     boot();
@@ -503,6 +663,7 @@
   });
   editor.addEventListener('input', function () { edited = true; });
   stopBtn.addEventListener('click', function () { if (busy === 'run') restart({ kind: 'stopped' }); });
+  exStop.addEventListener('click', function () { if (busy === 'verify') restart({ kind: 'stopped' }); });
   loadCancel.addEventListener('click', cancelLoad);
   resetBtn.addEventListener('click', resetDb);
   sampleBtn.addEventListener('click', loadSample);

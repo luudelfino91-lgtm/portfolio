@@ -10,7 +10,7 @@ trap 'rm -rf "$SITE_DIR"' EXIT INT TERM
 ln -s "$(pwd)" "$SITE_DIR/portfolio"   # /portfolio/ servido na PORT_SUB
 export SITE_DIR
 rc=0
-for t in reg shell i18n_theme_privacy a11y budget_file csv sql sample; do
+for t in reg shell i18n_theme_privacy a11y budget_file csv sql sample exercises; do
   echo "=== $t ==="; node tests/hub/$t.js > /tmp/hub-$t.log 2>&1; r=$?; [ $r -ne 0 ] && rc=1
   echo "exit=$r"
   grep -c '^PASS' /tmp/hub-$t.log | sed 's/^/PASS: /'; grep -c '^FAIL' /tmp/hub-$t.log | sed 's/^/FAIL: /'; grep -c '^N/A' /tmp/hub-$t.log | sed 's/^/N\/A: /'
