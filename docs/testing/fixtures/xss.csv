@@ -1,0 +1,6 @@
+<img src=x onerror=alert(1)>,<script>alert(1)</script>,"a""b",`tick`,"""; DROP TABLE t; --",=cmd|' /C calc'!A0
+<img src=x onerror=alert(1)>,"<script>alert(""x"")</script>",</script><script>alert(1)</script>,`${alert(1)}`,'; DROP TABLE t;--,=cmd|' /C calc'!A0
+=cmd|' /C calc'!A0,+SUM(1+1),-2+3,@SUM(A1),"=HYPERLINK(""http://example.invalid"",""x"")",	=1+1
+"""><svg/onload=alert(1)>",javascript:alert(1),{{7*7}},${7*7},<iframe src=javascript:alert(1)>,"'""`"
+"aspas "" e ' e ` juntas",</script>,<script>,&lt;b&gt;&amp;,"<a href=""javascript:alert(1)"">x</a>",normal
+ação,São Paulo,ç,ñ,<b>negrito</b>,fim

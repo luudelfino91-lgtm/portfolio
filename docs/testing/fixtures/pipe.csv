@@ -1,0 +1,201 @@
+id|nome|cidade|estado|idade|salario|ativo|data_cadastro|categoria|observacao
+1|João Conceição|São Paulo|SP|46|8442.93|false|2023-08-20|B|ação ç ñ Niño
+2|Ana Côrtes|Niterói|RJ|47|10476.32|true|2023-08-14|C|revisão
+3|Antônio Souza|Niterói|RJ|67|3367.22|true|2022-07-22|E|pedido urgente
+4|Nuno Oliveira|Brasília|DF|38|5259.81|true|2020-12-09|D|coração
+5|Luís Oliveira|São Paulo|SP|53|5248.32|true|2022-03-26|A|pedido urgente
+6|Luís Araújo|São Paulo|SP|56|7035.29|false|2020-01-26|D|coração
+7|José Pereira|Florianópolis|SC|68|9339.56|false|2023-08-20|D|senão
+8|José Pereira|Maceió|AL|58|2718.43|true|2023-08-09|A|coração
+9|Beatriz Lima|Curitiba|PR|42|8003.38|true|2020-07-07|B|coração
+10|Luís Muñoz|Maceió|AL|55|4899.28|true|2023-03-18|C|coração
+11|Ângela Oliveira|São Paulo|SP|22|4133.11|true|2020-03-28|C|ç
+12|Beatriz Araújo|Goiânia|GO|53|6677.39|true|2021-08-04|B|ação concluída
+13|Maria Souza|Maceió|AL|22|9877.63|false|2021-05-07|B|ç
+14|Ana Muñoz|Curitiba|PR|70|8254.37|true|2022-07-21|E|
+15|Beatriz Peña|Belém|PA|62|7191.68|true|2021-07-14|A|Niño
+16|Beatriz Peña|Maceió|AL|66|9739.78|true|2021-05-10|B|ç
+17|Maria Gonçalves|Florianópolis|SC|77|5619.15|true|2020-08-24|D|Niño
+18|José Gonçalves|Goiânia|GO|47|6422.38|false|2020-11-28|D|revisão
+19|Ana Oliveira|Florianópolis|SC|62|4195.58|false|2021-01-14|B|ç
+20|Conceição Muñoz|Belém|PA|63|4900.11|false|2023-08-01|E|coração
+21|João Oliveira|Maceió|AL|72|4077.14|false|2022-11-06|C|
+22|José Oliveira|São Paulo|SP|29|1756.98|true|2020-09-10|D|coração
+23|Beatriz Muñoz|Florianópolis|SC|41|5990.35|true|2021-03-29|B|
+24|Antônio Pereira|Belém|PA|38|2160.58|true|2022-05-07|A|coração
+25|Nuno Lima|Goiânia|GO|36|6004.35|true|2020-05-17|E|pedido urgente
+26|Beatriz Côrtes|Goiânia|GO|48|8805.62|false|2023-04-25|A|senão
+27|Nuno Silva|Belém|PA|43|10059.28|false|2023-09-30|E|senão
+28|Maria Souza|Maceió|AL|64|9003.05|true|2023-09-27|D|Niño
+29|Ângela Oliveira|Brasília|DF|50|9334.80|true|2022-07-28|D|Niño
+30|Antônio Lima|Curitiba|PR|73|4398.13|true|2022-07-07|B|senão
+31|Nuno Pereira|Florianópolis|SC|68|2138.35|false|2023-10-31|A|senão
+32|Luís Côrtes|Maceió|AL|72|2558.26|false|2022-11-28|C|ação concluída
+33|Beatriz Lima|Goiânia|GO|35|1713.11|true|2021-10-05|A|Niño
+34|Antônio Souza|Niterói|RJ|32|5244.94|false|2021-07-13|B|
+35|Conceição Souza|Brasília|DF|57|9847.86|true|2023-05-31|E|senão
+36|Ana Gonçalves|São Paulo|SP|70|8974.82|true|2023-08-25|A|senão
+37|Maria Souza|Florianópolis|SC|21|10433.00|false|2022-05-17|D|coração
+38|Conceição Côrtes|Niterói|RJ|56|7997.82|false|2020-04-15|B|revisão
+39|Ângela Oliveira|Florianópolis|SC|35|5181.92|false|2020-07-22|B|coração
+40|Conceição Lima|Brasília|DF|22|5523.45|false|2023-02-15|A|pedido urgente
+41|Ana Souza|Niterói|RJ|49|2437.03|false|2021-11-09|B|
+42|Ana Souza|Belém|PA|29|8157.51|true|2022-02-14|D|
+43|Ângela Araújo|Curitiba|PR|30|10265.27|false|2023-07-18|A|Niño
+44|Beatriz Peña|São Paulo|SP|63|4973.95|false|2022-06-10|B|coração
+45|Nuno Araújo|Niterói|RJ|44|5268.26|false|2022-01-28|B|ç
+46|José Souza|Belém|PA|47|4390.85|false|2021-05-20|A|Niño
+47|Ana Pereira|São Paulo|SP|40|7932.82|false|2023-01-10|C|
+48|Maria Pereira|Goiânia|GO|70|2100.01|false|2020-09-22|E|ação concluída
+49|Luís Silva|Maceió|AL|48|6870.23|false|2022-12-20|C|ação concluída
+50|João Peña|Goiânia|GO|59|5930.36|true|2023-07-07|E|revisão
+51|Ângela Oliveira|Niterói|RJ|55|1582.03|true|2022-10-07|E|coração
+52|João Gonçalves|Niterói|RJ|18|6457.94|false|2021-10-26|C|senão
+53|Nuno Côrtes|Belém|PA|66|4869.82|false|2021-02-02|D|ação concluída
+54|Conceição Oliveira|Goiânia|GO|30|8314.63|true|2023-12-31|C|senão
+55|Conceição Souza|Niterói|RJ|29|9216.27|true|2020-10-10|D|Niño
+56|Ana Côrtes|Maceió|AL|28|3137.15|true|2020-07-26|C|senão
+57|Nuno Pereira|Maceió|AL|60|10130.19|false|2024-01-07|A|ç
+58|Nuno Côrtes|Niterói|RJ|62|1827.21|true|2020-10-10|A|ç
+59|Ângela Gonçalves|Niterói|RJ|74|10120.96|false|2023-11-29|D|revisão
+60|João Muñoz|Brasília|DF|29|8136.08|false|2022-04-27|C|pedido urgente
+61|Maria Peña|Florianópolis|SC|19|1894.31|false|2020-01-04|C|
+62|Ângela Pereira|Curitiba|PR|70|10041.00|false|2023-06-26|C|ação concluída
+63|Ângela Muñoz|Belém|PA|38|3055.48|false|2021-05-31|B|senão
+64|José Araújo|Brasília|DF|42|8100.71|false|2021-02-17|E|Niño
+65|Ana Muñoz|São Paulo|SP|64|9657.62|false|2021-03-28|D|ç
+66|Conceição Araújo|Niterói|RJ|75|7022.20|true|2020-12-24|D|Niño
+67|Conceição Pereira|São Paulo|SP|36|6249.66|false|2022-10-13|C|senão
+68|Conceição Silva|Belém|PA|62|4682.08|true|2021-04-13|D|ação concluída
+69|Luís Gonçalves|Niterói|RJ|48|8688.91|true|2023-06-18|B|senão
+70|Maria Souza|Belém|PA|56|8592.65|false|2020-09-13|D|senão
+71|Maria Souza|Maceió|AL|32|6561.77|true|2020-03-01|C|coração
+72|Ana Côrtes|Curitiba|PR|39|3896.95|false|2021-04-05|D|pedido urgente
+73|Conceição Souza|Brasília|DF|40|3642.69|true|2021-04-23|C|ç
+74|João Peña|Brasília|DF|33|2323.23|false|2021-11-17|E|coração
+75|Luís Oliveira|São Paulo|SP|54|1554.91|false|2023-12-13|A|
+76|Maria Peña|Curitiba|PR|67|6007.93|false|2022-07-16|C|pedido urgente
+77|Nuno Côrtes|Goiânia|GO|75|2164.10|false|2022-03-27|D|
+78|Ângela Lima|Curitiba|PR|23|7934.25|false|2023-09-30|E|
+79|Luís Araújo|Maceió|AL|44|5022.62|false|2021-01-08|C|ação concluída
+80|Ângela Oliveira|Maceió|AL|60|3654.96|false|2021-07-31|B|revisão
+81|Ana Pereira|Belém|PA|46|6480.96|false|2022-09-16|C|
+82|Antônio Araújo|Niterói|RJ|46|8527.02|false|2021-07-27|C|pedido urgente
+83|Ana Oliveira|Goiânia|GO|69|7229.53|false|2023-03-30|B|Niño
+84|Maria Pereira|Goiânia|GO|46|9563.59|true|2022-06-03|E|ação concluída
+85|Antônio Muñoz|Niterói|RJ|18|6858.14|false|2024-01-20|C|
+86|Ana Pereira|Brasília|DF|46|9307.94|false|2023-02-13|C|ç
+87|Ana Oliveira|Goiânia|GO|43|3188.53|true|2023-11-17|C|coração
+88|João Silva|Belém|PA|55|5140.64|true|2022-09-20|B|ç
+89|Ana Peña|Niterói|RJ|38|10248.27|true|2023-11-25|D|ç
+90|Maria Lima|Brasília|DF|45|4749.88|false|2023-01-25|D|ç
+91|José Souza|Brasília|DF|54|3242.00|false|2024-01-19|D|ação concluída
+92|Maria Silva|Maceió|AL|73|3797.21|true|2022-08-28|C|Niño
+93|João Muñoz|São Paulo|SP|33|6538.66|true|2022-10-24|C|
+94|Ângela Lima|São Paulo|SP|19|10076.94|false|2021-01-30|A|ç
+95|Ângela Silva|Belém|PA|30|6021.68|true|2020-10-24|D|
+96|Ângela Oliveira|Belém|PA|67|7954.09|true|2023-05-14|E|revisão
+97|João Silva|Niterói|RJ|61|8730.45|true|2022-04-10|C|senão
+98|Ana Silva|Maceió|AL|25|5502.80|true|2021-07-12|E|
+99|Ângela Gonçalves|Florianópolis|SC|49|1938.56|true|2021-08-17|E|revisão
+100|José Araújo|Florianópolis|SC|35|5444.02|true|2020-12-03|B|
+101|Luís Peña|Goiânia|GO|31|5080.30|true|2021-02-13|A|ação concluída
+102|Ana Côrtes|Curitiba|PR|41|7516.29|true|2021-04-08|E|revisão
+103|José Araújo|Niterói|RJ|75|8477.77|true|2021-02-25|C|
+104|José Peña|Florianópolis|SC|42|1553.10|false|2020-11-21|E|Niño
+105|Ana Côrtes|Belém|PA|35|9562.77|false|2023-11-08|B|Niño
+106|Beatriz Peña|Curitiba|PR|19|2365.96|true|2022-01-04|E|coração
+107|Luís Lima|Belém|PA|37|2806.34|true|2022-04-24|D|
+108|Conceição Peña|Brasília|DF|77|1784.30|false|2022-12-21|D|senão
+109|José Araújo|Curitiba|PR|49|7173.04|false|2023-04-15|A|ç
+110|João Pereira|Curitiba|PR|72|5723.06|true|2022-04-09|B|Niño
+111|Conceição Oliveira|Belém|PA|67|6106.82|true|2023-03-13|E|
+112|Nuno Peña|Goiânia|GO|66|8429.60|true|2022-11-26|A|ç
+113|Antônio Araújo|Goiânia|GO|59|3540.14|true|2022-01-29|C|revisão
+114|José Souza|Niterói|RJ|72|9311.67|false|2023-08-10|E|pedido urgente
+115|Ângela Gonçalves|Niterói|RJ|34|2319.98|true|2023-05-14|A|Niño
+116|Conceição Gonçalves|Maceió|AL|34|9663.39|true|2022-09-09|A|
+117|Ana Oliveira|São Paulo|SP|61|1751.89|true|2020-12-26|A|revisão
+118|Nuno Côrtes|Belém|PA|60|4794.33|false|2022-03-09|A|
+119|Conceição Lima|Goiânia|GO|59|9585.60|false|2021-08-02|D|
+120|Antônio Muñoz|Niterói|RJ|71|7826.69|true|2023-09-10|C|ç
+121|Beatriz Souza|Belém|PA|42|7769.10|true|2020-09-01|E|Niño
+122|Luís Pereira|Maceió|AL|67|10499.91|true|2022-06-23|E|
+123|Ângela Araújo|Goiânia|GO|37|1500.80|true|2022-11-12|C|pedido urgente
+124|Luís Silva|Maceió|AL|43|5254.76|true|2021-01-22|C|pedido urgente
+125|João Gonçalves|Florianópolis|SC|37|4503.20|false|2020-07-08|E|
+126|João Pereira|Niterói|RJ|77|6084.56|true|2020-10-25|E|
+127|Ângela Oliveira|Florianópolis|SC|23|8178.54|true|2022-08-07|B|senão
+128|João Araújo|Curitiba|PR|59|1620.16|true|2021-05-21|E|ação concluída
+129|Ângela Oliveira|São Paulo|SP|23|2947.68|false|2021-07-09|C|pedido urgente
+130|Beatriz Souza|Maceió|AL|38|8146.16|false|2023-06-12|D|senão
+131|José Pereira|Maceió|AL|39|4624.59|false|2020-02-11|C|revisão
+132|Nuno Silva|Belém|PA|40|6573.18|true|2021-07-20|A|senão
+133|Conceição Pereira|Belém|PA|64|3621.78|true|2020-10-05|B|revisão
+134|Antônio Oliveira|Curitiba|PR|28|6555.84|false|2022-07-26|B|
+135|Beatriz Souza|Florianópolis|SC|73|10154.98|false|2020-10-09|C|revisão
+136|Luís Côrtes|Brasília|DF|49|5859.70|true|2020-08-31|D|pedido urgente
+137|Antônio Muñoz|Florianópolis|SC|51|6913.94|false|2022-11-30|C|revisão
+138|Maria Muñoz|Belém|PA|30|5931.70|false|2023-02-28|A|pedido urgente
+139|Conceição Lima|São Paulo|SP|49|2849.23|true|2022-07-13|D|coração
+140|João Peña|Florianópolis|SC|76|8505.52|false|2020-09-07|B|ç
+141|Maria Muñoz|São Paulo|SP|28|7442.81|true|2023-03-18|E|senão
+142|Antônio Lima|Niterói|RJ|19|3579.33|false|2023-08-13|C|ç
+143|Maria Souza|Maceió|AL|64|9470.51|true|2024-01-03|E|
+144|Ana Silva|Florianópolis|SC|30|4083.57|true|2021-05-02|B|
+145|João Muñoz|Brasília|DF|36|4636.52|true|2021-11-01|E|ação concluída
+146|Ana Muñoz|São Paulo|SP|37|8287.86|true|2020-03-14|B|senão
+147|Conceição Silva|Brasília|DF|50|8446.90|true|2021-08-09|A|ç
+148|Ângela Souza|Curitiba|PR|19|5309.71|false|2022-04-17|A|pedido urgente
+149|Ana Peña|Maceió|AL|29|9411.68|false|2022-09-30|A|ç
+150|Ana Muñoz|Maceió|AL|59|7236.53|true|2020-12-30|D|
+151|Ângela Souza|Niterói|RJ|43|2754.24|false|2023-04-15|E|
+152|Ana Pereira|Florianópolis|SC|67|2822.21|false|2021-02-14|D|
+153|Antônio Peña|Niterói|RJ|29|6804.83|true|2022-10-23|E|coração
+154|João Pereira|Maceió|AL|18|8543.33|false|2022-09-29|B|pedido urgente
+155|Antônio Peña|Goiânia|GO|44|4930.45|false|2021-11-25|D|
+156|Conceição Peña|Brasília|DF|64|4569.21|false|2021-01-01|D|ç
+157|Ana Gonçalves|Belém|PA|42|6538.18|true|2022-01-21|A|ç
+158|Conceição Araújo|Goiânia|GO|28|2197.27|true|2021-10-17|E|pedido urgente
+159|Ana Oliveira|Brasília|DF|35|9268.99|true|2022-08-03|B|ç
+160|Luís Peña|Goiânia|GO|20|5917.29|false|2023-01-02|B|ç
+161|Ângela Peña|Niterói|RJ|41|6009.71|false|2023-02-16|D|ação concluída
+162|Ana Peña|Curitiba|PR|29|8789.00|true|2022-10-30|A|ç
+163|Beatriz Araújo|Belém|PA|75|2987.77|false|2023-10-30|C|coração
+164|Ângela Lima|Florianópolis|SC|56|3657.56|true|2020-03-07|D|revisão
+165|José Pereira|Florianópolis|SC|52|4413.08|false|2020-08-09|B|
+166|Ana Côrtes|Brasília|DF|33|7936.88|false|2023-08-25|E|senão
+167|Antônio Côrtes|Florianópolis|SC|75|5353.82|true|2022-03-05|B|coração
+168|Nuno Oliveira|Maceió|AL|64|9652.39|true|2022-04-22|B|ação concluída
+169|Ângela Oliveira|Maceió|AL|27|9605.25|false|2023-05-15|A|
+170|Ana Pereira|Florianópolis|SC|74|5099.94|true|2023-03-12|C|Niño
+171|João Gonçalves|Curitiba|PR|75|7380.22|false|2021-04-15|D|coração
+172|Maria Araújo|Florianópolis|SC|58|7496.40|true|2022-11-13|A|pedido urgente
+173|Conceição Silva|Brasília|DF|66|6809.39|false|2022-07-01|B|ação concluída
+174|Conceição Araújo|Niterói|RJ|45|9659.04|false|2023-05-26|A|
+175|Luís Peña|Brasília|DF|18|8533.70|false|2023-06-07|E|pedido urgente
+176|José Souza|Niterói|RJ|58|10070.44|false|2022-08-12|B|revisão
+177|Nuno Oliveira|Brasília|DF|18|3573.36|true|2021-09-10|B|
+178|Maria Araújo|Florianópolis|SC|39|6874.67|false|2021-02-11|C|senão
+179|João Muñoz|São Paulo|SP|72|7607.92|true|2022-04-10|D|ação concluída
+180|Antônio Peña|Florianópolis|SC|42|4329.43|true|2021-05-07|A|revisão
+181|João Gonçalves|Brasília|DF|18|1959.89|true|2024-02-01|C|Niño
+182|Beatriz Pereira|São Paulo|SP|50|1602.61|true|2023-07-06|D|
+183|Ana Peña|Brasília|DF|27|7994.00|false|2022-11-08|E|ação concluída
+184|Maria Muñoz|Florianópolis|SC|62|4605.49|false|2023-02-21|D|
+185|Nuno Lima|Curitiba|PR|39|2813.01|false|2022-07-14|B|revisão
+186|Conceição Souza|Brasília|DF|73|7565.73|true|2021-02-01|B|ação concluída
+187|Nuno Peña|Brasília|DF|19|9772.18|true|2021-10-15|E|coração
+188|Nuno Silva|São Paulo|SP|42|5904.88|true|2021-07-18|C|
+189|Luís Oliveira|Goiânia|GO|37|9749.35|true|2020-07-25|B|ç
+190|Luís Gonçalves|Belém|PA|44|8590.73|false|2020-07-12|D|ação concluída
+191|Beatriz Oliveira|Curitiba|PR|50|5301.52|true|2024-01-08|C|ç
+192|Ângela Souza|Florianópolis|SC|30|2669.99|false|2023-04-18|C|pedido urgente
+193|Conceição Lima|São Paulo|SP|49|4034.79|false|2023-02-25|A|ç
+194|José Pereira|Curitiba|PR|20|2109.76|false|2020-06-23|C|Niño
+195|João Muñoz|Brasília|DF|46|6675.05|true|2020-01-09|A|pedido urgente
+196|Maria Gonçalves|Maceió|AL|50|5245.05|false|2022-04-22|D|ç
+197|José Lima|Curitiba|PR|56|7846.99|true|2023-04-30|D|ação concluída
+198|Ângela Souza|Goiânia|GO|48|7274.26|false|2022-03-13|E|coração
+199|Conceição Muñoz|São Paulo|SP|50|6582.12|true|2021-12-07|D|
+200|Ângela Côrtes|Maceió|AL|50|2503.69|false|2020-08-12|C|Niño

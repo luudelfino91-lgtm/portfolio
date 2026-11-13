@@ -1,0 +1,11 @@
+id,texto,nota,valor
+1,"Silva, João","disse ""olá""",10.5
+2,"linha1
+linha2","campo com
+quebra e, vírgula",20
+3,"aspas """"duplas"""" ok",,30.75
+4,"""inicio"" e fim","a,b,c",40
+5,simples,"x
+y (CRLF dentro do campo)",50
+6,",","""",60
+7,"ação, São Paulo",ñ,70
