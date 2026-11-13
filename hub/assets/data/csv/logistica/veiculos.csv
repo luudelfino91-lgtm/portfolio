@@ -1,0 +1,41 @@
+id,transportadora_id,codigo,tipo,capacidade_kg
+1,1,VEI-0001,caminhonete,2500
+2,2,VEI-0002,caminhao leve,6000
+3,3,VEI-0003,van,1200
+4,4,VEI-0004,van,1200
+5,5,VEI-0005,van,1200
+6,6,VEI-0006,van,1200
+7,7,VEI-0007,caminhonete,2500
+8,8,VEI-0008,van,1200
+9,1,VEI-0009,caminhao leve,6000
+10,2,VEI-0010,van,1200
+11,3,VEI-0011,caminhonete,2500
+12,4,VEI-0012,moto,40
+13,5,VEI-0013,van,1200
+14,6,VEI-0014,moto,40
+15,7,VEI-0015,moto,40
+16,8,VEI-0016,van,1200
+17,1,VEI-0017,caminhonete,2500
+18,2,VEI-0018,van,1200
+19,3,VEI-0019,van,1200
+20,4,VEI-0020,caminhao leve,6000
+21,5,VEI-0021,moto,40
+22,6,VEI-0022,moto,40
+23,7,VEI-0023,van,1200
+24,8,VEI-0024,moto,40
+25,1,VEI-0025,van,1200
+26,2,VEI-0026,moto,40
+27,3,VEI-0027,van,1200
+28,4,VEI-0028,van,1200
+29,5,VEI-0029,caminhonete,2500
+30,6,VEI-0030,van,1200
+31,7,VEI-0031,van,1200
+32,8,VEI-0032,caminhonete,2500
+33,1,VEI-0033,caminhonete,2500
+34,2,VEI-0034,van,1200
+35,3,VEI-0035,van,1200
+36,4,VEI-0036,caminhonete,2500
+37,5,VEI-0037,van,1200
+38,6,VEI-0038,van,1200
+39,7,VEI-0039,moto,40
+40,8,VEI-0040,van,1200

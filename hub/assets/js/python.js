@@ -16,8 +16,15 @@
      runner tambem recebe 'stop' e chama worker.terminate()). Python recarrega
      no proximo Executar (estado perdido, ~6 MB de novo: cache nao reaproveitado
      em iframe de origem opaca, medido em docs/security/phase-4-worker-isolation.md).
-   - Dados do usuario nunca saem do navegador: sem fetch, sem telemetria,
-     nada gravado (nem localStorage; so ld-lang/ld-theme do Hub, em outros arquivos).
+   - Dados (D11): NAO existe upload nem escolha de arquivo. Os unicos dados sao as tabelas do cenario escolhido
+     (5 cenarios embutidos), em hub/assets/data/csv/<cenario>/<tabela>.csv. A PAGINA (origem do site) busca esses
+     CSV na mesma origem (fetch relativo, sem credenciais; por isso a CSP desta pagina tem connect-src 'self') e os
+     entrega por postMessage ao iframe, que os grava em /data/<tabela>.csv no sistema de arquivos virtual. O iframe nao
+     tem rede nem origem para buscar nada. Os arquivos sao reenviados a CADA execucao (cada Run comeca com /data intacto).
+   - EXTENSAO FUTURA (pandas, outro agente): pacotes seriam carregados DENTRO do Worker (ver o ponto de extensao em
+     python-worker-src.js) com wheels hospedados no proprio site; esta pagina nao muda: os CSV em /data/ ja servem de entrada.
+   - Dados do usuario nunca saem do navegador: sem telemetria, nada gravado (nem localStorage; so ld-lang/ld-theme
+     do Hub, em outros arquivos). O unico fetch e o dos CSV do cenario, da mesma origem.
    - FLAG UNICA do fallback B2 (Worker de blob na propria pagina, sem isolamento
      de armazenamento): NAO implementado. So seria necessario se o GitHub Pages
      nao enviar Access-Control-Allow-Origin nos arquivos do Pyodide (SEC-P4-03).
@@ -25,7 +32,9 @@
 (function () {
   'use strict';
   var MAX_CODE = 204800;                 // 200 KB (bytes UTF-8)
-  var MAX_FILE = 10485760;               // 10 MiB (regra C da reconciliacao)
+  var MAX_FILE = 1048576;                // 1 MiB por tabela (as maiores tem ~60 KB); o runner confere de novo
+  var DATA_URL = new URL('../../assets/data/csv/', location.href).href;   // hub/assets/data/csv/
+  var SC = window.HubScenarios;
   var CAP_LINES = 2000, CAP_BYTES = 262144;
   var T_MIN = 5, T_MAX = 120, T_DEFAULT = 30;
   var LOAD_TIMEOUT_MS = 120000;          // carregar Pyodide + canario
@@ -33,7 +42,8 @@
 
   function $(id) { return document.getElementById(id); }
   var tool = $('pyTool'), editor = $('pyEditor'), runBtn = $('pyRun'), stopBtn = $('pyStop'), clearBtn = $('pyClear');
-  var timeoutIn = $('pyTimeout'), fileIn = $('pyFile'), fileRm = $('pyFileRm'), fileInfo = $('pyFileInfo');
+  var timeoutIn = $('pyTimeout'), dataFiles = $('pyDataFiles'), dataNote = $('pyDataNote');
+  var picker = null;
   var statusEl = $('pyStatus'), errBox = $('pyErr'), errT = $('pyErrT'), errM = $('pyErrM'), warnBox = $('pyWarn');
   var outEl = $('pyOut'), outEmpty = $('pyOutEmpty'), outNone = $('pyOutNone');
   if (!tool || !editor) return;
@@ -42,21 +52,19 @@
 
   var frame = null, runId = 0, state = 'idle', engineReady = false;
   var loadTimer = 0, runTimer = 0, startedAt = 0;
-  var file = null;                 // {name, buf, path}
-  var fileSent = false;            // o iframe atual ja tem o arquivo?
+  var dataCache = {};              // slug -> [{name, buf}] (CSV do cenario, em cache de memoria; copiados a cada execucao)
   var lines = 0, bytes = 0, truncated = false, anyOut = false;
   var lastStatus = null;           // para refazer o texto ao trocar de idioma: [chave, vars]
   var lastErr = null;
-  var pendingCode = '', pendingSecs = T_DEFAULT;
+  var pendingCode = '', pendingSecs = T_DEFAULT, pendingSlug = SC.defaultSlug;
 
-  function setState(s) { state = s; tool.dataset.state = s; runBtn.disabled = s !== 'idle'; stopBtn.disabled = s === 'idle'; }
+  function setState(s) { state = s; tool.dataset.state = s; runBtn.disabled = s !== 'idle'; stopBtn.disabled = s === 'idle'; if (picker) picker.setDisabled(s !== 'idle'); }
   function vv(v) { return typeof v === 'function' ? v() : v; }   // vars podem ser funcao: refeitas ao trocar de idioma
   function setStatus(key, vars) { lastStatus = key ? [key, vars] : null; statusEl.textContent = key ? t(key, vv(vars)) : ''; }
   function showErr(tk, mk, vars) { lastErr = [tk, mk, vars]; errT.textContent = t(tk); errM.textContent = t(mk, vars); errBox.hidden = false; }
   function hideErr() { lastErr = null; errBox.hidden = true; }
   function showWarn(key, vars) { warnBox.textContent = ''; var p = document.createElement('p'); p.textContent = t(key, vars); warnBox.appendChild(p); warnBox.dataset.k = key; warnBox.hidden = false; }
   function hideWarn() { warnBox.hidden = true; delete warnBox.dataset.k; warnBox.textContent = ''; }
-  function fmtSize(n) { return n < 1024 ? n + ' B' : n < 1048576 ? (n / 1024).toFixed(1) + ' KB' : (n / 1048576).toFixed(1) + ' MB'; }
 
   // ---- saida
   function clearOutput() {
@@ -87,7 +95,7 @@
       try { frame.contentWindow.postMessage({ t: 'stop' }, '*'); } catch (e) {}
       frame.remove(); frame = null;
     }
-    engineReady = false; fileSent = false;
+    engineReady = false;
   }
   function makeFrame() {
     var f = document.createElement('iframe');
@@ -103,15 +111,10 @@
     return f;
   }
 
+  // As tabelas do cenario vao a CADA execucao (copias: o cache da pagina nao e transferido); o Worker recria /data com elas.
   function sendRun(id, code) {
-    var msg = { t: 'run', id: id, code: code };
-    var transfer = [];
-    if (!fileSent) {
-      msg.files = file ? [{ name: file.name, buf: file.buf.slice(0) }] : [];
-      if (file) transfer.push(msg.files[0].buf);
-    }
-    fileSent = true;
-    frame.contentWindow.postMessage(msg, '*', transfer);
+    var files = (dataCache[pendingSlug] || []).map(function (f) { return { name: f.name, buf: f.buf.slice(0) } });
+    frame.contentWindow.postMessage({ t: 'run', id: id, code: code, tables: files }, '*', files.map(function (f) { return f.buf; }));
   }
 
   function finishRun(statusKey, vars) {
@@ -183,43 +186,49 @@
     if (!/^\d+$/.test(raw) || secs < T_MIN || secs > T_MAX) { showErr('hub.py.err.timeoutval.t', 'hub.py.err.timeoutval.m', { min: T_MIN, max: T_MAX }); timeoutIn.focus(); return; }
     clearOutput();
     runId++;
-    var id = runId;
-    if (!frame) {
-      setState('loading'); setStatus('hub.py.status.loading');
-      tool.dataset.engine = 'loading';
-      pendingCode = code; pendingSecs = secs;
-      frame = makeFrame();
-      loadTimer = setTimeout(function () {
-        killFrame(); setState('idle'); tool.dataset.engine = 'none'; setStatus('hub.py.status.failed');
-        showErr('hub.py.err.fatal.t', 'hub.py.err.fatal.m', { detail: 'timeout' });
-      }, LOAD_TIMEOUT_MS);
-    } else {
-      pendingCode = code; pendingSecs = secs;
-      setState('loading'); setStatus('hub.py.status.starting');
-      sendRun(id, code);
-    }
+    var id = runId, slug = picker.get();
+    pendingCode = code; pendingSecs = secs; pendingSlug = slug;
+    setState('loading'); setStatus('hub.py.status.data');
+    getData(slug).then(function () {
+      if (id !== runId || state !== 'loading') return;   // Parar (ou outra execucao) enquanto os dados vinham
+      if (!frame) {
+        setStatus('hub.py.status.loading');
+        tool.dataset.engine = 'loading';
+        frame = makeFrame();
+        loadTimer = setTimeout(function () {
+          killFrame(); setState('idle'); tool.dataset.engine = 'none'; setStatus('hub.py.status.failed');
+          showErr('hub.py.err.fatal.t', 'hub.py.err.fatal.m', { detail: 'timeout' });
+        }, LOAD_TIMEOUT_MS);
+      } else {
+        setStatus('hub.py.status.starting');
+        sendRun(id, code);
+      }
+    }, function (e) {
+      if (id !== runId || state !== 'loading') return;
+      setState('idle'); setStatus(null);
+      showErr('hub.py.err.data.t', 'hub.py.err.data.m', { detail: String(e && e.message || e).slice(0, 200) });
+    });
   }
 
-  // ---- arquivo CSV
-  function safeName(n) {
-    n = String(n || '').split(/[\\/]/).pop().replace(/[^\p{L}\p{N}._-]+/gu, '_').replace(/^\.+/, '').slice(0, 100);
-    return n || 'data.csv';
+  // ---- dados do cenario (D11): fetch same-origin dos CSV; nada de escolha de arquivo
+  function getData(slug) {
+    if (dataCache[slug]) return Promise.resolve(dataCache[slug]);
+    var tables = SC.bySlug[slug].tables;
+    return Promise.all(tables.map(function (tb) {
+      return fetch(DATA_URL + slug + '/' + tb + '.csv', { credentials: 'omit', cache: 'no-cache' }).then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + tb + '.csv');
+        return r.arrayBuffer();
+      }).then(function (buf) {
+        if (buf.byteLength === 0 || buf.byteLength > MAX_FILE) throw new Error(tb + '.csv: ' + buf.byteLength + ' bytes');
+        return { name: tb + '.csv', buf: buf };
+      });
+    })).then(function (files) { dataCache[slug] = files; return files; });
   }
-  function renderFile() {
-    fileRm.hidden = !file;
-    fileInfo.textContent = file ? t('hub.py.file.ready', { path: file.path, size: fmtSize(file.buf.byteLength) }) : '';
+  function renderData() {
+    var slug = picker.get(), list = SC.bySlug[slug].tables.map(function (tb) { return '/data/' + tb + '.csv'; }).join(', ');
+    dataFiles.textContent = t('hub.py.data.list', { list: list });
+    dataNote.textContent = t('hub.py.data.note', { example: '/data/' + SC.bySlug[slug].tables[0] + '.csv' });
   }
-  fileIn.addEventListener('change', function () {
-    var f = fileIn.files && fileIn.files[0];
-    if (!f) return;
-    if (f.size > MAX_FILE) { showErr('hub.py.err.file.big.t', 'hub.py.err.file.big.m', { name: f.name, size: fmtSize(f.size) }); fileIn.value = ''; return; }
-    hideErr();
-    f.arrayBuffer().then(function (buf) {
-      var name = safeName(f.name);
-      file = { name: name, buf: buf, path: '/data/' + name }; fileSent = false; fileIn.value = ''; renderFile();
-    }, function () { showErr('hub.py.err.file.read.t', 'hub.py.err.file.read.m'); fileIn.value = ''; });
-  });
-  fileRm.addEventListener('click', function () { file = null; fileSent = false; renderFile(); editor.focus(); });
 
   runBtn.addEventListener('click', run);
   stopBtn.addEventListener('click', stop);
@@ -232,7 +241,9 @@
     if (lastErr) { errT.textContent = t(lastErr[0]); errM.textContent = t(lastErr[1], lastErr[2]); }
     if (warnBox.dataset.k) { var k = warnBox.dataset.k; showWarn(k, k === 'hub.py.out.trunc' ? { lines: nf(CAP_LINES), kib: '256' } : undefined); }
     if (frame) frame.setAttribute('title', t('hub.py.frame.title'));
-    renderFile();
+    renderData();
   });
+  picker = SC.mount($('pyPicker'), { name: 'pyScenario', value: SC.defaultSlug, er: true, onChange: renderData });
+  renderData();
   setState('idle');
 })();

@@ -1,218 +1,180 @@
-// Leitor de CSV (T-302, T-306a CSV, T-309): CSV-01..04, 10, 12, 14, 15, 30, 40(xss), 51..53, 360px, axe, privacidade.
-// Requer: fixtures pequenas em docs/testing/fixtures e as grandes em FIXTURES_LARGE (padrao /tmp/csv-large),
-//   geradas FORA do repo: (cd docs/testing/fixtures && python3 -I gen_csv.py --large --out /tmp/csv-large)
-const L = require('./lib'); const fs = require('fs'); const path = require('path');
-const FX = path.join(L.REPO, 'docs/testing/fixtures'); const LARGE = process.env.FIXTURES_LARGE || '/tmp/csv-large';
-const EXP = JSON.parse(fs.readFileSync(FX + '/expected.json', 'utf8')).files.reduce((a, f) => (a[f.file] = f, a), {});
+// Explorador de dados (T-302 reescrito para D11: sem upload). Antes era o "leitor de CSV" (CSV-01..53); agora a pagina so abre as
+// tabelas dos 5 cenarios embutidos. Removidos em D11 (justificativa em docs/status/no-upload-status.md): CSV-01..04,10,12,14,15,16,17,19,20,22,
+// 30,40,41 (30 fixtures de arquivo, delimitador, codificacao, BOM, xss.csv, nome de arquivo malicioso), CSV-51..53 (10 MB, limite, cancelar
+// leitura), SEC-P3-01 (2.000 colunas) e CSV-05 (teclado no seletor de arquivo): o recurso que eles exercitavam nao existe mais.
+// Cobertura nova (EXP-xx): integridade das 27 tabelas na UI contra o sqlite3 (contagem de linhas visivel = oraculo, colunas, tipos, chaves, nulos,
+// previa celula a celula), seletor de cenarios, erros, ausencia de upload (DOM), privacidade/CSP, i18n, 360 px, axe, teclado.
+const L = require('./lib'); const fs = require('fs'); const O = require('./oracle');
 const AXE = fs.existsSync(L.AXE_PATH) ? fs.readFileSync(L.AXE_PATH, 'utf8') : null;
-if (!AXE) L.rec('A11-02 (CSV) axe-core presente em ' + L.AXE_PATH + ' (sem ele a cobertura axe nao roda)', false, 'instale axe-core: cd /tmp/axe && npm pack axe-core && tar xzf axe-core-*.tgz');
+if (!AXE) L.rec('A11-02 (explorador) axe-core presente em ' + L.AXE_PATH + ' (sem ele a cobertura axe nao roda)', false, 'instale axe-core: cd /tmp/axe && npm pack axe-core && tar xzf axe-core-*.tgz');
 const PAGE = 'hub/ferramentas/csv/';
-const fpath = n => path.isAbsolute(n) ? n : fs.existsSync(path.join(FX, n)) ? path.join(FX, n) : path.join(LARGE, n);
+const T0 = 30000;
+const ORACLE = O.data();
+const nf = (n, lang) => new Intl.NumberFormat(lang === 'pt' ? 'pt-BR' : 'en-US').format(n);
 
-async function load(pg, name, opts = {}) {
-  await pg.setInputFiles('#csvFile', typeof name === 'string' ? fpath(name) : name);
-  await pg.waitForFunction(() => ['ready', 'error'].includes(document.getElementById('csvTool').dataset.state), null, { timeout: 60000 });
-}
+const ready = (pg, table) => pg.waitForFunction(t => { const g = id => document.getElementById(id); return g('csvTool').dataset.state === 'ready' && (!t || (document.querySelector('[data-stat=table]') || {}).textContent.endsWith(' ' + t)); }, table, { timeout: T0 });
 const grab = pg => pg.evaluate(() => {
-  const g = id => document.getElementById(id);
+  const g = id => document.getElementById(id), q = s => document.querySelector(s);
   return {
-    state: g('csvTool').dataset.state, errVisible: !g('csvErr').hidden, err: g('csvErr').textContent, warn: g('csvWarn').hidden ? '' : g('csvWarn').textContent,
-    status: g('csvStatus').textContent, rows: (document.querySelector('[data-stat=rows]') || {}).textContent, cols: (document.querySelector('[data-stat=cols]') || {}).textContent,
-    delim: (document.querySelector('[data-stat=delim]') || {}).textContent, enc: (document.querySelector('[data-stat=enc]') || {}).textContent,
-    header: [...document.querySelectorAll('#csvData thead th')].map(e => e.textContent),
-    body: [...document.querySelectorAll('#csvData tbody tr')].map(tr => [...tr.cells].map(c => c.textContent)),
-    types: [...document.querySelectorAll('#csvCols tbody td[data-type]')].map(e => e.dataset.type),
-    resultVisible: !g('csvResult').hidden, bodyText: document.body.innerText,
+    state: g('csvTool').dataset.state, errVisible: !g('csvErr').hidden, errT: g('csvErrT').textContent, errM: g('csvErrM').textContent, status: g('csvStatus').textContent,
+    resultVisible: !g('csvResult').hidden, scenario: (q('[data-stat=scenario]') || {}).textContent, table: (q('[data-stat=table]') || {}).textContent,
+    rows: (q('[data-stat=rows]') || {}).textContent, cols: (q('[data-stat=cols]') || {}).textContent, nulls: (q('[data-stat=nulls]') || {}).textContent,
+    colRows: [...document.querySelectorAll('#csvCols tbody tr')].map(tr => [...tr.cells].map(c => c.textContent)), colTypes: [...document.querySelectorAll('#csvCols tbody td[data-type]')].map(e => e.dataset.type),
+    header: [...document.querySelectorAll('#csvData thead th')].map(e => e.textContent), body: [...document.querySelectorAll('#csvData tbody tr')].map(tr => [...tr.cells].map(c => c.textContent)),
+    cap: g('csvDataCap').textContent, options: [...g('csvTable').options].map(o => o.value), selected: g('csvTable').value, tableDisabled: g('csvTable').disabled,
+    radios: [...document.querySelectorAll('#csvPicker input[type=radio]')].map(r => ({ v: r.value, on: r.checked, name: r.closest('label').querySelector('.sc-name').textContent, desc: r.closest('label').querySelector('.sc-desc').textContent, meta: r.closest('label').querySelector('.sc-meta').textContent })),
+    er: (q('#csvPicker + * .sc-er-pre, .sc-er-pre') || {}).textContent, bodyText: document.body.innerText,
   };
 });
-const os = require('os');
-// SEC-P3-01: fixtures de largura geradas em tempo de teste, fora do repo
-const WDIR = fs.mkdtempSync(path.join(os.tmpdir(), 'hub-wide-'));
-const wide = n => { const p = path.join(WDIR, 'wide-' + n + '.csv'); const h = Array.from({ length: n }, (_, i) => 'c' + (i + 1)); fs.writeFileSync(p, h.join(',') + '\n' + h.map((_, i) => i).join(',') + '\n' + h.map((_, i) => 'v' + i).join(',') + '\n'); return p; };
-const nf = (n, lang) => new Intl.NumberFormat(lang === 'pt' ? 'pt-BR' : 'en-US').format(n);
+const pick = async (pg, slug) => { await pg.check(`#csvPicker input[value="${slug}"]`); await ready(pg); };
 
 (async () => {
   const srv = L.startServers(); await new Promise(r => setTimeout(r, 800));
   const br = await L.launch();
-  const cases = ['basic.csv', 'bom.csv', 'latin1.csv', 'semicolon.csv', 'tab.tsv', 'pipe.csv', 'quoted.csv', 'xss.csv', 'types.csv', 'nulls.csv', 'ragged.csv', 'dup-headers.csv', 'crlf.csv', 'cr.csv', 'lf.csv', 'one-col.csv', 'wide.csv', 'header-only.csv', 'canary-CANARIO-NOME-4c8e1b.csv'];
-  const DN = { ',': 'comma|vírgula', ';': 'semicolon|ponto e vírgula', '\t': 'tab', '|': 'pipe|barra vertical' };
 
-  for (const [base, label] of [[L.BASE, 'raiz /hub/'], [L.SUB, 'subpasta /portfolio/hub/']]) {
-    for (const lang of ['pt', 'en']) {
-      const c = await L.ctx(br, { lang }); const pg = await c.newPage(); const log = L.newLog(); L.watch(pg, log);
-      let dialogs = 0; pg.on('dialog', d => { dialogs++; d.dismiss(); });
-      await pg.goto(`${base}/${PAGE}`, { waitUntil: 'networkidle' });
-      const bad = [];
-      for (const n of cases) {
-        const e = EXP[n]; await load(pg, n); const r = await grab(pg);
-        const dn = e.delimiter ? DN[e.delimiter] : 'none|nenhum';
-        const rowsOk = r.rows === (e.rows === 1 ? (lang === 'pt' ? '1 linha' : '1 row') : `${nf(e.rows, lang)} ${lang === 'pt' ? 'linhas' : 'rows'}`);
-        const colsOk = r.cols === (e.columns === 1 ? (lang === 'pt' ? '1 coluna' : '1 column') : `${e.columns} ${lang === 'pt' ? 'colunas' : 'columns'}`);
-        const delimOk = new RegExp(dn).test(r.delim);
-        const hdrOk = JSON.stringify(r.header.map(h => /^\((no name|sem nome)\)$/.test(h) ? '' : h)) === JSON.stringify(e.header.slice(0, 200)); // previa limitada a 200 colunas (SEC-P3-01)
-        const firstOk = e.first_rows.slice(0, 10).every((row, i) => r.body[i] && r.body[i].length === Math.min(e.columns, 200) && row.slice(0, Math.min(e.columns, 200)).every((v, j) => r.body[i][j] === v));
-        const typesOk = e.columns_stats ? JSON.stringify(r.types) === JSON.stringify(e.columns_stats.map(s => s.type)) : true;
-        const nobom = !r.header.join('').includes('﻿') && !r.bodyText.includes('﻿');
-        const nofffd = !r.bodyText.includes('�') || n === 'xss.csv';
-        const prev = r.body.length === Math.min(100, e.rows);
-        if (!(r.state === 'ready' && rowsOk && colsOk && delimOk && hdrOk && firstOk && typesOk && nobom && nofffd && prev)) bad.push(`${n}: ${JSON.stringify({ state: r.state, rows: r.rows, cols: r.cols, delim: r.delim, rowsOk, colsOk, delimOk, hdrOk, firstOk, typesOk, nobom, nofffd, prev, shown: r.body.length })}`);
+  // ===== EXP-01: as 27 tabelas na UI = sqlite3 (raiz PT e EN; subpasta EN) =====
+  for (const [base, label, lang] of [[L.BASE, 'raiz /hub/', 'en'], [L.BASE, 'raiz /hub/', 'pt'], [L.SUB, 'subpasta /portfolio/hub/', 'en']]) {
+    const c = await L.ctx(br, { lang }); const pg = await c.newPage(); const log = L.newLog(); L.watch(pg, log);
+    let dialogs = 0; pg.on('dialog', d => { dialogs++; d.dismiss(); });
+    await pg.goto(`${base}/${PAGE}`, { waitUntil: 'networkidle' }); await ready(pg);
+    const bad = [], rowsSeen = {}; let tables = 0, cells = 0;
+    for (const slug of O.SLUGS) {
+      await pick(pg, slug);
+      const first = await grab(pg);
+      if (first.options.join() !== ORACLE[slug].tables.map(t => t.name).join()) bad.push(`${slug}: lista de tabelas ${first.options}`);
+      for (const tb of ORACLE[slug].tables) {
+        await pg.selectOption('#csvTable', tb.name); await ready(pg, tb.name);
+        const g = await grab(pg); tables++; rowsSeen[slug + '.' + tb.name] = g.rows;
+        const noun = n => n === 1 ? (lang === 'pt' ? '1 linha' : '1 row') : `${nf(n, lang)} ${lang === 'pt' ? 'linhas' : 'rows'}`;
+        const ncol = tb.columns.length, nullsTotal = tb.nulls.reduce((a, b) => a + b, 0);
+        const ok = {
+          rows: g.rows === noun(tb.count), cols: g.cols === `${ncol} ${lang === 'pt' ? 'colunas' : 'columns'}`, nulls: g.nulls.endsWith(': ' + nf(nullsTotal, lang)),
+          names: JSON.stringify(g.colRows.map(r => r[1])) === JSON.stringify(tb.columns.map(c => c.name)),
+          types: JSON.stringify(g.colTypes) === JSON.stringify(tb.columns.map(c => c.type)),
+          keys: g.colRows.every((r, i) => r[3] === [tb.columns[i].pk ? 'PK' : '', tb.columns[i].fk ? 'FK → ' + tb.columns[i].fk : ''].filter(Boolean).join(', ')),
+          nullCols: g.colRows.every((r, i) => r[4] === nf(tb.nulls[i], lang)),
+          header: JSON.stringify(g.header) === JSON.stringify(tb.columns.map(c => c.name)),
+          preview: g.body.length === Math.min(100, tb.count) && g.body.every((r, i) => O.sameRow(r, tb.rows[i])),
+          cap: g.cap === (tb.count > 100 ? (lang === 'pt' ? `Primeiras 100 de ${nf(tb.count, lang)} linhas` : `First 100 of ${nf(tb.count, lang)} rows`) : (lang === 'pt' ? `Todas as ${nf(tb.count, lang)} linhas` : `All ${nf(tb.count, lang)} rows`)),
+          scen: g.scenario.endsWith(': ' + g.radios.find(r => r.on).name) && g.radios.find(r => r.on).v === slug, noerr: !g.errVisible,
+        };
+        cells += g.body.reduce((a, r) => a + r.length, 0);
+        const fails = Object.entries(ok).filter(([, v]) => !v).map(([k]) => k);
+        if (fails.length) bad.push(`${slug}.${tb.name}: ${fails.join(',')} rows="${g.rows}" cols="${g.cols}" nulls="${g.nulls}"`);
       }
-      L.rec(`CSV-01/02/03/04/12/14/16/17/19/20 (${label}, ${lang}): ${cases.length} fixtures conferem com expected.json (linhas, colunas, delimitador, cabecalho, 10 primeiras linhas, tipos, sem BOM/U+FFFD, previa=min(100,linhas))`, bad.length === 0, bad.length ? bad.join('\n') : 'todas conferem');
-      // basic: texto "10.000 linhas"/"10 colunas" e 100 linhas
-      await load(pg, 'basic.csv'); const b = await grab(pg);
-      L.rec(`CSV-01 (${label}, ${lang}) basic.csv: 100 linhas na previa, "${nf(10000, lang)}" e "10" visiveis`, b.body.length === 100 && b.rows.startsWith(nf(10000, lang)) && b.cols.startsWith('10'), `${b.rows} | ${b.cols} | previa=${b.body.length} | status="${b.status}"`);
-      // erros
-      const errs = [];
-      for (const n of ['empty.csv', 'fake.csv']) {
-        await load(pg, n); const r = await grab(pg);
-        const hasCause = r.err.length > 30 && /(empty|no content|vazio|sem conte|binary|bin[aá]rio|text file|texto)/i.test(r.err);
-        const hasAction = /(Choose|Try|Use|Escolha|Tente|Use)/.test(r.err);
-        errs.push(`${n}: ${r.state}/${r.errVisible} "${r.err}"`);
-        if (!(r.errVisible && hasCause && hasAction && !/undefined|NaN|\{|\}/.test(r.err))) errs.push('  FALHOU causa/acao');
-      }
-      L.rec(`CSV-10/CSV-30 (${label}, ${lang}) empty.csv e fake.csv: mensagem com causa e acao, sem pageerror`, !errs.some(s => /FALHOU/.test(s)) && log.pageerrors.length === 0, errs.join('\n') + ` | pageerrors=${log.pageerrors.length}`);
-      L.rec(`CSV-40 (${label}, ${lang}) sem pageerror, sem dialogo, sem erro de console em todas as cargas`, log.pageerrors.length === 0 && dialogs === 0 && log.consoleErrors.length === 0, `pageerrors=${JSON.stringify(log.pageerrors)} dialogs=${dialogs} console=${JSON.stringify(log.consoleErrors)}`);
-      const origin = new URL(base).origin;
-      const foreign = log.requests.filter(u => !u.startsWith(origin) && !u.startsWith('blob:') && !u.startsWith('data:'));
-      const leaks = log.requests.filter(u => /CANARIO|9f3a7c/i.test(decodeURIComponent(u)));
-      L.rec(`PRV (${label}, ${lang}) nenhuma requisicao a outra origem e nenhum canario em URL (${log.requests.length} requisicoes)`, foreign.length === 0 && leaks.length === 0, `externas=${JSON.stringify(foreign)} canario em URL=${JSON.stringify(leaks)}`);
-      await c.close();
     }
+    L.rec(`EXP-01 (${label}, ${lang}): ${tables} tabelas dos 5 cenarios na UI = sqlite3: contagem de linhas visivel, colunas, tipos declarados, PK/FK, valores ausentes por coluna, cabecalho e previa (${cells} celulas) celula a celula`, bad.length === 0 && tables === 27, bad.length ? bad.slice(0, 8).join('\n') : `27 tabelas conferem; linhas visiveis=${JSON.stringify(rowsSeen)}`);
+    L.rec(`EXP-09 (${label}, ${lang}) sem pageerror, dialogo ou console.error durante as 27 cargas`, log.pageerrors.length === 0 && dialogs === 0 && log.consoleErrors.length === 0, `pageerrors=${JSON.stringify(log.pageerrors)} dialogs=${dialogs} console=${JSON.stringify(log.consoleErrors)}`);
+    const origin = new URL(base).origin;
+    const foreign = log.requests.filter(u => !u.startsWith(origin) && !u.startsWith('data:'));
+    const data = log.requests.filter(u => /\/hub\/assets\/data\//.test(u)), bad404 = log.responses.filter(r => r[0] >= 400);
+    const okData = data.every(u => /\/hub\/assets\/data\/csv\/[a-z-]+\/([a-z_]+\.csv|schema\.json)$/.test(u));
+    L.rec(`EXP-05/PRV (${label}, ${lang}) so a propria origem; unicos dados buscados: csv/<cenario>/(schema.json|<tabela>.csv); nenhum Worker, .wasm ou sql.js; nenhum >= 400 (${log.requests.length} requisicoes)`, foreign.length === 0 && okData && data.length > 0 && !log.requests.some(u => /worker|wasm|sql-wasm|papaparse/i.test(u)) && bad404.length === 0, `externas=${JSON.stringify(foreign)} dados=${data.length} fora do padrao=${JSON.stringify(data.filter(u => !/\/csv\//.test(u)))} >=400=${JSON.stringify(bad404)}`);
+    await c.close();
   }
 
-  // ---- xss: nada de elemento injetado
-  { const c = await L.ctx(br, { lang: 'en' }); const pg = await c.newPage(); const log = L.newLog(); L.watch(pg, log); let dl = 0; pg.on('dialog', d => { dl++; d.dismiss(); });
-    await pg.goto(`${L.BASE}/${PAGE}`); await load(pg, 'xss.csv'); await pg.waitForTimeout(500);
-    const r = await pg.evaluate(() => ({ imgs: document.querySelectorAll('#csvTool img, #csvTool iframe, #csvTool a, #csvTool svg:not([aria-hidden])').length, scripts: document.querySelectorAll('main script').length, inTable: document.querySelectorAll('#csvData *:not(table):not(thead):not(tbody):not(tr):not(th):not(td):not(caption):not(div.csv-cell)').length, hasText: document.querySelector('#csvData thead th').textContent }));
-    L.rec('CSV-40/41 xss.csv: celulas e cabecalhos como texto (nenhum img/script/iframe/a injetado, nenhum dialogo, nenhum onerror)', r.inTable === 0 && r.scripts === 0 && r.imgs === 0 && dl === 0 && r.hasText === '<img src=x onerror=alert(1)>' && log.pageerrors.length === 0, JSON.stringify(r) + ' dialogs=' + dl);
-    // nome de arquivo malicioso so como texto
-    const buf = fs.readFileSync(fpath('xss.csv')); for (const nm of ['<img src=x onerror=alert(1)>.csv', '"><script>alert(1)</script>.csv', "a'b\"c`d.csv"]) {
-      await load(pg, { name: nm, mimeType: 'text/csv', buffer: buf }); }
-    const nm = await pg.evaluate(() => ({ t: document.querySelector('[data-stat=file]').textContent, n: document.querySelectorAll('[data-stat=file] *').length, scripts: document.querySelectorAll('main script, main img').length }));
-    L.rec('CSV-22 nome de arquivo malicioso aparece como texto', nm.n === 0 && nm.scripts === 0 && dl === 0 && nm.t.includes("a'b\"c`d.csv"), JSON.stringify(nm));
+  // ===== EXP-02: seletor de cenarios (cartoes acessiveis, PT/EN) =====
+  for (const lang of ['en', 'pt']) {
+    const c = await L.ctx(br, { lang }); const pg = await c.newPage(); await pg.goto(`${L.BASE}/${PAGE}`, { waitUntil: 'networkidle' }); await ready(pg);
+    const g = await grab(pg);
+    const sem = await pg.evaluate(() => { const fs = document.querySelector('#csvPicker fieldset'); const lg = fs && fs.querySelector('legend'); const rs = [...document.querySelectorAll('#csvPicker input[type=radio]')];
+      return { fieldset: !!fs, legend: lg && lg.textContent, n: rs.length, sameName: new Set(rs.map(r => r.name)).size === 1, labels: rs.every(r => r.closest('label') && r.closest('label').textContent.trim().length > 10), checked: rs.filter(r => r.checked).length, summary: (document.querySelector('.sc-er summary') || {}).textContent, erVisible: !!document.querySelector('.sc-er-pre') }; });
+    const names = g.radios.map(r => r.name).join('|');
+    const expNames = lang === 'pt' ? 'Vendas|Marketing digital|Logística|RH|Atendimento' : 'Sales|Digital marketing|Logistics|HR|Customer service';
+    L.rec(`EXP-02 (${lang}) seletor: <fieldset> com <legend> "${lang === 'pt' ? 'Escolha um cenario' : 'Choose a scenario'}", 5 radios nativos do mesmo grupo, 1 marcado (Vendas/Sales), nomes e descricoes no idioma, "N tabelas"`,
+      sem.fieldset && sem.legend === (lang === 'pt' ? 'Escolha um cenário' : 'Choose a scenario') && sem.n === 5 && sem.sameName && sem.labels && sem.checked === 1 && names === expNames && g.radios[0].on && g.radios.every(r => r.desc.length > 25 && /^\d+ (tabelas|tables)$/.test(r.meta)) && g.radios.map(r => r.meta).join() === (lang === 'pt' ? '5 tabelas,5 tabelas,6 tabelas,6 tabelas,5 tabelas' : '5 tables,5 tables,6 tables,6 tables,5 tables') && /^(Diagrama de entidades|Entity diagram)/.test(sem.summary),
+      JSON.stringify({ sem, names, metas: g.radios.map(r => r.meta) }));
+    // ER em texto: abrir o <details> e conferir que mostra o diagrama do cenario escolhido (README)
+    await pg.click('#csvPicker .sc-er summary');
+    const er1 = await pg.textContent('.sc-er-pre'); await pick(pg, 'rh'); const er2 = await pg.textContent('.sc-er-pre'); const cap = await pg.textContent('.sc-er > p');
+    L.rec(`EXP-02 (${lang}) diagrama ER em texto acompanha o cenario escolhido (mesmo texto do README) e fica rolavel por teclado`, /itens_pedido >── 1 pedidos/.test(er1) && /funcionarios\(id PK, nome, email, cargo_id FK -> cargos\.id/.test(er2) && !/itens_pedido/.test(er2) && new RegExp(lang === 'pt' ? 'RH' : 'HR').test(cap) && await pg.getAttribute('.sc-er-pre', 'tabindex') === '0', `er1="${er1.split('\n')[0]}" er2="${er2.split('\n')[0]}" cap="${cap}"`);
+    await c.close();
+  }
+  { // trocar de cenario: lista de tabelas, estado e rotulos mudam; teclado (setas) escolhe cenario
+    const c = await L.ctx(br, { lang: 'en' }); const pg = await c.newPage(); await pg.goto(`${L.BASE}/${PAGE}`, { waitUntil: 'networkidle' }); await ready(pg);
+    await pg.selectOption('#csvTable', 'pedidos'); await ready(pg, 'pedidos');
+    await pick(pg, 'atendimento'); let g = await grab(pg);
+    L.rec('EXP-02 trocar para Atendimento: lista de tabelas do cenario novo, primeira tabela carregada, estado "ready", status fala do cenario', g.options.join() === 'clientes,agentes,tickets,interacoes,pesquisas_satisfacao' && g.table === 'Table: clientes' && g.rows === '120 rows' && /Customer service/.test(g.status) && g.state === 'ready', JSON.stringify({ o: g.options, t: g.table, r: g.rows, s: g.status }));
+    await pg.selectOption('#csvTable', 'tickets'); await ready(pg, 'tickets'); await pick(pg, 'logistica'); g = await grab(pg);
+    await pg.focus('#csvPicker input:checked'); await pg.keyboard.press('ArrowDown'); await pg.waitForFunction(() => document.querySelector('[data-stat=scenario]').textContent.endsWith('HR'), null, { timeout: T0 }); await ready(pg); const k = await grab(pg);
+    L.rec('EXP-02/EXP-08 teclado: seta para baixo no grupo de radios escolhe o proximo cenario (Logistica -> RH) e carrega a primeira tabela; foco permanece no radio', k.scenario === 'Scenario: HR' && k.table === 'Table: departamentos' && k.rows === '8 rows' && await pg.evaluate(() => document.activeElement.value) === 'rh', JSON.stringify({ s: k.scenario, t: k.table, r: k.rows }));
     await c.close(); }
 
-  // ---- codificacao manual (CSV-15)
-  { const c = await L.ctx(br, { lang: 'pt' }); const pg = await c.newPage(); await pg.goto(`${L.BASE}/${PAGE}`);
-    await load(pg, 'latin1.csv'); const a = await grab(pg);
-    L.rec('CSV-15 latin1.csv (auto): sem "�", acentos corretos, aviso de codificacao exibido', !a.bodyText.includes('�') && a.body[0][1] === 'João' && /Windows-1252/.test(a.warn), `linha1=${JSON.stringify(a.body[0])} aviso="${a.warn}" enc="${a.enc}"`);
-    await pg.selectOption('#csvEnc', 'utf-8'); await pg.waitForFunction(() => document.getElementById('csvTool').dataset.state === 'ready' && document.querySelector('#csvData tbody td').textContent.length > 0);
-    await pg.waitForTimeout(300); const u = await grab(pg);
-    L.rec('CSV-15 latin1.csv forcado UTF-8: mostra aviso claro de caracteres nao decodificados', u.bodyText.includes('�') && /não puderam ser decodificados/.test(u.warn), `aviso="${u.warn}" linha1=${JSON.stringify(u.body[0])}`);
-    await pg.selectOption('#csvEnc', 'windows-1252'); await pg.waitForTimeout(600); const w = await grab(pg);
-    L.rec('CSV-15 escolha manual Windows-1252: acentos corretos e sem aviso', w.body[0][1] === 'João' && !w.bodyText.includes('�') && w.warn === '', `linha1=${JSON.stringify(w.body[0])} aviso="${w.warn}"`);
-    await load(pg, 'bom.csv'); const bm = await grab(pg);
-    L.rec('CSV-14 bom.csv: 1a coluna "código" sem U+FEFF; basic.csv acentos identicos', bm.header[0] === 'código' && bm.enc.includes('BOM'), `header=${JSON.stringify(bm.header)} enc=${bm.enc}`);
+  // ===== EXP-03: erros (arquivo ausente, schema ausente, conteudo inconsistente) =====
+  for (const lang of ['en', 'pt']) {
+    const c = await L.ctx(br, { lang }); const pg = await c.newPage(); const log = L.newLog(); L.watch(pg, log);
+    await pg.goto(`${L.BASE}/${PAGE}`, { waitUntil: 'networkidle' }); await ready(pg);
+    await pg.route('**/csv/loja-exemplo/pedidos.csv', r => r.fulfill({ status: 404, body: 'nope' }));
+    await pg.selectOption('#csvTable', 'pedidos'); await pg.waitForFunction(() => document.getElementById('csvTool').dataset.state === 'error', null, { timeout: T0 });
+    let g = await grab(pg);
+    L.rec(`EXP-03 (${lang}) tabela indisponivel (404): erro com causa e acao, role=alert, resultado anterior escondido, sem pageerror`, g.errVisible && g.errT.length > 10 && /HTTP 404/.test(g.errM) && /(Check|Confira)/.test(g.errM) && !g.resultVisible && !/undefined|NaN|\{|\}/.test(g.errT + g.errM) && await pg.getAttribute('#csvErr', 'role') === 'alert' && log.pageerrors.length === 0, `t="${g.errT}" m="${g.errM}"`);
+    await pg.unroute('**/csv/loja-exemplo/pedidos.csv'); await pg.selectOption('#csvTable', 'produtos'); await ready(pg, 'produtos'); g = await grab(pg);
+    L.rec(`EXP-03 (${lang}) apos o erro, escolher outra tabela recupera (erro some, 30 linhas)`, !g.errVisible && /30/.test(g.rows), `rows=${g.rows} err=${g.errVisible}`);
+    await pg.route('**/csv/loja-exemplo/categorias.csv', r => r.fulfill({ status: 200, contentType: 'text/csv', body: 'id,outra\n1,x\n' }));
+    await pg.selectOption('#csvTable', 'categorias'); await pg.waitForFunction(() => document.getElementById('csvTool').dataset.state === 'error', null, { timeout: T0 }); g = await grab(pg);
+    L.rec(`EXP-03 (${lang}) CSV com cabecalho diferente do schema.json: "dados inconsistentes", nada exibido como verdade`, g.errVisible && /categorias/.test(g.errM) && /(inconsist)/i.test(g.errT) && !g.resultVisible, `t="${g.errT}" m="${g.errM}"`);
+    await pg.route('**/csv/rh/schema.json', r => r.fulfill({ status: 500, body: 'x' }));
+    await pg.check('#csvPicker input[value="rh"]'); await pg.waitForFunction(() => document.getElementById('csvTool').dataset.state === 'error', null, { timeout: T0 }); g = await grab(pg);
+    L.rec(`EXP-03 (${lang}) schema.json do cenario indisponivel (500): erro claro, lista de tabelas desabilitada, sem pageerror`, g.errVisible && /HTTP 500/.test(g.errM) && g.tableDisabled && log.pageerrors.length === 0, `m="${g.errM}" disabled=${g.tableDisabled}`);
+    await pg.unroute('**/csv/rh/schema.json'); await pg.check('#csvPicker input[value="logistica"]'); await ready(pg); g = await grab(pg);
+    L.rec(`EXP-03 (${lang}) apos o erro de cenario, escolher outro cenario recupera`, !g.errVisible && g.rows.startsWith('6'), `rows=${g.rows}`);
+    await c.close();
+  }
+
+  // ===== EXP-04: sem upload no DOM e sem leitura de arquivo =====
+  { const c = await L.ctx(br, { lang: 'en' }); const pg = await c.newPage(); await pg.goto(`${L.BASE}/${PAGE}`, { waitUntil: 'networkidle' }); await ready(pg);
+    const r = await pg.evaluate(() => ({ files: document.querySelectorAll('input[type=file], [type=file]').length, dz: document.querySelectorAll('[class*=drop], [ondrop], [ondragover]').length, accept: document.querySelectorAll('[accept]').length, labelFor: [...document.querySelectorAll('label[for]')].map(l => l.getAttribute('for')),
+      text: document.body.innerText }));
+    // soltar um arquivo na pagina nao pode ser aceito: o evento drop nao tem tratador (a pagina nao le File)
+    const handled = await pg.evaluate(() => { let prevented = false; const dt = new DataTransfer(); dt.items.add(new File(['a,b\n1,2\n'], 'x.csv', { type: 'text/csv' })); const ev = new DragEvent('drop', { dataTransfer: dt, bubbles: true, cancelable: true }); document.body.dispatchEvent(ev); prevented = ev.defaultPrevented; return prevented; });
+    L.rec('EXP-04 DOM do explorador: nenhum <input type=file>, nenhuma zona de soltar, nenhum atributo accept; texto da pagina nao oferece carregar arquivo; drop de arquivo sem tratador (defaultPrevented=false)', r.files === 0 && r.dz === 0 && r.accept === 0 && r.labelFor.every(f => f === 'csvTable') && !/(drop a|choose a file|solte um|escolher um arquivo|carregar csv|load a csv|upload)/i.test(r.text.replace(/nothing is uploaded[^.]*\./i, '').replace(/nada é enviado[^.]*\./i, '')) && handled === false, JSON.stringify({ ...r, text: undefined, handled }));
     await c.close(); }
 
-  // ---- limites e desempenho (CSV-51/52/53)
-  { const c = await L.ctx(br, { lang: 'pt' }); await c.addInitScript(() => { window.__lt = []; try { new PerformanceObserver(l => l.getEntries().forEach(e => window.__lt.push(e.duration))).observe({ entryTypes: ['longtask'] }); } catch (e) { window.__lt = null; } });
-    const pg = await c.newPage(); const log = L.newLog(); L.watch(pg, log); await pg.goto(`${L.BASE}/${PAGE}`);
-    const lim = fpath('limit-10mb.csv'), over = fpath('over-limit.csv');
-    if (!fs.existsSync(lim) || !fs.existsSync(over)) { L.rec('CSV-51/52 fixtures grandes presentes', false, 'gere com gen_csv.py --large --out ' + LARGE); }
-    else {
-      const sz = [fs.statSync(lim).size, fs.statSync(over).size];
-      const t0 = Date.now(); await load(pg, lim); const dt = Date.now() - t0; const r = await grab(pg);
-      const lt = await pg.evaluate(() => window.__lt);
-      const mx = lt && lt.length ? Math.max(...lt) : 0;
-      L.rec('CSV-51 limit-10mb.csv (10.485.760 bytes) aceito, 111.875 linhas x 10 colunas, nenhuma long task > 1 s (PerformanceObserver)', sz[0] === 10485760 && r.state === 'ready' && r.rows.startsWith('111.875') && r.cols.startsWith('10') && lt !== null && mx < 1000, `bytes=${sz[0]} estado=${r.state} ${r.rows} ${r.cols} tempo=${dt} ms long tasks=${JSON.stringify(lt)} maior=${Math.round(mx)} ms`);
-      L.rec('CSV-51 limit-10mb.csv previa de 100 linhas e tipos conferem com expected.json', r.body.length === 100 && JSON.stringify(r.types) === JSON.stringify(EXP['limit-10mb.csv'].columns_stats.map(s => s.type)), `previa=${r.body.length} tipos=${r.types}`);
-      await load(pg, over); const o = await grab(pg);
-      L.rec('CSV-52 over-limit.csv (10.485.761 bytes) recusado com "10 MB"; arquivo anterior mantido', sz[1] === 10485761 && o.errVisible && /10 MB/.test(o.err) && o.resultVisible && o.rows.startsWith('111.875'), `bytes=${sz[1]} msg="${o.err}" resultado anterior visivel=${o.resultVisible}`);
-      // cancelar a 40%: a leitura de 10 MB e rapida, entao a amostragem pode perder a corrida contra o fim da leitura;
-      // ate 5 tentativas (a asserção abaixo continua exigindo cancelamento efetivo a >=40%)
-      let seen = [], cancelled = null;
-      for (let attempt = 0; attempt < 5 && cancelled === null; attempt++) {
-        await pg.goto(`${L.BASE}/${PAGE}`); await load(pg, 'basic.csv');
-        await pg.setInputFiles('#csvFile', lim);
-        for (let i = 0; i < 4000; i++) {
-          const v = await pg.evaluate(() => ({ p: document.getElementById('csvProg').value, s: document.getElementById('csvTool').dataset.state }));
-          seen.push(v.p); if (v.s !== 'loading' && i > 0) break;
-          if (v.p >= 40) {
-            try { await pg.click('#csvCancel', { timeout: 1000 }); cancelled = v.p; } catch (e) { /* leitura terminou antes do clique: nova tentativa */ }
-            break; }
-          await pg.waitForTimeout(5);
-        }
-      }
-      await pg.waitForTimeout(1500); const k = await grab(pg);
-      const info = await pg.evaluate(() => ({ focus: document.activeElement.id, runHidden: document.getElementById('csvRun').hidden }));
-      L.rec('CSV-53 cancelar a >=40%: interrompe, volta ao estado anterior (basic.csv), sem resultado tardio, sem pageerror', cancelled !== null && cancelled >= 40 && k.state === 'ready' && k.rows.startsWith('10.000') && /cancelada/i.test(k.status) && info.runHidden && log.pageerrors.length === 0, `cancelado em ${cancelled}% (amostras de progresso=${JSON.stringify(seen.slice(-8))}) estado=${k.state} linhas=${k.rows} status="${k.status}" foco=${info.focus}`);
-      if (cancelled === null) console.log('INFO leitura terminou antes de 40% ser amostrado: progresso=' + JSON.stringify(seen));
-    }
+  // ===== EXP-06: CSP desta pagina inalterada (sem relaxar) =====
+  { const html = fs.readFileSync(`${L.REPO}/${PAGE}index.html`, 'utf8'); const csp = html.match(/<meta http-equiv="Content-Security-Policy" content="([^"]+)">/)[1];
+    L.rec("EXP-06 CSP do explorador: default-src none, script-src 'self' (sem wasm-unsafe-eval/unsafe-*), connect-src 'self', SEM worker-src (nao ha Worker), sem origem externa; nenhum <script> inline, on*= ou style=", /^default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'$/.test(csp) && !/<script(?![^>]*\bsrc=)[^>]*>/i.test(html) && !/\son[a-z]+\s*=|\sstyle\s*=/i.test(html), csp);
+    const c = await L.ctx(br, {}); const pg = await c.newPage(); const msgs = []; pg.on('console', m => msgs.push(m.text())); await pg.goto(`${L.BASE}/${PAGE}`); await ready(pg); await pick(pg, 'marketing-digital');
+    L.rec('EXP-06 pagina real: nenhuma violacao de CSP no console', !msgs.some(t => /Content Security|Refused/.test(t)), JSON.stringify(msgs)); await c.close(); }
+
+  // ===== EXP-07: troca de idioma com tabela carregada =====
+  { const c = await L.ctx(br, { lang: 'en' }); const pg = await c.newPage(); await pg.goto(`${L.BASE}/${PAGE}`); await ready(pg);
+    await pick(pg, 'atendimento'); await pg.selectOption('#csvTable', 'interacoes'); await ready(pg, 'interacoes'); const en = await grab(pg);
+    await pg.click('[data-lang=pt]'); const pt = await grab(pg);
+    L.rec('EXP-07 troca EN->PT com tabela carregada: resumo, cabecalhos, tipos, legenda, nomes e descricoes dos cenarios traduzidos; tabela e dados mantidos (sem novo fetch)', en.rows === '566 rows' && pt.rows === '566 linhas' && pt.scenario === 'Cenário: Atendimento' && /Primeiras 100 de 566 linhas/.test(pt.cap) && pt.radios.map(r => r.name).join('|') === 'Vendas|Marketing digital|Logística|RH|Atendimento' && pt.colRows.length === en.colRows.length && pt.colRows[0][2] === 'inteiro (INTEGER)' && en.colRows[0][2] === 'integer (INTEGER)' && /Tabela interacoes/.test(pt.status) && pt.table === 'Tabela: interacoes' && pt.selected === 'interacoes', `${en.rows} -> ${pt.rows} | ${pt.status}`);
     await c.close(); }
 
-
-  // ---- SEC-P3-01: limite de colunas (2.000), Hub.t em passada unica
-  { const c = await L.ctx(br, { lang: 'pt' }); await c.addInitScript(() => { window.__lt = []; try { new PerformanceObserver(l => l.getEntries().forEach(e => window.__lt.push(e.duration))).observe({ entryTypes: ['longtask'] }); } catch (e) { window.__lt = null; } });
-    const pg = await c.newPage(); const log = L.newLog(); L.watch(pg, log); await pg.goto(`${L.BASE}/${PAGE}`);
-    const nodes = () => pg.evaluate(() => document.getElementsByTagName('*').length);
-    const lts = () => pg.evaluate(() => window.__lt);
-    await load(pg, wide(2000)); let r = await grab(pg);
-    const n2000 = await nodes();
-    L.rec('SEC-P3-01 CSV 2.000 colunas aceito: 2.000 colunas/tipos contados, previa limitada a 200 colunas com aviso', r.state === 'ready' && r.cols.startsWith('2.000') && r.types.length === 2000 && r.header.length === 200 && r.body.length === 2 && r.body[0].length === 200 && /200 primeiras de 2\.000/.test(r.warn) && n2000 < 20000, `estado=${r.state} cols="${r.cols}" tipos=${r.types.length} cabecalho=${r.header.length} aviso="${r.warn}" nos DOM=${n2000}`);
-    await load(pg, 'basic.csv');
-    for (const n of [2001, 5000, 100000]) {
-      await pg.evaluate(() => { window.__lt = []; });
-      const t0 = Date.now(); await load(pg, wide(n)); const dt = Date.now() - t0; r = await grab(pg); const lt = await lts(); const mx = lt && lt.length ? Math.max(...lt) : 0; const nn = await nodes();
-      L.rec(`SEC-P3-01 CSV ${n} colunas recusado com causa e acao, arquivo anterior mantido, long task < 1 s, DOM < 20.000 nos`, r.errVisible && r.err.includes(nf(n, 'pt')) && r.err.includes('2.000') && /Escolha/.test(r.err) && /continua sendo mostrado/.test(r.err) && r.resultVisible && r.rows.startsWith('10.000') && lt !== null && mx < 1000 && nn < 20000 && log.pageerrors.length === 0, `msg="${r.err}" tempo=${dt} ms maior long task=${Math.round(mx)} ms nos=${nn} resultado anterior=${r.resultVisible}/${r.rows}`);
-    }
-    // EN
-    await pg.evaluate(() => Hub.setLang('en')); await pg.waitForTimeout(100); r = await grab(pg);
-    L.rec('SEC-P3-01 mensagem de colunas em EN', /Too many columns|columns and the limit is 2,000/.test(r.err) && !/\{|\}|undefined/.test(r.err), `msg="${r.err}"`);
-    await pg.evaluate(() => Hub.setLang('pt'));
-    // Hub.t: passada unica
-    const bufb = fs.readFileSync(fpath('basic.csv'));
-    await load(pg, { name: '{rows} {cols}.csv', mimeType: 'text/csv', buffer: bufb }); r = await grab(pg);
-    const tt = await pg.evaluate(() => Hub.t('hub.csv.stat.file', { v: '{x}' }) + '|' + Hub.t('hub.csv.data.cap.some', { n: '{total}', total: 'T' }));
-    L.rec('Hub.t substitui {x} em passada unica: arquivo "{rows} {cols}.csv" aparece literal no status', /\{rows\} \{cols\}\.csv/.test(await pg.textContent('[data-stat=file]')) && /\{x\}/.test(tt) && tt.includes('Primeiras {total} de T'), `status="${r.status}" t="${tt}"`);
-    await c.close(); }
-
-  // ---- 360px sem rolagem horizontal, temas, axe
+  // ===== 360 px, temas, axe =====
   for (const theme of ['light', 'dark']) for (const lang of ['en', 'pt']) {
-    const c = await L.ctx(br, { lang, theme, vp: 360 }); const pg = await c.newPage(); await pg.goto(`${L.BASE}/${PAGE}`, { waitUntil: 'networkidle' });
-    const m = async () => pg.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
-    const res = [];
-    res.push(['inicial', await m()]);
-    for (const n of ['wide.csv', 'basic.csv', 'xss.csv']) { await load(pg, n); res.push([n, await m()]); }
-    await load(pg, 'fake.csv'); res.push(['erro', await m()]);
-    await load(pg, 'latin1.csv'); res.push(['aviso', await m()]);
-    L.rec(`RSP/CSV-360px (${lang}/${theme}): sem rolagem horizontal da pagina em todos os estados`, res.every(([, x]) => x.sw <= x.cw), JSON.stringify(res));
+    const c = await L.ctx(br, { lang, theme, vp: 360 }); const pg = await c.newPage(); await pg.goto(`${L.BASE}/${PAGE}`, { waitUntil: 'networkidle' }); await ready(pg);
+    const m = () => pg.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
+    const res = [['inicial', await m()]];
+    for (const [slug, tb] of [['logistica', 'entregas'], ['atendimento', 'interacoes'], ['rh', 'funcionarios'], ['marketing-digital', 'metricas_diarias']]) { await pick(pg, slug); await pg.selectOption('#csvTable', tb); await ready(pg, tb); res.push([slug + '.' + tb, await m()]); }
+    await pg.click('#csvPicker .sc-er summary'); res.push(['ER aberto', await m()]);
+    await pg.route('**/csv/rh/aus*.csv', r => r.fulfill({ status: 404, body: 'x' })); await pick(pg, 'rh'); await pg.selectOption('#csvTable', 'ausencias'); await pg.waitForFunction(() => document.getElementById('csvTool').dataset.state === 'error'); res.push(['erro', await m()]);
+    L.rec(`EXP-10/RSP (${lang}/${theme}/360px) sem rolagem horizontal da pagina em todos os estados (cartoes, tabelas largas, ER aberto, erro)`, res.every(([, x]) => x.sw <= x.cw), JSON.stringify(res));
     if (AXE) {
       const out = [];
-      for (const [st, n] of [['inicial', null], ['tabela carregada', 'basic.csv'], ['aviso', 'latin1.csv'], ['erro', 'fake.csv']]) {
-        if (n) await load(pg, n);
-        await pg.evaluate(AXE);
+      for (const [st, fn] of [['inicial', async () => { await pg.unroute('**/csv/rh/aus*.csv'); await pg.reload({ waitUntil: 'networkidle' }); await ready(pg); }], ['outro cenario, tabela larga', async () => { await pick(pg, 'atendimento'); await pg.selectOption('#csvTable', 'interacoes'); await ready(pg, 'interacoes'); }], ['ER aberto', async () => { await pg.click('#csvPicker .sc-er summary'); }], ['erro', async () => { await pg.route('**/csv/rh/ausencias.csv', r => r.fulfill({ status: 404, body: 'x' })); await pick(pg, 'rh'); await pg.selectOption('#csvTable', 'ausencias'); await pg.waitForFunction(() => document.getElementById('csvTool').dataset.state === 'error'); }]]) {
+        await fn(); await pg.evaluate(AXE);
         const r = await pg.evaluate(async () => { const r = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } }); return r.violations.map(v => ({ id: v.id, impact: v.impact, n: v.nodes.length, t: v.nodes.slice(0, 2).map(x => x.target.join(' ')) })); });
         out.push(`${st}: ${r.length ? JSON.stringify(r) : 'sem violacoes'}`);
       }
-      L.rec(`A11-02 axe (${lang}/${theme}/360) nos estados dinamicos: zero violacoes`, out.every(s => /sem violacoes/.test(s)), out.join('\n'));
+      L.rec(`A11-02 axe (${lang}/${theme}/360) no explorador (inicial, outro cenario, ER aberto, erro): zero violacoes`, out.every(s => /sem violacoes/.test(s)), out.join('\n'));
     }
     await c.close();
   }
-  { const c = await L.ctx(br, { lang: 'en', theme: 'dark', vp: 1280 }); const pg = await c.newPage(); await pg.goto(`${L.BASE}/${PAGE}`);
-    await load(pg, 'basic.csv'); await pg.evaluate(AXE);
-    const r = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => v.id + ' ' + v.impact));
-    L.rec('A11-02 axe (en/dark/1280) tabela carregada: zero violacoes', r.length === 0, JSON.stringify(r)); await c.close(); }
+  { const c = await L.ctx(br, { lang: 'pt', theme: 'dark', vp: 1280 }); const pg = await c.newPage(); await pg.goto(`${L.BASE}/${PAGE}`); await ready(pg); await pick(pg, 'logistica');
+    await pg.evaluate(AXE); const r = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => v.id + ' ' + v.impact));
+    L.rec('A11-02 axe (pt/dark/1280) explorador com tabela carregada: zero violacoes', r.length === 0, JSON.stringify(r)); await c.close(); }
 
-  // ---- teclado (CSV-05): Tab chega ao seletor de arquivo, foco visivel, Enter/Space abrem o seletor; selects por teclado
-  { const c = await L.ctx(br, { lang: 'en' }); const pg = await c.newPage(); await pg.goto(`${L.BASE}/${PAGE}`, { waitUntil: 'networkidle' });
-    const seq = []; for (let i = 0; i < 14; i++) { await pg.keyboard.press('Tab'); seq.push(await pg.evaluate(() => { const e = document.activeElement; return e.id || e.tagName + ':' + e.textContent.trim().slice(0, 12); })); if (seq[seq.length - 1] === 'csvEnc') break; }
-    await pg.focus('#csvFile'); const vis = await pg.evaluate(() => { const l = document.querySelector('.csv-pick'); const o = getComputedStyle(l).outlineStyle; return o; });
-    let fc = null, via = 'Enter';
-    for (const k of ['Enter', 'Space', 'Enter']) { via = k; const w = pg.waitForEvent('filechooser', { timeout: 5000 }).catch(() => null); await pg.focus('#csvFile'); await pg.keyboard.press(k === 'Space' ? ' ' : k); fc = await w; if (fc) break; }
-    if (!fc) throw new Error('seletor de arquivo nao abriu por teclado (Enter/Space/Enter)');
-    await fc.setFiles(fpath('basic.csv')); await pg.waitForFunction(() => document.getElementById('csvTool').dataset.state === 'ready');
-    await pg.focus('#csvDelim'); await pg.keyboard.press('ArrowDown'); await pg.waitForFunction(() => document.getElementById('csvTool').dataset.state === 'ready'); await pg.waitForTimeout(500);
-    const r = await grab(pg);
-    L.rec('CSV-05 operacao so por teclado: Tab chega a escolha de arquivo e aos seletores, Enter abre o seletor, foco visivel (outline), mudar opcao com seta relê', seq.includes('csvFile') && seq.includes('csvEnc') && vis !== 'none' && r.state === 'ready', `ordem de Tab=${seq.join(' > ')} outline=${vis} tecla que abriu=${via} delim apos seta="${r.delim}" erro=${r.errVisible}`);
+  // ===== EXP-08: teclado: Tab chega ao seletor, a lista de tabelas e as regioes rolaveis; foco visivel =====
+  { const c = await L.ctx(br, { lang: 'en' }); const pg = await c.newPage(); await pg.goto(`${L.BASE}/${PAGE}`, { waitUntil: 'networkidle' }); await ready(pg);
+    const seq = []; for (let i = 0; i < 22; i++) { await pg.keyboard.press('Tab'); seq.push(await pg.evaluate(() => { const e = document.activeElement; return (e.id || e.tagName) + (e.type === 'radio' ? ':' + e.value : ''); })); if (seq[seq.length - 1] === 'csvTable') break; }
+    const vis = await pg.evaluate(() => getComputedStyle(document.querySelector('.sc-input:focus-visible + .sc-body') || document.body).outlineStyle);
+    await pg.focus('#csvTable'); await pg.keyboard.press('ArrowDown'); await ready(pg, 'categorias'); const g = await grab(pg);
+    L.rec('EXP-08 so teclado: Tab chega ao grupo de cenarios (1 parada, o radio marcado) e a lista de tabelas; seta na lista carrega a proxima tabela', seq.some(x => x.startsWith('csvScenario') || /^INPUT:loja-exemplo|:loja-exemplo/.test(x)) && seq[seq.length - 1] === 'csvTable' && g.table === 'Table: categorias' && g.rows === '6 rows', `ordem de Tab=${seq.join(' > ')} | tabela=${g.table} ${g.rows}`);
     await c.close(); }
 
-  // ---- i18n: troca de idioma re-renderiza texto dinamico
-  { const c = await L.ctx(br, { lang: 'en' }); const pg = await c.newPage(); await pg.goto(`${L.BASE}/${PAGE}`); await load(pg, 'basic.csv'); const en = await grab(pg);
-    await pg.click('[data-lang=pt]'); const pt = await grab(pg);
-    L.rec('HUB-15 troca EN->PT com arquivo carregado traduz resumo e legenda', en.rows === '10,000 rows' && pt.rows === '10.000 linhas' && /Primeiras 100 de 10\.000 linhas/.test(await pg.textContent('#csvDataCap')), `${en.rows} -> ${pt.rows}`); await c.close(); }
-
-  fs.rmSync(WDIR, { recursive: true, force: true });
   await br.close(); srv.stop();
   process.exit(L.results.some(r => !r.ok) ? 1 : 0);
 })().catch(e => { console.log('FAIL erro do teste :: ' + (e && e.stack || e)); process.exit(1); });

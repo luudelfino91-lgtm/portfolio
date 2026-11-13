@@ -1,0 +1,204 @@
+{
+ "slug": "atendimento",
+ "tables": [
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nome",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "email",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "plano",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "data_cadastro",
+     "pk": false,
+     "type": "TEXT"
+    }
+   ],
+   "name": "clientes"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nome",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "equipe",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "data_entrada",
+     "pk": false,
+     "type": "TEXT"
+    }
+   ],
+   "name": "agentes"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "clientes.id",
+     "name": "cliente_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "agentes.id",
+     "name": "agente_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "assunto",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "prioridade",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "canal",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "status",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "aberto_em",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "fechado_em",
+     "pk": false,
+     "type": "TEXT"
+    }
+   ],
+   "name": "tickets"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "tickets.id",
+     "name": "ticket_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "autor_tipo",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "agentes.id",
+     "name": "agente_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "data_hora",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "mensagem",
+     "pk": false,
+     "type": "TEXT"
+    }
+   ],
+   "name": "interacoes"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "tickets.id",
+     "name": "ticket_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nota",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "comentario",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "respondida_em",
+     "pk": false,
+     "type": "TEXT"
+    }
+   ],
+   "name": "pesquisas_satisfacao"
+  }
+ ]
+}

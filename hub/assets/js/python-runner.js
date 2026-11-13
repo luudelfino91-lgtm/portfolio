@@ -11,7 +11,7 @@
    ===================================================================== */
 (function () {
   'use strict';
-  var CAP_LINES = 2000, CAP_BYTES = 262144, MAX_CODE = 204800, MAX_FILE = 10485760;
+  var CAP_LINES = 2000, CAP_BYTES = 262144, MAX_CODE = 204800, MAX_FILE = 1048576, MAX_FILES = 8, MAX_TOTAL = 4194304;   // CSV do cenario: ate 8 tabelas, 1 MiB cada, 4 MiB no total (D11)
   var parentWin = window.parent;
   // M3: so roda em iframe sandbox sem allow-same-origin. Aberto como pagina de topo ou emoldurado sem
   // sandbox, o documento teria a origem do site: recusa e nem registra o listener de 'run'.
@@ -80,13 +80,14 @@
   function sendRun(d) {
     curId = d.id; running = true; pending = []; pendBytes = 0; lines = 0; bytes = 0; trunc = false; truncSent = false;
     var files = null, transfer = [];
-    if (Array.isArray(d.files)) {
+    if (Array.isArray(d.tables)) {
       files = [];
-      d.files.slice(0, 1).forEach(function (f) {
-        if (f && typeof f.name === 'string' && f.buf instanceof ArrayBuffer && f.buf.byteLength <= MAX_FILE) { files.push({ name: f.name.slice(0, 200), buf: f.buf }); transfer.push(f.buf); }
+      var total = 0;
+      d.tables.slice(0, MAX_FILES).forEach(function (f) {
+        if (f && typeof f.name === 'string' && f.buf instanceof ArrayBuffer && f.buf.byteLength <= MAX_FILE && total + f.buf.byteLength <= MAX_TOTAL) { total += f.buf.byteLength; files.push({ name: f.name.slice(0, 200), buf: f.buf }); transfer.push(f.buf); }
       });
     }
-    worker.postMessage({ t: 'run', id: d.id, code: d.code, files: files }, transfer);
+    worker.postMessage({ t: 'run', id: d.id, code: d.code, tables: files }, transfer);
   }
 
   window.addEventListener('message', function (e) {

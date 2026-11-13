@@ -1,5 +1,8 @@
 // Playground de Python (T-402, Fase 4): PY-01..PY-26 (execucao, erros, Parar, tempo limite, saida, PRV-14,
-// isolamento/canario, CSP/sandbox, arquivo CSV, limites, i18n, axe, tema, armazenamento).
+// isolamento/canario, CSP/sandbox, dados do cenario (D11), limites, i18n, axe, tema, armazenamento).
+// D11: removidos PY-11 (arquivo CSV do usuario: escolher, sanitizar nome, remover, 10 MB) e a leitura de fixtures grandes; no lugar, PY-11 testa o
+// cenario escolhido em /data (5 cenarios x tabelas = oraculo sqlite3), o fetch so apos Executar, a recuperacao de erro e o Parar durante o fetch.
+// Justificativa em docs/status/no-upload-status.md.
 //
 // SERVIDORES PROPRIOS (nao usa os de lib.js, que nao enviam CORS):
 //   site    http://127.0.0.1:${PORT_PY||8084}   serve o repo em / e em /portfolio/ (subpasta, como o Pages de projeto)
@@ -14,7 +17,7 @@
 //
 // Requer axe-core (AXE_PATH) como os demais testes. So Chrome (CHROME_PATH). Firefox/Safari NAO testados.
 const L = require('./lib'); const fs = require('fs'); const path = require('path'); const http = require('http');
-const FX = path.join(L.REPO, 'docs/testing/fixtures'); const LARGE = process.env.FIXTURES_LARGE || '/tmp/csv-large';
+const O = require('./oracle'); const ORA = O.data();
 const AXE = fs.existsSync(L.AXE_PATH) ? fs.readFileSync(L.AXE_PATH, 'utf8') : null;
 const PORT_PY = Number(process.env.PORT_PY || 8084), PORT_OUT = Number(process.env.PORT_OUT || 8085);
 const SITE = `http://127.0.0.1:${PORT_PY}`, OUT = `http://127.0.0.1:${PORT_OUT}`;
@@ -27,7 +30,7 @@ function siteServer() {
   return http.createServer((req, res) => {
     let u = decodeURIComponent(req.url.split('?')[0]); served.push(u);
     if (u === '/__attacker.html') {   // pagina "atacante" (so teste): emoldura o runner SEM sandbox e tenta mandar {t:'run'}
-      res.writeHead(200, { 'content-type': MIME.html }); return res.end(`<!doctype html><meta charset=utf-8><iframe id=f src="/hub/ferramentas/python/runner.html"></iframe><script>window.__msgs=[];addEventListener('message',e=>__msgs.push(JSON.stringify(e.data)));const f=document.getElementById('f');const go=()=>f.contentWindow.postMessage({t:'run',id:1,code:'print(1)',files:[]},'*');f.onload=()=>{go();setTimeout(go,300);setTimeout(go,800)}</script>`);
+      res.writeHead(200, { 'content-type': MIME.html }); return res.end(`<!doctype html><meta charset=utf-8><iframe id=f src="/hub/ferramentas/python/runner.html"></iframe><script>window.__msgs=[];addEventListener('message',e=>__msgs.push(JSON.stringify(e.data)));const f=document.getElementById('f');const go=()=>f.contentWindow.postMessage({t:'run',id:1,code:'print(1)',tables:[]},'*');f.onload=()=>{go();setTimeout(go,300);setTimeout(go,800)}</script>`);
     }
     if (u.startsWith('/portfolio/')) u = u.slice('/portfolio'.length);
     let p = path.join(L.REPO, u); if (!p.startsWith(L.REPO)) { res.statusCode = 403; return res.end(); }
@@ -295,7 +298,7 @@ print("fim")
     { // (a) runner aberto como pagina de topo
       const c = await L.ctx(br, { lang: 'en' }); const pg = await c.newPage(); const log = L.newLog(); L.watch(pg, log); served.length = 0;
       await pg.goto(`${SITE}/hub/ferramentas/python/runner.html`, { waitUntil: 'load' });
-      await pg.evaluate(() => { window.postMessage({ t: 'run', id: 1, code: 'print(1)', files: [] }, '*'); }); await pg.waitForTimeout(1500);
+      await pg.evaluate(() => { window.postMessage({ t: 'run', id: 1, code: 'print(1)', tables: [] }, '*'); }); await pg.waitForTimeout(1500);
       const o = await pg.evaluate(() => ({ origin: window.origin, hasWorker: false }));
       L.rec('PY-21 runner como pagina de topo (origem do site): {t:"run"} por postMessage nao cria Worker nem baixa o Pyodide', pg.workers().length === 0 && !served.some(u => /vendor\/pyodide/.test(u)) && o.origin === SITE && log.pageerrors.length === 0, JSON.stringify({ workers: pg.workers().length, pyodide: served.filter(u => /pyodide/.test(u)), origin: o.origin })); await c.close(); }
     { // (b) pai atacante com iframe SEM sandbox em outra pagina
@@ -371,7 +374,7 @@ print("tarde")
     const rd = rc && dirs(rc[1]), pd = pc && dirs(pc[1]);
     L.rec('PY-10 runner.html: CSP meta primeiro no <head>, default-src none, script-src self + wasm-unsafe-eval (sem unsafe-eval/unsafe-inline), connect-src self, worker-src data:, base-uri none, form-action none, object-src none',
       !!rd && /<head>\s*<meta http-equiv="Content-Security-Policy"/.test(runner) && rd['default-src'] === "'none'" && rd['script-src'] === "'self' 'wasm-unsafe-eval'" && rd['connect-src'] === "'self'" && rd['worker-src'] === 'data:' && rd['base-uri'] === "'none'" && rd['form-action'] === "'none'" && rd['object-src'] === "'none'" && !/unsafe-eval'(?! )|unsafe-inline/.test(rc[1].replace("'wasm-unsafe-eval'", '')) && !/<script>[^<]/.test(runner), rc ? rc[1] : 'sem CSP');
-    L.rec('PY-10 pagina do Python: CSP com frame-src self, script-src self (sem wasm-unsafe-eval, o Pyodide so roda no iframe), connect-src none, sem worker-src', !!pd && pd['frame-src'] === "'self'" && pd['script-src'] === "'self'" && pd['connect-src'] === "'none'" && !('worker-src' in pd) && pd['default-src'] === "'none'", pc ? pc[1] : 'sem CSP');
+    L.rec('PY-10 pagina do Python: CSP com frame-src self, script-src self (sem wasm-unsafe-eval, o Pyodide so roda no iframe), connect-src self (D11: a pagina busca os CSV do cenario na mesma origem), sem worker-src', !!pd && pd['frame-src'] === "'self'" && pd['script-src'] === "'self'" && pd['connect-src'] === "'self'" && !('worker-src' in pd) && pd['default-src'] === "'none'", pc ? pc[1] : 'sem CSP');
     L.rec('PY-10 nenhum <iframe> literal no HTML da pagina (criado so no clique) e nenhum script inline', !/<iframe/i.test(page) && !/<script>[^<]/.test(page), 'ok');
     const { c, pg, log } = await open(br, SITE, 'en', 'light'); const csp = []; pg.on('console', m => csp.push(m.text()));
     await run(pg, 'print(1)');
@@ -383,32 +386,64 @@ print("tarde")
     await c.close();
   }
 
-  // ===== arquivo CSV =====
+  // ===== dados do cenario (D11): /data/<tabela>.csv =====
   if (want('PY-11')) {
+    const tblNames = slug => ORA[slug].tables.map(t => t.name);
+    const PROBE = `import csv, os
+for n in sorted(os.listdir('/data')):
+    rows = list(csv.reader(open('/data/' + n, newline='', encoding='utf-8')))
+    print(n, len(rows) - 1, sum(1 for r in rows[1:] for c in r if c == ''), ','.join(rows[0]))`;
     for (const lang of ['en', 'pt']) {
       const { c, pg, log } = await open(br, SITE, lang, 'light');
-      await pg.setInputFiles('#pyFile', path.join(FX, 'basic.csv')); await pg.waitForFunction(() => document.getElementById('pyFileInfo').textContent.length > 0);
-      const info = await pg.textContent('#pyFileInfo'); const nodeRows = fs.readFileSync(path.join(FX, 'basic.csv'), 'utf8').split('\n').filter(Boolean).length;
-      await run(pg, `import csv\nrows = list(csv.reader(open('/data/basic.csv', newline='', encoding='utf-8')))\nprint(len(rows))\nprint(','.join(rows[0]))\nimport os\nprint(os.listdir('/data'))`); const g = await grab(pg);
-      const head = fs.readFileSync(path.join(FX, 'basic.csv'), 'utf8').split('\n')[0].replace(/\r$/, '');
-      L.rec(`PY-11 (${lang}) CSV em /data/basic.csv lido por open()/csv: ${nodeRows} linhas, cabecalho igual ao do arquivo`, g.out === `${nodeRows}\n${head}\n['basic.csv']\n` && /\/data\/basic\.csv/.test(info) && log.pageerrors.length === 0, `info="${info}" out=${JSON.stringify(g.out.slice(0, 200))}`);
-      // sanitizacao do nome + substituicao do arquivo
-      // (caminho em disco com nao-ASCII nao chega ao input via setInputFiles do Playwright; usa payload em memoria)
-      await pg.setInputFiles('#pyFile', { name: 'my data (1) \u00fc.csv', mimeType: 'text/csv', buffer: Buffer.from('a,b\n1,2\n') }); await pg.waitForFunction(() => /my_data/.test(document.getElementById('pyFileInfo').textContent));
-      await run(pg, `import os\nprint(os.listdir('/data'))\nprint(open('/data/' + os.listdir('/data')[0]).read().strip())`); const g2 = await grab(pg);
-      L.rec(`PY-11 (${lang}) nome sanitizado (espacos/parenteses viram _) e arquivo anterior substituido em /data`, g2.out === "['my_data_1_ü.csv']\na,b\n1,2\n".replace('1_ü', '1_ü'), JSON.stringify(g2.out));
-      await pg.click('#pyFileRm'); await run(pg, `import os\nprint(os.listdir('/data'))`); const g3 = await grab(pg);
-      L.rec(`PY-11 (${lang}) Remover arquivo: /data fica vazio na execucao seguinte (motor ja carregado)`, g3.out === '[]\n' && (await pg.evaluate(() => document.getElementById('pyFileRm').hidden)), JSON.stringify(g3.out));
+      const dom = await pg.evaluate(() => ({ files: document.querySelectorAll('input[type=file], [type=file], [accept]').length, ids: ['pyFile', 'pyFileRm', 'pyFileInfo', 'pyFileNote'].filter(i => document.getElementById(i)), radios: document.querySelectorAll('#pyPicker input[type=radio]').length, checked: (document.querySelector('#pyPicker input:checked') || {}).value, files2: document.getElementById('pyDataFiles').textContent }));
+      const before = log.requests.filter(u => /\/data\/csv\//.test(u)).length;
+      L.rec(`PY-11 (${lang}) pagina sem escolha de arquivo (nenhum input file, nenhum controle de arquivo), 5 cenarios como radios, Vendas marcado, lista de arquivos de /data visivel; nenhum CSV buscado antes de Executar`, dom.files === 0 && dom.ids.length === 0 && dom.radios === 5 && dom.checked === 'loja-exemplo' && dom.files2.includes('/data/clientes.csv') && dom.files2.includes('/data/itens_pedido.csv') && before === 0, JSON.stringify({ dom, before }));
+      const bad = [], seen = [];
+      for (const slug of O.SLUGS) {
+        await pg.check(`#pyPicker input[value="${slug}"]`);
+        const listed = await pg.textContent('#pyDataFiles');
+        const f0 = log.requests.length;
+        await run(pg, PROBE); const g = await grab(pg);
+        const got = g.out.trim().split('\n').map(l => { const [n, rows, nulls, ...h] = l.split(' '); return { n, rows: +rows, nulls: +nulls, header: h.join(' ') }; });
+        const exp = tblNames(slug).slice().sort().map(n => { const t = ORA[slug].tables.find(x => x.name === n); return { n: n + '.csv', rows: t.count, nulls: t.nulls.reduce((a, b) => a + b, 0), header: t.columns.map(x => x.name).join(',') }; });
+        const fetched = log.requests.slice(f0).filter(u => /\/data\/csv\//.test(u)).map(u => u.split('/').pop()).sort();
+        const ok = JSON.stringify(got) === JSON.stringify(exp) && tblNames(slug).every(n => listed.includes('/data/' + n + '.csv')) && fetched.join() === tblNames(slug).map(n => n + '.csv').sort().join();
+        seen.push(`${slug}: ${got.length} arquivos, ${got.reduce((a, r) => a + r.rows, 0)} linhas`);
+        if (!ok) bad.push(`${slug}: dados=${JSON.stringify(got) === JSON.stringify(exp)} lista=${tblNames(slug).every(n => listed.includes('/data/' + n + '.csv'))} fetched=${fetched} esperado=${tblNames(slug).map(n => n + '.csv').sort()} got=${JSON.stringify(got.filter((r, i) => JSON.stringify(r) !== JSON.stringify(exp[i])))} exp=${JSON.stringify(exp.filter((r, i) => JSON.stringify(r) !== JSON.stringify(got[i])))}`);
+      }
+      L.rec(`PY-11 (${lang}) o cenario escolhido aparece em /data: os 5 cenarios, na MESMA sessao do Python (troca de cenario nao deixa arquivo do anterior), cada tabela com linhas, celulas vazias (NULL) e cabecalho = sqlite3; so as tabelas do cenario sao buscadas`, bad.length === 0 && log.pageerrors.length === 0, bad.length ? bad.join('\n') : seen.join(' | '));
+      const f1 = log.requests.filter(u => /\/data\/csv\//.test(u)).length;
+      await run(pg, "import os\nprint(len(os.listdir('/data')))"); const again = await grab(pg);
+      L.rec(`PY-11 (${lang}) rodar de novo o mesmo cenario (Atendimento, 5 tabelas) nao busca os CSV outra vez (cache de memoria da pagina) e os arquivos sao reenviados ao Python`, again.out === '5\n' && log.requests.filter(u => /\/data\/csv\//.test(u)).length === f1, `saida=${JSON.stringify(again.out)} buscas ${f1} -> ${log.requests.filter(u => /\/data\/csv\//.test(u)).length}`);
       await c.close();
     }
-    { const { c, pg, log } = await open(br, SITE, 'en', 'light'); const lim = path.join(LARGE, 'limit-10mb.csv'), over = path.join(LARGE, 'over-limit.csv');
-      if (!fs.existsSync(lim)) L.rec('PY-11 fixtures grandes presentes em ' + LARGE, false, 'gere: (cd docs/testing/fixtures && python3 -I gen_csv.py --large --out /tmp/csv-large)');
-      else {
-        await pg.setInputFiles('#pyFile', over); await pg.waitForTimeout(300); let g = await grab(pg);
-        L.rec('PY-11 CSV de 10.485.761 bytes (acima do limite) recusado com mensagem, nada carregado', g.errVisible && /too large/i.test(g.errT) && (await pg.evaluate(() => document.getElementById('pyFileRm').hidden)), JSON.stringify({ t: g.errT, m: g.errM }));
-        await pg.setInputFiles('#pyFile', lim); await pg.waitForFunction(() => document.getElementById('pyFileInfo').textContent.length > 0, null, { timeout: 20000 });
-        await run(pg, `import os\nprint(os.path.getsize('/data/limit-10mb.csv'))`); g = await grab(pg);
-        L.rec('PY-11 CSV de exatamente 10.485.760 bytes aceito e visivel no FS virtual com o tamanho exato', g.out === '10485760\n' && log.pageerrors.length === 0, JSON.stringify(g.out)); }
+    { // cada execucao comeca com /data intacto (o programa pode alterar/apagar os arquivos)
+      const { c, pg } = await open(br, SITE, 'en', 'light');
+      await run(pg, "import os\nopen('/data/clientes.csv', 'w').write('x\\n')\nos.remove('/data/categorias.csv')\nprint(sorted(os.listdir('/data')))"); const a = await grab(pg);
+      await run(pg, "import os\nprint(sorted(os.listdir('/data')))\nprint(sum(1 for _ in open('/data/clientes.csv')) - 1)"); const b = await grab(pg);
+      L.rec('PY-11 depois de um programa sobrescrever e apagar arquivos de /data, a execucao seguinte ve os arquivos originais (clientes com 40 linhas, categorias de volta)', b.out.startsWith("['categorias.csv', 'clientes.csv'") && /\n40\n$/.test(b.out) && !a.out.includes("'categorias.csv'"), JSON.stringify({ a: a.out, b: b.out }));
+      await c.close(); }
+    { // erro ao buscar os dados: mensagem clara, nada executa, nenhum iframe criado; depois recupera
+      const { c, pg, log } = await open(br, SITE, 'en', 'light');
+      await pg.route('**/csv/loja-exemplo/pedidos.csv', r => r.fulfill({ status: 404, body: 'nope' }));
+      await run(pg, 'print("NAO DEVE EXECUTAR")'); let g = await grab(pg);
+      L.rec('PY-11 CSV do cenario indisponivel (404): erro "Could not load the scenario data" com HTTP 404, nada executou, nenhum iframe/Pyodide criado, botoes liberados', g.errVisible && /Could not load the scenario data/.test(g.errT) && /HTTP 404 pedidos\.csv/.test(g.errM) && g.out === '' && g.frames === 0 && g.state === 'idle' && !g.runDisabled && pyReq(log).length === 0 && log.pageerrors.length === 0, JSON.stringify({ t: g.errT, m: g.errM, frames: g.frames, py: pyReq(log).length }));
+      await pg.unroute('**/csv/loja-exemplo/pedidos.csv'); await run(pg, "import os\nprint(len(os.listdir('/data')))"); g = await grab(pg);
+      L.rec('PY-11 depois do erro de dados, com o arquivo de volta o Executar funciona (5 arquivos) e o erro some', g.out === '5\n' && !g.errVisible, JSON.stringify(g.out));
+      await c.close(); }
+    { // Parar enquanto os dados estao sendo buscados: nada executa depois, nenhum iframe e criado
+      const { c, pg, log } = await open(br, SITE, 'en', 'light');
+      await pg.route('**/csv/loja-exemplo/clientes.csv', async r => { await new Promise(x => setTimeout(x, 1500)); r.continue(); });
+      await pg.fill('#pyEditor', 'print("TARDIO")'); await pg.click('#pyRun'); await pg.waitForFunction(() => document.getElementById('pyTool').dataset.state === 'loading');
+      const midStatus = await pg.textContent('#pyStatus'); const pickerLocked = await pg.evaluate(() => document.querySelector('#pyPicker input').disabled);
+      await pg.click('#pyStop'); await pg.waitForTimeout(2500); const g = await grab(pg);
+      L.rec('PY-11 Parar durante a busca dos dados: volta a "idle", seletor liberado, nada executa depois (sem saida "TARDIO"), nenhum iframe nem Pyodide criado; durante a busca o seletor fica travado', /Loading the scenario tables/.test(midStatus) && pickerLocked && g.state === 'idle' && g.out === '' && g.frames === 0 && pyReq(log).length === 0 && !(await pg.evaluate(() => document.querySelector('#pyPicker input').disabled)), JSON.stringify({ midStatus, pickerLocked, state: g.state, out: g.out, frames: g.frames }));
+      await c.close(); }
+    { // CSV com mais de 1 MiB ou vazio e recusado pela pagina (teto de defesa, o runner confere de novo)
+      const { c, pg } = await open(br, SITE, 'en', 'light');
+      await pg.route('**/csv/loja-exemplo/categorias.csv', r => r.fulfill({ status: 200, contentType: 'text/csv', body: '' }));
+      await run(pg, 'print(1)'); const g = await grab(pg);
+      L.rec('PY-11 CSV vazio recebido do servidor e recusado como erro de dados (nada executa)', g.errVisible && /scenario data/.test(g.errT) && /categorias\.csv: 0 bytes/.test(g.errM) && g.out === '', JSON.stringify({ t: g.errT, m: g.errM }));
       await c.close(); }
   }
 
@@ -460,7 +495,7 @@ print("tarde")
     for (const lang of ['en', 'pt']) for (const theme of ['light', 'dark']) for (const vp of [360, 1280]) {
       const { c, pg } = await open(br, SITE, lang, theme, vp);
       for (const st of ['inicial', 'erro+saida']) {
-        if (st === 'erro+saida') { await run(pg, 'print("saida")\nimport sys\nprint("err", file=sys.stderr)\n1/0'); await run(pg, 'print("x")', { secs: 5 }); await pg.fill('#pyTimeout', '5'); await pg.fill('#pyEditor', 'while True: pass'); await pg.click('#pyRun'); await idle(pg); await pg.fill('#pyEditor', 'print(12)'); await pg.click('#pyRun'); await idle(pg); await pg.fill('#pyEditor', '1/0'); await pg.click('#pyRun'); await idle(pg); await pg.setInputFiles('#pyFile', path.join(FX, 'basic.csv')); await pg.waitForFunction(() => document.getElementById('pyFileInfo').textContent.length > 0); }
+        if (st === 'erro+saida') { await run(pg, 'print("saida")\nimport sys\nprint("err", file=sys.stderr)\n1/0'); await run(pg, 'print("x")', { secs: 5 }); await pg.fill('#pyTimeout', '5'); await pg.fill('#pyEditor', 'while True: pass'); await pg.click('#pyRun'); await idle(pg); await pg.fill('#pyEditor', 'print(12)'); await pg.click('#pyRun'); await idle(pg); await pg.fill('#pyEditor', '1/0'); await pg.click('#pyRun'); await idle(pg) ; }
         await pg.evaluate(AXE); n++;
         const res = await pg.evaluate(async () => { const r = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } }); return { v: r.violations.map(v => v.id + ' [' + v.impact + '] ' + v.nodes.slice(0, 3).map(x => x.target.join(' ')).join(' | ')), inc: r.incomplete.map(v => v.id + ' x' + v.nodes.length) }; });
         res.v.forEach(v => bad.push(`${lang}/${theme}/${vp}/${st}: ${v}`)); res.inc.forEach(v => inc.add(v));
@@ -476,10 +511,10 @@ print("tarde")
     { const c = await L.ctx(br, { lang: 'en', extra: { reducedMotion: 'reduce' } }); const pg = await c.newPage(); await pg.goto(`${SITE}/${PAGE}`); const an = await pg.evaluate(() => document.getAnimations().filter(a => a.playState === 'running' && a.effect.getTiming().iterations === Infinity).length); L.rec('PY-15 reduced-motion: sem animacao infinita', an === 0, 'animacoes=' + an); await c.close(); }
     // armazenamento
     { const c = await L.ctx(br, { lang: 'en', theme: 'dark' }); const pg = await c.newPage(); await pg.goto(`${SITE}/${PAGE}`, { waitUntil: 'networkidle' });
-      await run(pg, 'import js\nprint(1)'); await pg.setInputFiles('#pyFile', path.join(FX, 'basic.csv')); await pg.waitForTimeout(300); await run(pg, 'print(open("/data/basic.csv").read()[:5])');
+      await run(pg, 'import js\nprint(1)'); await run(pg, 'print(open("/data/clientes.csv").read()[:5])');
       const st = await pg.evaluate(async () => ({ ls: Object.keys(localStorage), ss: Object.keys(sessionStorage), ck: document.cookie, idb: indexedDB.databases ? (await indexedDB.databases()).length : 'n/a', caches: (await caches.keys()).length }));
       const cookies = await c.cookies();
-      L.rec('PY-16/PRV-06/07 depois de executar e carregar CSV: nenhum cookie, localStorage so ld-lang/ld-theme, sem sessionStorage/IndexedDB/Cache Storage', cookies.length === 0 && st.ck === '' && st.ls.every(k => ['ld-lang', 'ld-theme'].includes(k)) && !st.ss.length && st.idb === 0 && st.caches === 0, JSON.stringify({ st, cookies })); await c.close(); }
+      L.rec('PY-16/PRV-06/07 depois de executar e ler os CSV do cenario: nenhum cookie, localStorage so ld-lang/ld-theme, sem sessionStorage/IndexedDB/Cache Storage', cookies.length === 0 && st.ck === '' && st.ls.every(k => ['ld-lang', 'ld-theme'].includes(k)) && !st.ss.length && st.idb === 0 && st.caches === 0, JSON.stringify({ st, cookies })); await c.close(); }
   }
 
   // ===== shell: a pagina entra na navegacao e no cartao da home =====

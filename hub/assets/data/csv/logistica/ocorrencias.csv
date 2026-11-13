@@ -1,0 +1,161 @@
+id,entrega_id,tipo,data_ocorrencia,descricao
+1,4,recusa na entrega,2025-01-10,Registro automatico: recusa na entrega
+2,4,recusa na entrega,2025-01-11,Registro automatico: recusa na entrega
+3,7,recusa na entrega,2025-01-12,Registro automatico: recusa na entrega
+4,9,atraso por clima,2025-01-13,Registro automatico: atraso por clima
+5,11,endereco nao localizado,2025-01-17,Registro automatico: endereco nao localizado
+6,11,extravio,2025-01-18,Registro automatico: extravio
+7,17,recusa na entrega,2025-01-19,Registro automatico: recusa na entrega
+8,18,atraso por clima,2025-01-20,Registro automatico: atraso por clima
+9,21,recusa na entrega,2025-01-20,Registro automatico: recusa na entrega
+10,21,endereco nao localizado,2025-01-20,Registro automatico: endereco nao localizado
+11,19,destinatario ausente,2025-01-21,
+12,20,recusa na entrega,2025-01-22,Registro automatico: recusa na entrega
+13,27,avaria,2025-01-26,Registro automatico: avaria
+14,31,atraso por clima,2025-01-26,Registro automatico: atraso por clima
+15,33,endereco nao localizado,2025-01-27,Registro automatico: endereco nao localizado
+16,35,recusa na entrega,2025-01-28,
+17,42,atraso por clima,2025-02-03,Registro automatico: atraso por clima
+18,42,avaria,2025-02-04,Registro automatico: avaria
+19,45,endereco nao localizado,2025-02-07,Registro automatico: endereco nao localizado
+20,45,atraso por clima,2025-02-07,Registro automatico: atraso por clima
+21,48,atraso por clima,2025-02-09,Registro automatico: atraso por clima
+22,50,endereco nao localizado,2025-02-11,Registro automatico: endereco nao localizado
+23,61,atraso por clima,2025-02-19,Registro automatico: atraso por clima
+24,62,extravio,2025-02-19,Registro automatico: extravio
+25,68,destinatario ausente,2025-02-21,Registro automatico: destinatario ausente
+26,72,extravio,2025-02-23,Registro automatico: extravio
+27,71,extravio,2025-02-24,Registro automatico: extravio
+28,73,avaria,2025-02-24,Registro automatico: avaria
+29,74,avaria,2025-02-25,Registro automatico: avaria
+30,77,destinatario ausente,2025-02-27,Registro automatico: destinatario ausente
+31,78,extravio,2025-03-01,Registro automatico: extravio
+32,83,destinatario ausente,2025-03-05,Registro automatico: destinatario ausente
+33,82,destinatario ausente,2025-03-06,Registro automatico: destinatario ausente
+34,82,recusa na entrega,2025-03-06,Registro automatico: recusa na entrega
+35,86,destinatario ausente,2025-03-12,Registro automatico: destinatario ausente
+36,109,extravio,2025-03-28,Registro automatico: extravio
+37,110,atraso por clima,2025-03-29,
+38,113,endereco nao localizado,2025-03-30,Registro automatico: endereco nao localizado
+39,115,atraso por clima,2025-03-30,
+40,116,endereco nao localizado,2025-03-31,
+41,119,extravio,2025-03-31,Registro automatico: extravio
+42,120,avaria,2025-03-31,Registro automatico: avaria
+43,117,endereco nao localizado,2025-04-01,Registro automatico: endereco nao localizado
+44,119,destinatario ausente,2025-04-01,Registro automatico: destinatario ausente
+45,120,endereco nao localizado,2025-04-01,Registro automatico: endereco nao localizado
+46,120,atraso por clima,2025-04-01,Registro automatico: atraso por clima
+47,134,recusa na entrega,2025-04-10,Registro automatico: recusa na entrega
+48,139,avaria,2025-04-11,Registro automatico: avaria
+49,142,atraso por clima,2025-04-12,
+50,146,endereco nao localizado,2025-04-12,
+51,146,recusa na entrega,2025-04-13,Registro automatico: recusa na entrega
+52,152,destinatario ausente,2025-04-16,Registro automatico: destinatario ausente
+53,158,endereco nao localizado,2025-04-17,Registro automatico: endereco nao localizado
+54,154,extravio,2025-04-18,Registro automatico: extravio
+55,157,atraso por clima,2025-04-18,Registro automatico: atraso por clima
+56,169,extravio,2025-04-21,Registro automatico: extravio
+57,165,avaria,2025-04-22,Registro automatico: avaria
+58,178,atraso por clima,2025-04-27,
+59,181,recusa na entrega,2025-05-01,
+60,183,atraso por clima,2025-05-01,Registro automatico: atraso por clima
+61,184,avaria,2025-05-01,Registro automatico: avaria
+62,188,extravio,2025-05-02,Registro automatico: extravio
+63,203,avaria,2025-05-15,Registro automatico: avaria
+64,203,recusa na entrega,2025-05-16,Registro automatico: recusa na entrega
+65,208,atraso por clima,2025-05-16,Registro automatico: atraso por clima
+66,209,avaria,2025-05-16,Registro automatico: avaria
+67,209,extravio,2025-05-16,Registro automatico: extravio
+68,211,extravio,2025-05-19,
+69,213,recusa na entrega,2025-05-19,Registro automatico: recusa na entrega
+70,225,extravio,2025-05-25,
+71,225,endereco nao localizado,2025-05-25,Registro automatico: endereco nao localizado
+72,225,recusa na entrega,2025-05-26,Registro automatico: recusa na entrega
+73,228,destinatario ausente,2025-05-26,
+74,235,extravio,2025-05-30,Registro automatico: extravio
+75,239,avaria,2025-06-01,
+76,243,endereco nao localizado,2025-06-02,Registro automatico: endereco nao localizado
+77,244,extravio,2025-06-03,Registro automatico: extravio
+78,251,recusa na entrega,2025-06-06,
+79,250,destinatario ausente,2025-06-08,
+80,250,avaria,2025-06-08,Registro automatico: avaria
+81,251,recusa na entrega,2025-06-08,Registro automatico: recusa na entrega
+82,258,avaria,2025-06-08,Registro automatico: avaria
+83,265,avaria,2025-06-14,Registro automatico: avaria
+84,267,atraso por clima,2025-06-16,Registro automatico: atraso por clima
+85,277,extravio,2025-06-18,Registro automatico: extravio
+86,283,endereco nao localizado,2025-06-23,Registro automatico: endereco nao localizado
+87,285,recusa na entrega,2025-06-23,Registro automatico: recusa na entrega
+88,285,recusa na entrega,2025-06-25,Registro automatico: recusa na entrega
+89,290,atraso por clima,2025-06-28,Registro automatico: atraso por clima
+90,293,avaria,2025-06-29,Registro automatico: avaria
+91,295,recusa na entrega,2025-07-03,Registro automatico: recusa na entrega
+92,299,avaria,2025-07-04,Registro automatico: avaria
+93,303,recusa na entrega,2025-07-07,Registro automatico: recusa na entrega
+94,303,endereco nao localizado,2025-07-08,Registro automatico: endereco nao localizado
+95,310,endereco nao localizado,2025-07-10,Registro automatico: endereco nao localizado
+96,313,recusa na entrega,2025-07-14,
+97,317,extravio,2025-07-14,Registro automatico: extravio
+98,318,destinatario ausente,2025-07-14,Registro automatico: destinatario ausente
+99,321,endereco nao localizado,2025-07-16,Registro automatico: endereco nao localizado
+100,323,avaria,2025-07-17,Registro automatico: avaria
+101,322,destinatario ausente,2025-07-18,
+102,329,avaria,2025-07-19,Registro automatico: avaria
+103,329,recusa na entrega,2025-07-19,Registro automatico: recusa na entrega
+104,336,avaria,2025-07-21,Registro automatico: avaria
+105,333,endereco nao localizado,2025-07-22,Registro automatico: endereco nao localizado
+106,342,atraso por clima,2025-07-28,Registro automatico: atraso por clima
+107,342,endereco nao localizado,2025-07-28,
+108,342,recusa na entrega,2025-07-28,
+109,342,endereco nao localizado,2025-07-29,Registro automatico: endereco nao localizado
+110,343,endereco nao localizado,2025-07-29,Registro automatico: endereco nao localizado
+111,343,destinatario ausente,2025-07-30,Registro automatico: destinatario ausente
+112,344,extravio,2025-07-30,Registro automatico: extravio
+113,347,atraso por clima,2025-07-30,Registro automatico: atraso por clima
+114,361,recusa na entrega,2025-08-10,
+115,361,destinatario ausente,2025-08-10,Registro automatico: destinatario ausente
+116,367,destinatario ausente,2025-08-14,Registro automatico: destinatario ausente
+117,372,avaria,2025-08-17,Registro automatico: avaria
+118,368,avaria,2025-08-18,Registro automatico: avaria
+119,369,recusa na entrega,2025-08-18,Registro automatico: recusa na entrega
+120,370,recusa na entrega,2025-08-19,Registro automatico: recusa na entrega
+121,370,destinatario ausente,2025-08-19,Registro automatico: destinatario ausente
+122,377,atraso por clima,2025-08-23,
+123,377,destinatario ausente,2025-08-24,Registro automatico: destinatario ausente
+124,379,destinatario ausente,2025-08-24,Registro automatico: destinatario ausente
+125,384,recusa na entrega,2025-08-29,
+126,391,destinatario ausente,2025-09-02,Registro automatico: destinatario ausente
+127,392,extravio,2025-09-03,Registro automatico: extravio
+128,396,endereco nao localizado,2025-09-06,Registro automatico: endereco nao localizado
+129,402,avaria,2025-09-07,Registro automatico: avaria
+130,405,recusa na entrega,2025-09-09,Registro automatico: recusa na entrega
+131,408,destinatario ausente,2025-09-10,
+132,410,avaria,2025-09-10,Registro automatico: avaria
+133,417,atraso por clima,2025-09-21,Registro automatico: atraso por clima
+134,428,atraso por clima,2025-09-24,Registro automatico: atraso por clima
+135,430,avaria,2025-09-25,
+136,432,atraso por clima,2025-09-25,
+137,433,extravio,2025-09-27,Registro automatico: extravio
+138,439,recusa na entrega,2025-09-27,Registro automatico: recusa na entrega
+139,441,endereco nao localizado,2025-09-28,Registro automatico: endereco nao localizado
+140,444,avaria,2025-09-29,Registro automatico: avaria
+141,442,avaria,2025-09-30,Registro automatico: avaria
+142,444,atraso por clima,2025-10-01,Registro automatico: atraso por clima
+143,446,avaria,2025-10-01,Registro automatico: avaria
+144,451,destinatario ausente,2025-10-07,Registro automatico: destinatario ausente
+145,451,endereco nao localizado,2025-10-07,Registro automatico: endereco nao localizado
+146,454,endereco nao localizado,2025-10-10,Registro automatico: endereco nao localizado
+147,453,avaria,2025-10-11,Registro automatico: avaria
+148,462,destinatario ausente,2025-10-13,Registro automatico: destinatario ausente
+149,461,recusa na entrega,2025-10-14,Registro automatico: recusa na entrega
+150,462,extravio,2025-10-15,
+151,465,extravio,2025-10-15,Registro automatico: extravio
+152,466,avaria,2025-10-17,Registro automatico: avaria
+153,467,recusa na entrega,2025-10-18,Registro automatico: recusa na entrega
+154,468,atraso por clima,2025-10-19,Registro automatico: atraso por clima
+155,475,destinatario ausente,2025-10-20,Registro automatico: destinatario ausente
+156,477,destinatario ausente,2025-10-20,Registro automatico: destinatario ausente
+157,480,endereco nao localizado,2025-10-24,Registro automatico: endereco nao localizado
+158,493,endereco nao localizado,2025-10-29,Registro automatico: endereco nao localizado
+159,496,extravio,2025-11-01,Registro automatico: extravio
+160,498,atraso por clima,2025-11-01,Registro automatico: atraso por clima

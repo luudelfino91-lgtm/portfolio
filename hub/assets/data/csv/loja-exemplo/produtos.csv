@@ -1,0 +1,31 @@
+id,nome,categoria_id,preco,estoque
+1,Fone de ouvido simples,1,89.9,120
+2,Carregador USB,1,49.9,300
+3,Teclado compacto,1,159.9,80
+4,Caixa de som portatil,1,249.9,45
+5,Notebook basico,1,2899.0,12
+6,Romance de aventura,2,39.9,150
+7,Guia de receitas,2,59.9,90
+8,Livro de ficcao cientifica,2,44.5,110
+9,Manual de jardinagem,2,69.9,60
+10,Colecao de contos,2,34.9,140
+11,Jogo de panelas,3,399.0,25
+12,Liquidificador,3,189.9,40
+13,Conjunto de facas,3,129.9,55
+14,Garrafa termica,3,74.9,100
+15,Tabua de corte,3,29.9,200
+16,Bola de futebol,4,99.9,70
+17,Corda de pular,4,24.9,180
+18,Tapete de yoga,4,119.9,65
+19,Halteres 5 kg (par),4,149.9,50
+20,Bicicleta urbana,4,1499.0,8
+21,Caderno 200 folhas,5,19.9,400
+22,Caneta gel (caixa),5,14.9,500
+23,Agenda 2025,5,54.9,130
+24,Mochila escolar,5,139.9,75
+25,Marcadores de texto,5,9.9,600
+26,Quebra-cabeca 500 pecas,6,64.9,85
+27,Blocos de montar,6,179.9,60
+28,Jogo de tabuleiro,6,129.9,45
+29,Boneco articulado,6,84.9,0
+30,Pista de carrinhos,6,219.9,15

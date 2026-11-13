@@ -41,9 +41,9 @@ const { execSync } = require('child_process');
   const S = require('./scope'); const fs = require('fs'), os = require('os'), path = require('path');
   const all = S.changed(L.REPO);
   // Alteracao do portfolio APROVADA pelo Lucas (link Portfolio->Hub no rodape + contraste --ink-3): somente estes 3 arquivos.
-  const APPROVED = ['index.html', 'assets/css/styles.css', 'assets/js/i18n.js'];
+  const APPROVED = ['index.html', 'assets/css/styles.css', 'assets/js/i18n.js', '.gitignore']; // .gitignore: __pycache__/ e *.pyc (revisao D11, B1)
   const out = S.offending(L.REPO).filter(f => !APPROVED.includes(f));
-  L.rec('REG-01/T-210 nenhum arquivo fora de docs/, hub/, tests/, .claude/ alterado, exceto os 3 aprovados (diff commitado + working tree + porcelain)', out.length === 0, 'arquivos fora do escopo: ' + JSON.stringify(out) + ' (total alterados: ' + all.length + ')');
+  L.rec('REG-01/T-210 nenhum arquivo fora de docs/, hub/, tests/, .claude/ alterado, exceto os 3 aprovados e .gitignore (B1) (diff commitado + working tree + porcelain)', out.length === 0, 'arquivos fora do escopo: ' + JSON.stringify(out) + ' (total alterados: ' + all.length + ')');
   { const sh = (c, d) => execSync(c, { cwd: d, stdio: 'pipe', encoding: 'utf8' });
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'hub-neg-')); const res = [];
     try {
@@ -51,8 +51,8 @@ const { execSync } = require('child_process');
       sh('git config user.email t@t && git config user.name t', c);
       // o origin/main do clone e o branch main LOCAL do repo (pode estar atrasado); use o origin/main real do repo
       sh(`git fetch -q "${L.REPO}" +refs/remotes/origin/main:refs/remotes/origin/main`, c);
-      res.push(['controle limpo (HEAD commitado)', S.offending(c).length === 0]);
-      fs.appendFileSync(`${c}/docs/_x.md`, 'x'); res.push(['controle: arquivo novo em docs/ nao acusa', S.offending(c).length === 0]); fs.unlinkSync(`${c}/docs/_x.md`);
+      res.push(['controle limpo (HEAD commitado)', S.offending(c).filter(f => !APPROVED.includes(f)).length === 0]);
+      fs.appendFileSync(`${c}/docs/_x.md`, 'x'); res.push(['controle: arquivo novo em docs/ nao acusa', S.offending(c).filter(f => !APPROVED.includes(f)).length === 0]); fs.unlinkSync(`${c}/docs/_x.md`);
       for (const f of ['index.html', 'certificacoes.html', 'assets/css/styles.css', 'README.md', 'CHANGELOG.md']) {
         if (!fs.existsSync(`${c}/${f}`)) { res.push([`${f} (ausente no clone)`, false]); continue; }
         fs.appendFileSync(`${c}/${f}`, '\n<!-- x -->'); res.push([`${f} alterado no working tree acusa`, S.offending(c).includes(f)]);

@@ -1,11 +1,13 @@
 # Project Status Report: Fase 3 (leitor de CSV e SQL playground)
 
+> **Atualização D11 (sem upload):** o leitor de CSV virou explorador dos cenários embutidos (sem Papa Parse, sem Worker de CSV, sem arquivo do usuário), e T-302, T-305 e o item (a) de T-306 foram superados. As linhas abaixo descrevem o estado antes da D11. Ver `docs/status/no-upload-status.md`.
+
 **Data:** 2026-11-13. **Branch:** `feat/phase-3-csv-sql` (PR #6). **Commit verificado:** e377ca0 (revisão independente final: APROVAR, sem achados críticos/altos/médios; a905171 foi o commit anterior (suíte reexecutada em 2026-11-13 por mim e pelo revisor independente, com as portas de teste livres; as alterações deste ajuste de documentação e de `tests/hub/lib.js` vêm depois e foram reverificadas na reexecução registrada na seção 3).
 **Status:** `IN REVIEW`, com **revisão independente: APROVADA** na reavaliação final (a primeira foi REJEITADA e as correções foram reverificadas). **Não pronta para produção.** Itens MVP abertos: T-301 (parcial), T-306 (parcial), T-310 (parcial), T-312 (relatório de segurança em elaboração) e a verificação fora do Chrome.
 
 ## 1. O que existe
-- `hub/ferramentas/csv/` (leitor de CSV com Web Worker, Papa Parse 5.7.1 local) e `hub/ferramentas/sql/` (playground com sql.js **1.16.0** local, Worker próprio, CSV como tabela).
-- `hub/assets/vendor/` com `sqljs/` e `papaparse/` (cópias byte a byte do registro npm; SHA-256 em `manifest.json` e `SHA256SUMS`, conferidos com `sha256sum -c`; também no `README.md`).
+- `hub/ferramentas/csv/` (hoje explorador dos cenários embutidos, sem Papa Parse e sem Worker de CSV; **histórico (superado pela D11):** leitor de CSV com Web Worker e Papa Parse 5.7.1) e `hub/ferramentas/sql/` (playground com sql.js **1.16.0** local e Worker próprio; **histórico (superado pela D11):** CSV como tabela).
+- `hub/assets/vendor/` com `sqljs/` (e, **histórico, removido pela D11**, `papaparse/`) (cópias byte a byte do registro npm; SHA-256 em `manifest.json` e `SHA256SUMS`, conferidos com `sha256sum -c`; também no `README.md`).
 - Cartões de CSV e SQL sem chip "Em construção" na home e em `hub/ferramentas/`.
 - Fixtures de CSV com `expected.json` e a suíte `tests/hub/` (`run-all.sh`).
 - CSP das páginas do Hub por `<meta>`. A página SQL tem `'wasm-unsafe-eval'` e `worker-src 'self'`; as demais continuam sem.
@@ -15,12 +17,12 @@ Legenda: **ENTREGUE (Chrome)** = implementado e coberto por teste automatizado p
 
 | Tarefa | Estado | Evidência e ressalva |
 |---|---|---|
-| T-301 vendorização | PARCIAL | sql.js 1.16.0 e Papa Parse 5.7.1 vendorizados, integridade SHA-512 comparada com o registro npm. `manifest.json` e `SHA256SUMS` criados, conferidos com `sha256sum -c` (sem conferência automática em teste/CI). Advisories não verificados |
-| T-302 leitor de CSV | ENTREGUE (Chrome) | Suíte csv 47 PASS. Arrastar e soltar (CSV-02) sem verificação real; Firefox/Edge/WebKit não executados |
+| T-301 vendorização | PARCIAL | sql.js 1.16.0 e Papa Parse 5.7.1 (histórico: Papa Parse removido pela D11) vendorizados, integridade SHA-512 comparada com o registro npm. `manifest.json` e `SHA256SUMS` criados, conferidos com `sha256sum -c` (sem conferência automática em teste/CI). Advisories não verificados |
+| T-302 leitor de CSV | SUPERADA (D11; histórico: ENTREGUE (Chrome)) | Histórico: suíte csv 47 PASS. Arrastar e soltar (CSV-02) sem verificação real; Firefox/Edge/WebKit não executados |
 | T-303 perfil por coluna (P1) | NÃO INICIADO | Fora do MVP; sem evidência |
 | T-304 SQL playground | ENTREGUE (Chrome) | Suíte sql 139 PASS. MIME de `.wasm` e comportamento no Pages real não verificados |
-| T-305 CSV como tabela | ENTREGUE (Chrome) | Coberto pela suíte sql |
-| T-306 Worker, Parar/Cancelar | PARCIAL | Critério (a) de 10 MB coberto no Chrome. Item (b), 50 MB (CSV-51b, SQL-18b), **sem teste**; pico de memória não medido |
+| T-305 CSV como tabela | SUPERADA (D11; histórico: ENTREGUE (Chrome)) | Histórico: coberto pela suíte sql, testes SQL-10 a SQL-18 removidos |
+| T-306 Worker, Parar/Cancelar | PARCIAL | Histórico, superado pela D11: critério (a) de 10 MB e item (b), 50 MB (CSV-51b, SQL-18b), não existem mais (sem upload). Segue vigente: Worker de SQL, Parar e tempo limite (SQL-32/33) |
 | T-307 exercícios (P1) | NÃO INICIADO | Fora do MVP |
 | T-308 exportar CSV (P1) | NÃO INICIADO | Fora do MVP |
 | T-309 i18n e acessibilidade | ENTREGUE (Chrome) | Verificador de chaves exit 0, a11y 17 PASS. Leitor de tela não verificado |

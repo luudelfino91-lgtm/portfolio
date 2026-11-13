@@ -1,16 +1,17 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title data-i="hub.title.csv">CSV viewer · Data &amp; AI Community Hub</title>
-<meta name="description" content="Open a CSV file in your browser and see its columns, inferred types and first rows. Nothing is uploaded." data-ia="content:hub.desc.csv">
+<title data-i="hub.title.csv">Data explorer · Data &amp; AI Community Hub</title>
+<meta name="description" content="Explore five built-in sample scenarios in your browser: pick a table and see its row and column counts, types and a preview. Nothing is uploaded." data-ia="content:hub.desc.csv">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../../assets/css/styles.css">
 <link rel="stylesheet" href="../../assets/css/hub.css">
 <link rel="stylesheet" href="../../assets/css/csv.css">
+<link rel="stylesheet" href="../../assets/css/scenarios.css">
 <script src="../../assets/js/theme.js"></script>
 <script src="../../assets/js/i18n.js" defer></script>
 </head>
@@ -39,48 +40,20 @@
   </header>
 
   <main id="main" tabindex="-1">
-    <nav class="crumb" aria-label="You are here" data-ia="aria-label:hub.crumb.label"><ol><li><a href="../../"><span data-i="hub.crumb.home">Home</span></a></li><li><a href="../"><span data-i="hub.nav.tools">Tools</span></a></li><li aria-current="page"><span data-i="hub.tool.csv.name">CSV viewer</span></li></ol></nav>
+    <nav class="crumb" aria-label="You are here" data-ia="aria-label:hub.crumb.label"><ol><li><a href="../../"><span data-i="hub.crumb.home">Home</span></a></li><li><a href="../"><span data-i="hub.nav.tools">Tools</span></a></li><li aria-current="page"><span data-i="hub.tool.csv.name">Data explorer</span></li></ol></nav>
     <section class="hub-hero hub-hero--sub" aria-labelledby="h1">
-      <h1 id="h1" data-i="hub.tool.csv.name">CSV viewer</h1>
+      <h1 id="h1" data-i="hub.tool.csv.name">Data explorer</h1>
     </section>
-    <p class="lede csv-lede" data-i="hub.csv.lede">Open a CSV file to see its size, columns, inferred types and first rows. The file is read in this browser and is never sent anywhere.</p>
+    <p class="lede csv-lede" data-i="hub.csv.lede">Pick one of the five built-in scenarios and a table to see how many rows and columns it has, the type of each column and a preview of the first rows. The data comes with this site: nothing is uploaded and nothing leaves your browser.</p>
 
     <div class="csv-tool" id="csvTool" data-state="idle">
-      <div class="csv-drop" id="csvDrop">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
-        <p class="csv-drop-title" id="csvDropTitle" data-i="hub.csv.drop.title">Drop a CSV file here</p>
-        <p class="csv-drop-or" data-i="hub.csv.drop.or">or</p>
-        <input class="csv-file" id="csvFile" type="file" accept=".csv,.tsv,.txt,text/csv,text/plain,text/tab-separated-values">
-        <label class="btn btn-dark csv-pick" for="csvFile"><span data-i="hub.csv.drop.btn">Choose a file</span></label>
-        <p class="csv-hint" data-i="hub.csv.drop.hint">Limit: 10 MB per file. Comma, semicolon, tab or pipe delimiters. The file stays in this browser.</p>
-      </div>
+      <div id="csvPicker"></div>
 
       <div class="csv-opts">
         <div class="csv-field">
-          <label for="csvDelim" data-i="hub.csv.opt.delim">Delimiter</label>
-          <select id="csvDelim">
-            <option value="auto" data-i="hub.csv.opt.auto">Automatic</option>
-            <option value="," data-i="hub.csv.opt.comma">Comma (,)</option>
-            <option value=";" data-i="hub.csv.opt.semicolon">Semicolon (;)</option>
-            <option value="&#9;" data-i="hub.csv.opt.tab">Tab</option>
-            <option value="|" data-i="hub.csv.opt.pipe">Pipe (|)</option>
-          </select>
+          <label for="csvTable" data-i="hub.csv.table.label">Table</label>
+          <select id="csvTable" disabled></select>
         </div>
-        <div class="csv-field">
-          <label for="csvEnc" data-i="hub.csv.opt.enc">Encoding</label>
-          <select id="csvEnc">
-            <option value="auto" data-i="hub.csv.opt.auto">Automatic</option>
-            <option value="utf-8" data-i="hub.csv.opt.utf8">UTF-8</option>
-            <option value="windows-1252" data-i="hub.csv.opt.w1252">Windows-1252 / ISO-8859-1 (Latin-1)</option>
-          </select>
-        </div>
-        <p class="csv-note" data-i="hub.csv.opt.note">Changing an option reads the current file again.</p>
-      </div>
-
-      <div class="csv-run" id="csvRun" hidden>
-        <progress id="csvProg" max="100" value="0" aria-label="Reading progress" data-ia="aria-label:hub.csv.progress"></progress>
-        <span class="csv-pct" id="csvPct" aria-hidden="true">0%</span>
-        <button class="btn btn-ghost" id="csvCancel" type="button"><span data-i="hub.csv.cancel">Cancel reading</span></button>
       </div>
 
       <p class="csv-status" id="csvStatus" role="status" aria-live="polite"></p>
@@ -89,23 +62,22 @@
         <strong id="csvErrT"></strong>
         <p id="csvErrM"></p>
       </div>
-      <div class="notice csv-warn" id="csvWarn" role="status" hidden></div>
 
       <div class="csv-result" id="csvResult" hidden>
-        <h2 id="csvResH" data-i="hub.csv.res.h">File summary</h2>
+        <h2 id="csvResH" data-i="hub.csv.res.h">Table summary</h2>
         <ul class="csv-stats" id="csvStats">
-          <li data-stat="file"></li><li data-stat="size"></li><li data-stat="rows"></li><li data-stat="cols"></li><li data-stat="delim"></li><li data-stat="enc"></li>
+          <li data-stat="scenario"></li><li data-stat="table"></li><li data-stat="rows"></li><li data-stat="cols"></li><li data-stat="nulls"></li>
         </ul>
 
-        <h2 id="csvColsH" data-i="hub.csv.cols.h">Columns and inferred types</h2>
+        <h2 id="csvColsH" data-i="hub.csv.cols.h">Columns and types</h2>
         <div class="csv-scroll csv-scroll--cols" role="region" tabindex="0" aria-labelledby="csvColsH">
           <table class="csv-table" id="csvCols">
-            <caption data-i="hub.csv.cols.cap">Columns of the file with their inferred type</caption>
-            <thead><tr><th scope="col" data-i="hub.csv.cols.th.n">#</th><th scope="col" data-i="hub.csv.cols.th.name">Name</th><th scope="col" data-i="hub.csv.cols.th.type">Type</th></tr></thead>
+            <caption data-i="hub.csv.cols.cap">Columns of the table with their declared type and number of missing values</caption>
+            <thead><tr><th scope="col" data-i="hub.csv.cols.th.n">#</th><th scope="col" data-i="hub.csv.cols.th.name">Name</th><th scope="col" data-i="hub.csv.cols.th.type">Type</th><th scope="col" data-i="hub.csv.cols.th.key">Key</th><th scope="col" data-i="hub.csv.cols.th.nulls">Missing (NULL)</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>
-        <p class="csv-note" data-i="hub.csv.type.note">Types are inferred from every row. Empty cells (or only spaces) are ignored; codes with leading zeros stay text.</p>
+        <p class="csv-note" data-i="hub.csv.type.note">Types are the ones declared in the database. Dates and times are stored as text (ISO format). An empty cell is a missing value (NULL). PK = primary key, FK = foreign key.</p>
 
         <h2 id="csvDataH" data-i="hub.csv.data.h">Data preview</h2>
         <div class="csv-scroll" role="region" tabindex="0" aria-labelledby="csvDataH">
@@ -115,7 +87,6 @@
             <tbody></tbody>
           </table>
         </div>
-        <p class="csv-note" id="csvDataEmpty" hidden></p>
       </div>
     </div>
   </main>
@@ -131,6 +102,7 @@
   </footer>
 </div>
 <script src="../../assets/js/nav.js" defer></script>
+<script src="../../assets/js/scenarios.js" defer></script>
 <script src="../../assets/js/csv.js" defer></script>
 </body>
 </html>

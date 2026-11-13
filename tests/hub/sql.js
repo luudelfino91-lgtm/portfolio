@@ -1,17 +1,11 @@
-// SQL playground (T-304, T-305, T-306 SQL, T-309): SQL-01..06, 10..18, 20..27, 30..36, 40, 41, 51, 52, PRV (CSP, rede, canario), 360px, axe.
-// Requer: fixtures pequenas em docs/testing/fixtures e as grandes em FIXTURES_LARGE (padrao /tmp/csv-large),
-//   geradas FORA do repo: (cd docs/testing/fixtures && python3 -I gen_csv.py --large --out /tmp/csv-large)
+// SQL playground (T-304, T-305, T-306 SQL, T-309; reescrito para D11 = sem upload): SQL-01..06, 20..27, 30..36, 40, 51, 52, PRV (CSP, rede, canario), 360px, axe.
+// Removido em D11 (justificativa em docs/status/no-upload-status.md): SQL-10..18 (CSV como tabela, nomes saneados, tipos, nulos, BOM, 10 MB,
+// 2.000 colunas, cancelar leitura), SQL-41 (nomes de arquivo/xss.csv) e T-306a de leitura: o recurso nao existe mais. O que sobrou usa
+// tabelas dos cenarios embutidos no lugar de CSV. A integridade dos 5 cenarios na UI esta em tests/hub/scenarios.js.
 const L = require('./lib'); const fs = require('fs'); const path = require('path');
-const FX = path.join(L.REPO, 'docs/testing/fixtures'); const LARGE = process.env.FIXTURES_LARGE || '/tmp/csv-large';
-const EXP = JSON.parse(fs.readFileSync(FX + '/expected.json', 'utf8')).files.reduce((a, f) => (a[f.file] = f, a), {});
 const AXE = fs.existsSync(L.AXE_PATH) ? fs.readFileSync(L.AXE_PATH, 'utf8') : null;
 if (!AXE) L.rec('A11-02 (SQL) axe-core presente em ' + L.AXE_PATH + ' (sem ele a cobertura axe nao roda)', false, 'instale axe-core: cd /tmp/axe && npm pack axe-core && tar xzf axe-core-*.tgz');
 const PAGE = 'hub/ferramentas/sql/';
-const fpath = n => path.isAbsolute(n) ? n : fs.existsSync(path.join(FX, n)) ? path.join(FX, n) : path.join(LARGE, n);
-const os = require('os');
-// SEC-P3-01: fixtures de largura geradas em tempo de teste, fora do repo
-const WDIR = fs.mkdtempSync(path.join(os.tmpdir(), 'hub-wide-'));
-const wide = n => { const p = path.join(WDIR, 'wide-' + n + '.csv'); const h = Array.from({ length: n }, (_, i) => 'c' + (i + 1)); fs.writeFileSync(p, h.join(',') + '\n' + h.map((_, i) => i).join(',') + '\n' + h.map((_, i) => 'v' + i).join(',') + '\n'); return p; };
 const T0 = 60000;
 
 const state = pg => pg.evaluate(() => document.getElementById('sqlTool').dataset.state);
@@ -28,8 +22,10 @@ async function run(pg, sql, via = 'click') {
   if (via === 'click') await pg.click('#sqlRun'); else await pg.keyboard.press(via);
   await ready(pg);
 }
-async function loadCsv(pg, f) {
-  await pg.setInputFiles('#sqlFile', typeof f === 'string' ? fpath(f) : f);
+// escolhe o cenario no seletor (radio nativo) e carrega; espera o status de "carregado" e o motor pronto
+async function loadSample(pg, slug = 'loja-exemplo') {
+  await pg.check(`#sqlPicker input[value="${slug}"]`); await pg.click('#sqlSampleBtn');
+  await pg.waitForFunction(() => /^(Sample database loaded|Banco de exemplo carregado)/.test(document.getElementById('sqlStatus').textContent) || !document.getElementById('sqlErr').hidden, null, { timeout: T0 });
   await ready(pg);
 }
 const grab = pg => pg.evaluate(() => {
@@ -46,9 +42,7 @@ const grab = pg => pg.evaluate(() => {
     bodyText: document.body.innerText,
   };
 });
-const cols = (r, tbl) => r.schema.find(t => t.cap.startsWith(tbl + ' ')).rows.map(x => x[1]);
 const nf = (n, lang) => new Intl.NumberFormat(lang === 'pt' ? 'pt-BR' : 'en-US').format(n);
-const SQL_TYPE = { integer: 'INTEGER', decimal: 'REAL', decimal_br: 'REAL' };
 
 (async () => {
   const srv = L.startServers(); await new Promise(r => setTimeout(r, 800));
@@ -105,6 +99,15 @@ const SQL_TYPE = { integer: 'INTEGER', decimal: 'REAL', decimal_br: 'REAL' };
       const inl = 'SELECT COUNT(*) AS n FROM (SELECT 1 AS v) WHERE v IN (' + '1,'.repeat(48000) + '1)'; // ~96 KB
       const tIn = Date.now(); await run(pg, inl); g = await grab(pg);
       L.rec(`SQL-30 ${tag} consulta de ${Math.round(inl.length / 1024)} KB (lista IN com 48.001 itens): executa, resultado correto, sem travar`, inl.length > 90000 && !g.errVisible && g.body[0][0] === '1', `bytes=${inl.length} resultado=${JSON.stringify(g.body)} erro="${g.errM}" tempo=${Date.now() - tIn} ms`);
+      // SQL-31 (reescrito em D11, sem upload): teto de linhas (1.000) e orcamento de celulas (20.000 = linhas x colunas)
+      await run(pg, 'WITH RECURSIVE n(i) AS (SELECT 1 UNION ALL SELECT i+1 FROM n WHERE i<5000) SELECT i FROM n'); g = await grab(pg);
+      const n1k = lang === 'pt' ? '1.000' : '1,000', n5k = lang === 'pt' ? '5.000' : '5,000';
+      L.rec(`SQL-31 ${tag} 5.000 linhas geradas: exibe exatamente 1.000 linhas, legenda "mostrando ${n1k} de ${n5k}" e nota do limite, sem erro`,
+        !g.errVisible && g.body.length === 1000 && g.body[0][0] === '1' && g.body[999][0] === '1000' && g.cap.includes(n1k) && g.cap.includes(n5k) && g.note.includes(n1k) && /(Only the first|Só as primeiras)/.test(g.note), JSON.stringify({ rows: g.body.length, cap: g.cap, note: g.note }));
+      const cols25 = Array.from({ length: 25 }, (_, k) => `i+${k} AS c${k}`).join(', '); // 25 colunas: 20.000 / 25 = 800 linhas
+      await run(pg, `WITH RECURSIVE n(i) AS (SELECT 1 UNION ALL SELECT i+1 FROM n WHERE i<5000) SELECT ${cols25} FROM n`); g = await grab(pg);
+      L.rec(`SQL-31 ${tag} 25 colunas x 5.000 linhas: o orcamento de celulas limita a 800 linhas (20.000 celulas), com legenda e nota`,
+        !g.errVisible && g.body.length === 800 && g.header.length === 25 && g.cap.includes('800') && g.cap.includes(n5k) && /(Only the first|Só as primeiras)/.test(g.note) && g.note.includes('800'), JSON.stringify({ rows: g.body.length, cols: g.header.length, cap: g.cap, note: g.note }));
       // duplo Ctrl+Enter (SQL-34)
       await pg.fill('#sqlEditor', 'SELECT 34'); await pg.keyboard.press('Control+Enter'); await pg.keyboard.press('Control+Enter'); await ready(pg); g = await grab(pg);
       L.rec(`SQL-34 ${tag} duplo Ctrl+Enter: uma execucao por vez, resultado consistente`, g.body.length === 1 && g.body[0][0] === '34' && !g.errVisible, JSON.stringify(g.body));
@@ -118,140 +121,10 @@ const SQL_TYPE = { integer: 'INTEGER', decimal: 'REAL', decimal_br: 'REAL' };
     }
   }
 
-  // ===== CSV como tabela (T-305) =====
-  { const { c, pg, log, dialogs } = await open(br, L.BASE, 'en', 'light');
-    await loadCsv(pg, 'basic.csv'); let g = await grab(pg);
-    L.rec('SQL-10 basic.csv como tabela: aparece no esquema e status informa o nome', g.schema.length === 1 && /^basic · 10,000 rows · 10 columns$/.test(g.schema[0].cap) && /Table basic created/.test(g.status), `cap="${g.schema[0] && g.schema[0].cap}" status="${g.status}"`);
-    L.rec('SQL-10 editor ganha consulta pronta sobre a tabela (so se o usuario nao editou)', /SELECT \* FROM basic LIMIT 10/.test(g.text), g.text);
-    await run(pg, 'SELECT COUNT(*) FROM basic'); g = await grab(pg);
-    L.rec('SQL-10 SELECT COUNT(*) sobre basic.csv = 10000 (expected.json)', g.body[0][0] === String(EXP['basic.csv'].rows), JSON.stringify(g.body));
-    // tipos e somas conforme expected.json (SQL-14), nulos (SQL-15)
-    const e = EXP['basic.csv']; g = await grab(pg);
-    const tdecl = g.schema[0].rows.map(r => r[2]);
-    L.rec('SQL-14 tipos declarados da tabela basic conferem com expected.json (integer->INTEGER, decimal->REAL, resto TEXT)', JSON.stringify(tdecl) === JSON.stringify(e.columns_stats.map(s => SQL_TYPE[s.type] || 'TEXT')), `esperado=${e.columns_stats.map(s => SQL_TYPE[s.type] || 'TEXT')} obtido=${tdecl}`);
-    await run(pg, 'SELECT SUM(id), SUM(idade), ROUND(SUM(salario),2), COUNT(observacao), COUNT(*) FROM basic'); g = await grab(pg);
-    const sx = n => e.columns_stats.find(s => s.name === n);
-    L.rec('SQL-14/15 SUM(id), SUM(idade), SUM(salario) e COUNT(observacao) vs COUNT(*) conferem com o oraculo', g.body[0][0] === sx('id').sum && g.body[0][1] === sx('idade').sum && Math.abs(+g.body[0][2] - +sx('salario').sum) < 0.005 && g.body[0][3] === String(sx('observacao').non_null) && g.body[0][4] === '10000', `obtido=${JSON.stringify(g.body)} esperado sums=${sx('id').sum},${sx('idade').sum},${sx('salario').sum} non_null=${sx('observacao').non_null}`);
-    await run(pg, "SELECT nome FROM basic WHERE id=1"); g = await grab(pg);
-    L.rec('SQL-10 acentos preservados (linha 1: "João Conceição")', g.body[0][0] === e.first_rows[0][1], JSON.stringify(g.body));
-    // types.csv: SUM de decimal e decimal BR; datas/booleanos/codigos como TEXT
-    await loadCsv(pg, 'types.csv'); g = await grab(pg); const et = EXP['types.csv'].columns_stats;
-    L.rec('SQL-16 segundo CSV: as duas tabelas coexistem', g.schema.length === 2 && g.schema.map(t => t.cap.split(' ')[0]).join() === 'basic,types', g.schema.map(t => t.cap).join(' | '));
-    await run(pg, 'SELECT SUM(inteiro), SUM(decimal), SUM(inteiro_ou_decimal), SUM(decimal_br), SUM(inteiro_negativo), typeof(codigo_zeros), codigo_zeros, data_iso, booleano FROM types LIMIT 1'); g = await grab(pg);
-    const sum = n => +et.find(s => s.name === n).sum;
-    const r0 = g.body[0];
-    L.rec('SQL-14 SUM de inteiro, decimal, decimal com virgula e negativos confere com o oraculo; zeros a esquerda, datas e booleanos ficam TEXT', +r0[0] === sum('inteiro') && Math.abs(+r0[1] - sum('decimal')) < 1e-9 && Math.abs(+r0[2] - sum('inteiro_ou_decimal')) < 1e-9 && Math.abs(+r0[3] - sum('decimal_br')) < 1e-9 && +r0[4] === sum('inteiro_negativo') && r0[5] === 'text' && r0[6] === '00123' && r0[7] === '2024-01-31' && r0[8] === 'true', JSON.stringify(r0));
-    // mesmo nome substitui e avisa (SQL-16)
-    await loadCsv(pg, 'types.csv'); g = await grab(pg);
-    L.rec('SQL-16 carregar o mesmo nome de novo substitui a tabela e avisa', g.schema.length === 2 && /(already existed|replaced)/.test(g.warn), `schema=${g.schema.length} aviso="${g.warn}"`);
-    // nulos (SQL-15)
-    await loadCsv(pg, 'nulls.csv'); const en = EXP['nulls.csv'].columns_stats;
-    await run(pg, 'SELECT COUNT(*), COUNT(vazio), COUNT(so_espacos), COUNT(todo_nulo), COUNT(texto_null), COUNT(texto_na) FROM nulls'); g = await grab(pg);
-    const nn = n => String(en.find(s => s.name === n).non_null);
-    L.rec('SQL-15 vazio e so espacos viram NULL (COUNT(col) != COUNT(*)); "NULL" e "NA" ficam texto (regra A1 documentada no esquema)', g.body[0].join() === ['30', nn('vazio'), nn('so_espacos'), nn('todo_nulo'), nn('texto_null'), nn('texto_na')].join(), `obtido=${g.body[0]} esperado=30,${nn('vazio')},${nn('so_espacos')},${nn('todo_nulo')},${nn('texto_null')},${nn('texto_na')}`);
-    // BOM (SQL-13)
-    await loadCsv(pg, 'bom.csv'); await run(pg, 'SELECT codigo, nome, valor FROM bom ORDER BY codigo'); g = await grab(pg);
-    L.rec('SQL-13 bom.csv: primeira coluna sem U+FEFF e consultavel (codigo); acentos preservados no valor', g.header.join() === 'codigo,nome,valor' && g.body.length === 3 && g.body[0][1] === 'ação' && !g.bodyText.includes('﻿'), JSON.stringify({ h: g.header, b: g.body }));
-    // nomes duplicados e vazios (SQL-12)
-    await loadCsv(pg, 'dup-headers.csv'); g = await grab(pg);
-    const dh = cols(g, 'dup_headers');
-    L.rec('SQL-12 cabecalhos duplicados/vazios/maiusculas: saneados, unicos e listados com o nome original no esquema', dh.join() === 'id,nome,nome_2,col_4,valor,nome_3,col_7' && g.schema.find(t => t.cap.startsWith('dup_headers ')).rows[3][3] === '(no name)' && /(cleaned up|ajustados)/.test(g.warn), `colunas=${dh} orig=${JSON.stringify(g.schema.find(t => t.cap.startsWith('dup_headers ')).rows.map(r => r[3]))} aviso="${g.warn}"`);
-    await run(pg, 'SELECT nome, nome_2, nome_3, col_4, col_7 FROM dup_headers ORDER BY id LIMIT 1'); g = await grab(pg);
-    L.rec('SQL-12 colunas saneadas consultaveis (sem aspas); aspas duplas tambem funcionam', g.body[0].join() === 'a,b,d,c,e', JSON.stringify(g.body));
-    // header-only / empty (SQL-17)
-    await loadCsv(pg, 'header-only.csv'); const ho = await grab(pg);
-    await run(pg, 'SELECT COUNT(*) FROM header_only'); g = await grab(pg);
-    L.rec('SQL-17 header-only.csv: tabela vazia criada, COUNT(*) = 0', ho.schema.some(t => t.cap.startsWith('header_only ')) && g.body[0][0] === '0', `schema=${ho.schema.map(t => t.cap)} count=${JSON.stringify(g.body)}`);
-    await loadCsv(pg, 'empty.csv'); g = await grab(pg);
-    L.rec('SQL-17 empty.csv (0 bytes): mensagem clara, banco nao alterado', g.errVisible && /empty/i.test(g.errT) && /not changed/.test(g.errH) && g.schema.length === 6, `t="${g.errT}" h="${g.errH}" tabelas=${g.schema.length}`);
-    await loadCsv(pg, 'fake.csv'); g = await grab(pg);
-    L.rec('SQL-17 fake.csv (PNG): recusado como binario, sem pageerror, banco intacto', g.errVisible && /text file/i.test(g.errT) && g.schema.length === 6 && log.pageerrors.length === 0, `t="${g.errT}"`);
-    // nomes de tabela (SQL-11)
-    const buf = fs.readFileSync(fpath('types.csv'));
-    const names = [['order.csv', 'order_'], ['2024 vendas ação.csv', 't_2024_vendas_acao'], ['meu-arquivo (1).CSV', 'meu_arquivo_1'], ['SELECT.csv', 'select_'], ['sqlite_x.csv', 't_sqlite_x'], ['日本語.csv', '日本語'], ['!!!.csv', 'tabela']];
-    const got = [];
-    for (const [fn, want] of names) { await loadCsv(pg, { name: fn, mimeType: 'text/csv', buffer: buf }); g = await grab(pg); got.push([fn, want, /^Table (\S+) created/.exec(g.status) && /^Table (\S+) created/.exec(g.status)[1]]); }
-    L.rec('SQL-11 nome da tabela saneado de forma previsivel (espacos, acentos, hifen, digito inicial, palavra reservada, sqlite_, nao latino, vazio) e mostrado na tela', got.every(([, w, o]) => w === o), JSON.stringify(got));
-    await run(pg, 'SELECT COUNT(*) FROM order_'); const q1 = await grab(pg); await run(pg, 'SELECT COUNT(*) FROM t_2024_vendas_acao'); const q2 = await grab(pg);
-    L.rec('SQL-11 consultas funcionam com os nomes saneados (order_, t_2024_vendas_acao)', q1.body[0][0] === '6' && q2.body[0][0] === '6', JSON.stringify([q1.body, q2.body]));
-    L.rec('SQL-11/12 sem pageerror nem dialogo em todas as cargas', log.pageerrors.length === 0 && dialogs.n === 0, `pageerrors=${JSON.stringify(log.pageerrors)} dialogs=${dialogs.n}`);
-    await c.close(); }
-
-  // ===== Seguranca: xss.csv, nomes maliciosos (SQL-41) =====
-  { const { c, pg, log, dialogs } = await open(br, L.BASE, 'pt', 'light');
-    await loadCsv(pg, 'xss.csv'); let g = await grab(pg);
-    const xs = EXP['xss.csv'];
-    L.rec('SQL-41 xss.csv: nomes de colunas maliciosos viram identificadores seguros e o nome original aparece so como texto no esquema', g.schema.length === 1 && g.schema[0].rows.map(r => r[3]).join('|') === xs.header.join('|') && dialogs.n === 0, `colunas=${JSON.stringify(g.schema[0].rows.map(r => r[1]))}`);
-    await run(pg, 'SELECT * FROM xss'); g = await grab(pg);
-    const inj = await pg.evaluate(() => ({ el: document.querySelectorAll('#sqlTool img, #sqlTool iframe, #sqlTool svg:not([aria-hidden]), #sqlTool a, main script').length, other: document.querySelectorAll('#sqlResTable *:not(table):not(thead):not(tbody):not(tr):not(th):not(td):not(caption):not(div.csv-cell):not(.sql-null), #sqlSchema *:not(table):not(thead):not(tbody):not(tr):not(th):not(td):not(caption)').length }));
-    L.rec('SQL-41/CSV-40 xss.csv: celulas e esquema como texto (nenhum img/script/iframe/a injetado, nenhum dialogo, celulas identicas ao arquivo)', inj.el === 0 && inj.other === 0 && dialogs.n === 0 && g.body.length === 5 && g.body[0][0] === xs.first_rows[0][0] && g.body[0][1] === xs.first_rows[0][1] && (g.body[1][5] === xs.first_rows[1][5].trim() || g.body[1][5] === xs.first_rows[1][5]), `${JSON.stringify(inj)} dialogs=${dialogs.n} linha1=${JSON.stringify(g.body[0])} header=${JSON.stringify(g.header)}`);
-    const buf = fs.readFileSync(fpath('xss.csv'));
-    for (const nm of ['<img src=x onerror=alert(1)>.csv', '"><script>alert(1)</script>.csv', "a'b\"c`d.csv", '=cmd|\' /C calc\'!A0.csv', '..\\..\\etc\\passwd.csv']) await loadCsv(pg, { name: nm, mimeType: 'text/csv', buffer: buf });
-    g = await grab(pg);
-    const nm = await pg.evaluate(() => ({ n: document.querySelectorAll('#sqlStatus *, #sqlSchema caption *').length, tags: document.querySelectorAll('main img, main script, main iframe').length }));
-    L.rec('SQL-41 nomes de arquivo maliciosos: tabela com nome seguro, nome original so como texto, nada injetado', nm.n === 0 && nm.tags === 0 && dialogs.n === 0 && log.pageerrors.length === 0 && g.schema.every(t => /^[\p{L}\p{N}_ ]+ · /u.test(t.cap)), `tabelas=${JSON.stringify(g.schema.map(t => t.cap.split(' · ')[0]))} status="${g.status}" ${JSON.stringify(nm)}`);
-    // SQL gerado: nome malicioso nao quebra: a tabela acima ja prova; confere injecao classica
-    await run(pg, 'SELECT COUNT(*) FROM xss'); g = await grab(pg);
-    L.rec('SQL-41/SR-07 cabecalho "\\"; DROP TABLE t; --" nao executa SQL: tabela xss continua com 5 linhas', g.body[0][0] === '5', JSON.stringify(g.body));
-    await c.close(); }
-
-  // ===== Limite, desempenho e cancelamento (SQL-18, SQL-31, T-306a) =====
-  { const c = await L.ctx(br, { lang: 'pt' }); await c.addInitScript(() => { window.__lt = []; try { new PerformanceObserver(l => l.getEntries().forEach(e => window.__lt.push(e.duration))).observe({ entryTypes: ['longtask'] }); } catch (e) { window.__lt = null; } });
-    const pg = await c.newPage(); const log = L.newLog(); L.watch(pg, log); await pg.goto(`${L.BASE}/${PAGE}`); await ready(pg);
-    const lim = fpath('limit-10mb.csv'), over = fpath('over-limit.csv');
-    if (!fs.existsSync(lim) || !fs.existsSync(over)) L.rec('SQL-18 fixtures grandes presentes', false, 'gere com gen_csv.py --large --out ' + LARGE);
-    else {
-      const sz = [fs.statSync(lim).size, fs.statSync(over).size];
-      const t0 = Date.now(); await loadCsv(pg, 'limit-10mb.csv'); const dt = Date.now() - t0; let g = await grab(pg);
-      const lt = await pg.evaluate(() => window.__lt); const mx = lt && lt.length ? Math.max(...lt) : 0;
-      L.rec('SQL-18 limit-10mb.csv (10.485.760 bytes) como tabela: carrega 111.875 linhas x 10 colunas, nenhuma long task > 1 s (PerformanceObserver)', sz[0] === 10485760 && g.schema.length === 1 && /111\.875 linhas/.test(g.schema[0].cap) && lt !== null && mx < 1000, `bytes=${sz[0]} cap="${g.schema[0] && g.schema[0].cap}" tempo=${dt} ms long tasks=${JSON.stringify(lt)} maior=${Math.round(mx)} ms`);
-      const ex = EXP['limit-10mb.csv'].columns_stats;
-      await run(pg, 'SELECT COUNT(*), SUM(' + g.schema[0].rows.find((r, i) => ex[i].type === 'integer')[1] + ') FROM limit_10mb'); g = await grab(pg);
-      const ic = ex.find(s => s.type === 'integer');
-      L.rec('SQL-18 COUNT(*) e SUM de coluna inteira sobre limit-10mb conferem com expected.json', g.body[0][0] === String(EXP['limit-10mb.csv'].rows) && g.body[0][1] === ic.sum, `obtido=${JSON.stringify(g.body)} esperado=${EXP['limit-10mb.csv'].rows},${ic.sum}`);
-      const t1 = Date.now(); await run(pg, 'SELECT * FROM limit_10mb'); g = await grab(pg);
-      const lt2 = await pg.evaluate(() => window.__lt); const mx2 = lt2 && lt2.length ? Math.max(...lt2) : 0;
-      L.rec('SQL-31 SELECT * da tabela de 10 MB: exibe subconjunto (1.000) com aviso "mostrando N de M", sem long task > 1 s', g.body.length === 1000 && /mostrando 1\.000 de 111\.875/.test(g.cap) && /1\.000/.test(g.note) && mx2 < 1000, `cap="${g.cap}" nota="${g.note}" tempo=${Date.now() - t1} ms maior long task=${Math.round(mx2)} ms`);
-      await loadCsv(pg, 'over-limit.csv'); g = await grab(pg);
-      L.rec('SQL-18/CSV-52 over-limit.csv (10.485.761 bytes) recusado com "10 MB"; banco e tabela anterior intactos', sz[1] === 10485761 && g.errVisible && /10 MB/.test(g.errM) && g.schema.length === 1, `bytes=${sz[1]} msg="${g.errM}" tabelas=${g.schema.length}`);
-      // cancelar a >= 40% mantem as tabelas anteriores (recarregadas apos terminate)
-      await pg.goto(`${L.BASE}/${PAGE}`); await ready(pg); await loadCsv(pg, 'basic.csv');
-      await pg.setInputFiles('#sqlFile', lim);
-      let cancelled = null, seen = [];
-      for (let i = 0; i < 4000; i++) {
-        const v = await pg.evaluate(() => ({ p: document.getElementById('sqlProg').value, s: document.getElementById('sqlTool').dataset.state }));
-        seen.push(v.p); if (v.s !== 'loading' && i > 0) break;
-        if (v.p >= 40) { await pg.click('#sqlLoadCancel'); cancelled = v.p; break; }
-        await pg.waitForTimeout(5);
-      }
-      await ready(pg); await pg.waitForTimeout(300); g = await grab(pg);
-      await run(pg, 'SELECT COUNT(*) FROM basic'); const after = await grab(pg);
-      const foc = await pg.evaluate(() => document.activeElement.id);
-      L.rec('T-306a/CSV-53(SQL) cancelar o carregamento a >=40%: interrompe (terminate), o banco e recriado, basic e recarregada automaticamente e consultavel, limit_10mb nao existe, sem pageerror', cancelled !== null && cancelled >= 40 && g.state === 'ready' && g.schema.length === 1 && g.schema[0].cap.startsWith('basic ') && after.body[0][0] === '10000' && /(canceled|cancelado)/i.test(g.warn) && log.pageerrors.length === 0, `cancelado em ${cancelled}% (amostras=${JSON.stringify(seen.slice(-6))}) tabelas=${JSON.stringify(g.schema.map(t => t.cap))} aviso="${g.warn}" count=${JSON.stringify(after.body)} foco=${foc}`);
-      if (cancelled === null) console.log('INFO leitura terminou antes de 40% ser amostrada: ' + JSON.stringify(seen));
-    }
-    await c.close(); }
-
-  // ===== SEC-P3-01: limite de colunas no SQL =====
-  { const c = await L.ctx(br, { lang: 'pt' }); await c.addInitScript(() => { window.__lt = []; try { new PerformanceObserver(l => l.getEntries().forEach(e => window.__lt.push(e.duration))).observe({ entryTypes: ['longtask'] }); } catch (e) { window.__lt = null; } });
-    const pg = await c.newPage(); const log = L.newLog(); L.watch(pg, log); await pg.goto(`${L.BASE}/${PAGE}`); await ready(pg);
-    await loadCsv(pg, wide(2000)); let g = await grab(pg);
-    L.rec('SEC-P3-01 SQL: CSV com 2.000 colunas aceito como tabela', g.schema.length === 1 && /2\.000 colunas/.test(g.schema[0].cap) && !g.errVisible, `cap="${g.schema[0] && g.schema[0].cap}" erro=${g.errVisible}`);
-    await loadCsv(pg, 'basic.csv');
-    for (const n of [2001, 5000, 100000]) {
-      await pg.evaluate(() => { window.__lt = []; });
-      await loadCsv(pg, wide(n)); g = await grab(pg); const lt = await pg.evaluate(() => window.__lt); const mx = lt && lt.length ? Math.max(...lt) : 0;
-      const nn = await pg.evaluate(() => document.getElementsByTagName('*').length);
-      L.rec(`SEC-P3-01 SQL: CSV com ${n} colunas recusado com a mesma mensagem; tabelas anteriores intactas; motor pronto; long task < 1 s`, g.errVisible && g.errM.includes('2.000') && /Escolha/.test(g.errM) && g.schema.length === 2 && g.state === 'ready' && lt !== null && mx < 1000 && nn < 20000 && log.pageerrors.length === 0, `msg="${g.errM}" tabelas=${g.schema.length} maior long task=${Math.round(mx)} ms nos=${nn}`);
-    }
-    await run(pg, 'SELECT COUNT(*) FROM basic'); g = await grab(pg);
-    L.rec('SEC-P3-01 SQL: apos recusar, consulta segue funcionando', g.body[0][0] === '10000', JSON.stringify(g.body));
-    await c.close(); }
-
   // ===== Parar e tempo limite (SQL-32, SQL-33, T-306a) =====
   { const c = await L.ctx(br, { lang: 'en' }); await c.addInitScript(() => { window.__lt = []; try { new PerformanceObserver(l => l.getEntries().forEach(e => window.__lt.push(e.duration))).observe({ entryTypes: ['longtask'] }); } catch (e) { window.__lt = null; } });
     const pg = await c.newPage(); const log = L.newLog(); L.watch(pg, log); await pg.goto(`${L.BASE}/${PAGE}`); await ready(pg);
-    await loadCsv(pg, 'basic.csv'); await run(pg, 'CREATE TABLE so_sql(a); INSERT INTO so_sql VALUES (1)');
+    await loadSample(pg); await run(pg, 'CREATE TABLE so_sql(a); INSERT INTO so_sql VALUES (1)');
     const slow = 'WITH RECURSIVE c(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM c WHERE x < 1000000000) SELECT count(*) FROM c';
     // SQL-32: Parar aparece apos ~3 s; parar termina e recria o Worker; UI segue utilizavel
     await pg.fill('#sqlEditor', slow); const t0 = Date.now(); await pg.click('#sqlRun');
@@ -261,12 +134,12 @@ const SQL_TYPE = { integer: 'INTEGER', decimal: 'REAL', decimal_br: 'REAL' };
     await pg.click('#sqlStop'); await ready(pg); await pg.waitForFunction(() => /recreated/.test(document.getElementById('sqlStatus').textContent), null, { timeout: 30000 });
     let g = await grab(pg);
     const foc = await pg.evaluate(() => document.activeElement.id);
-    L.rec('SQL-32 consulta lenta: estado "running" e aria-busy durante; "Parar" so aparece apos ~3 s; parar termina o Worker, banco recriado, aviso claro, tabelas de CSV recarregadas, foco volta ao Executar',
-      midState === 'running' && busyAttr === 'true' && !earlyStop && tStop >= 2900 && tStop < 6000 && /Stop/.test(slowStatus) && g.errVisible && /stopped/.test(g.errT) && /(recreated)/.test(g.errH) && g.schema.length === 1 && g.schema[0].cap.startsWith('basic ') && foc === 'sqlRun',
+    L.rec('SQL-32 consulta lenta: estado "running" e aria-busy durante; "Parar" so aparece apos ~3 s; parar termina o Worker, banco recriado, aviso claro, cenario carregado recarregado automaticamente, foco volta ao Executar',
+      midState === 'running' && busyAttr === 'true' && !earlyStop && tStop >= 2900 && tStop < 6000 && /Stop/.test(slowStatus) && g.errVisible && /stopped/.test(g.errT) && /(recreated)/.test(g.errH) && g.schema.length === 5 && g.schema.every(x => /sample database$/.test(x.cap)) && foc === 'sqlRun',
       `estado=${midState} aria-busy=${busyAttr} Parar visivel antes de 3 s=${earlyStop} Parar apareceu em ${tStop} ms status="${slowStatus}" erro="${g.errT}" tabelas=${JSON.stringify(g.schema.map(t => t.cap))} foco=${foc}`);
-    await run(pg, 'SELECT COUNT(*) FROM basic'); g = await grab(pg);
+    await run(pg, 'SELECT COUNT(*) FROM clientes'); g = await grab(pg);
     await run(pg, 'SELECT * FROM so_sql'); const lost = await grab(pg);
-    L.rec('SQL-32/33 apos Parar: interface utilizavel (basic consultavel = 10000), tabela criada por SQL perdida como avisado', g.body[0][0] === '10000' && lost.errVisible && /no such table/.test(lost.errM), `count=${JSON.stringify(g.body)} so_sql: "${lost.errM}"`);
+    L.rec('SQL-32/33 apos Parar: interface utilizavel (clientes consultavel = 40), tabela criada por SQL perdida como avisado', g.body[0][0] === '40' && lost.errVisible && /no such table/.test(lost.errM), `count=${JSON.stringify(g.body)} so_sql: "${lost.errM}"`);
     // SQL-33: laco infinito; tempo limite de 5 s
     await pg.selectOption('#sqlTimeout', '5');
     const lim = await pg.textContent('#sqlLimits');
@@ -274,8 +147,8 @@ const SQL_TYPE = { integer: 'INTEGER', decimal: 'REAL', decimal_br: 'REAL' };
     await pg.waitForFunction(() => document.getElementById('sqlTool').dataset.state !== 'running', null, { timeout: 15000 }); const tOut = Date.now() - t1;
     await ready(pg, 30000); g = await grab(pg);
     L.rec('SQL-33 laco infinito: interrompido no tempo limite configurado (5 s), mensagem "passou de 5 segundos" com sugestao de LIMIT/WHERE, banco recriado, nota de limite reflete o valor', tOut >= 4900 && tOut < 8000 && g.errVisible && /more than 5 seconds/.test(g.errM) && /(LIMIT|WHERE)/.test(g.errH) && /recreated/.test(g.errH) && /more than 5 seconds/.test(lim) && g.text.startsWith('WITH RECURSIVE'), `interrompida apos ${tOut} ms; t="${g.errT}" m="${g.errM}" h="${g.errH}" nota="${lim}" editor mantido=${g.text.startsWith('WITH RECURSIVE')}`);
-    await run(pg, 'SELECT 1+1'); g = await grab(pg); const cnt = await (async () => { await run(pg, 'SELECT COUNT(*) FROM basic'); return (await grab(pg)).body[0][0]; })();
-    L.rec('SQL-33 apos o tempo limite: nova consulta executa, tabela de CSV recarregada, sem pageerror', g.body[0][0] === '2' && cnt === '10000' && log.pageerrors.length === 0, `1+1=${g.body[0][0]} count=${cnt} pageerrors=${JSON.stringify(log.pageerrors)}`);
+    await run(pg, 'SELECT 1+1'); g = await grab(pg); const cnt = await (async () => { await run(pg, 'SELECT COUNT(*) FROM clientes'); return (await grab(pg)).body[0][0]; })();
+    L.rec('SQL-33 apos o tempo limite: nova consulta executa, cenario recarregado, sem pageerror', g.body[0][0] === '2' && cnt === '40' && log.pageerrors.length === 0, `1+1=${g.body[0][0]} count=${cnt} pageerrors=${JSON.stringify(log.pageerrors)}`);
     // memoria: zeroblob/randomblob gigantes nao congelam
     await run(pg, 'SELECT length(zeroblob(2000000000))'); const z1 = await grab(pg);
     await run(pg, 'SELECT length(randomblob(900000000))', 'Control+Enter'); const z2 = await grab(pg);
@@ -287,8 +160,8 @@ const SQL_TYPE = { integer: 'INTEGER', decimal: 'REAL', decimal_br: 'REAL' };
 
   // ===== Reiniciar banco (SQL-25) =====
   { const { c, pg } = await open(br, L.BASE, 'en', 'light');
-    await loadCsv(pg, 'basic.csv'); await run(pg, 'CREATE TABLE x(a)'); await pg.fill('#sqlEditor', 'SELECT 77'); await pg.click('#sqlReset'); await ready(pg); const g = await grab(pg);
-    L.rec('SQL-25 Reiniciar banco: remove todas as tabelas (CSV e SQL), mantem o texto do editor, informa na tela', g.schema.length === 0 && g.text === 'SELECT 77' && /reset/.test(g.status), `tabelas=${g.schema.length} editor="${g.text}" status="${g.status}"`);
+    await loadSample(pg); await run(pg, 'CREATE TABLE x(a)'); await pg.fill('#sqlEditor', 'SELECT 77'); await pg.click('#sqlReset'); await ready(pg); const g = await grab(pg);
+    L.rec('SQL-25 Reiniciar banco: remove todas as tabelas (cenario e SQL), mantem o texto do editor, informa na tela', g.schema.length === 0 && g.text === 'SELECT 77' && /reset/.test(g.status), `tabelas=${g.schema.length} editor="${g.text}" status="${g.status}"`);
     await c.close(); }
 
   // ===== Falha ao preparar o motor (SQL-27) e estado "aguarde" (SQL-04) =====
@@ -322,30 +195,29 @@ const SQL_TYPE = { integer: 'INTEGER', decimal: 'REAL', decimal_br: 'REAL' };
     L.rec("PRV-13 com a CSP da pagina de SQL (inclui 'wasm-unsafe-eval'): script inline, onerror inline, eval e new Function continuam bloqueados; imagem externa bloqueada", r.inlineScript === 'bloqueado' && r.inlineHandler === 'bloqueado' && r.eval === 'bloqueado' && r.fn === 'bloqueado' && msgs.some(t => /example\.com/.test(t)), JSON.stringify(r) + ' console: ' + msgs.filter(t => /Content Security/.test(t)).map(t => t.slice(0, 110)).join(' | '));
     await c.close();
     // pagina real: sem violacao de CSP no console e sem script inline no HTML
-    const c2 = await L.ctx(br, {}); const p2 = await c2.newPage(); const m2 = []; p2.on('console', m => m2.push(m.text())); await p2.goto(`${L.BASE}/${PAGE}`); await ready(p2); await run(p2, 'SELECT 1'); await loadCsv(p2, 'basic.csv');
+    const c2 = await L.ctx(br, {}); const p2 = await c2.newPage(); const m2 = []; p2.on('console', m => m2.push(m.text())); await p2.goto(`${L.BASE}/${PAGE}`); await ready(p2); await run(p2, 'SELECT 1'); await loadSample(p2);
     L.rec('PRV-13 pagina real de SQL: nenhuma violacao de CSP no console, nenhum <script> inline nem on*= nem style= no HTML', !m2.some(t => /Content Security|Refused/.test(t)) && !/<script(?![^>]*\bsrc=)[^>]*>/i.test(html) && !/\son[a-z]+\s*=|\sstyle\s*=/i.test(html), `console=${JSON.stringify(m2)}`);
     await c2.close();
-    // canario (metodo 5.2): conteudo e nome do CSV e SQL
+    // canario (metodo 5.2): o texto do SQL digitado nunca sai; nenhuma requisicao carrega o canario; nenhuma outra origem
     const c3 = await L.ctx(br, { lang: 'en' }); const p3 = await c3.newPage(); const reqs = [];
     p3.on('request', q => reqs.push({ url: q.url(), post: q.postData() || '', h: JSON.stringify(q.headers()) }));
     await p3.goto(`${L.BASE}/${PAGE}`); await ready(p3);
-    await loadCsv(p3, 'canary-CANARIO-NOME-4c8e1b.csv'); const gc = await grab(p3);
-    const tn = gc.schema[0].cap.split(' ')[0];
-    await run(p3, `SELECT '${'CANARIO-SQL-51b2'}' AS c, * FROM ${tn}`); const g3 = await grab(p3);
+    await loadSample(p3, 'rh'); const gc = await grab(p3);
+    await run(p3, `SELECT '${'CANARIO-SQL-51b2'}' AS c, * FROM departamentos`); const g3 = await grab(p3);
     const hit = reqs.filter(q => /CANARIO|9f3a7c|51b2|4c8e1b/i.test(decodeURIComponent(q.url) + q.post + q.h));
-    L.rec('PRV-01..05 canario no conteudo e nome do CSV e no SQL: zero ocorrencia em URL, cabecalho ou corpo de requisicao; zero outra origem', g3.body.length > 0 && hit.length === 0 && reqs.every(q => q.url.startsWith(L.BASE)), `requisicoes=${reqs.length} ocorrencias=${JSON.stringify(hit)} linhas=${g3.body.length} tabela=${tn}`);
-    // rede cortada depois do primeiro carregamento: continua funcionando
+    L.rec('PRV-01..05 canario no SQL digitado: zero ocorrencia em URL, cabecalho ou corpo de requisicao; zero outra origem', g3.body.length > 0 && hit.length === 0 && reqs.every(q => q.url.startsWith(L.BASE)), `requisicoes=${reqs.length} ocorrencias=${JSON.stringify(hit)} linhas=${g3.body.length} tabelas=${gc.schema.length}`);
+    // rede cortada depois do primeiro carregamento: continua funcionando (o texto do .sql do cenario fica em cache na pagina)
     await c3.setOffline(true); await run(p3, "SELECT 'offline' AS x"); const off = await grab(p3);
-    await loadCsv(p3, 'types.csv'); const off2 = await grab(p3);
-    L.rec('T-310 com a rede cortada depois do primeiro carregamento: consulta e carga de CSV continuam funcionando', off.body[0][0] === 'offline' && off2.schema.length === 2, `consulta=${JSON.stringify(off.body)} tabelas=${off2.schema.length}`);
+    await loadSample(p3, 'rh'); const off2 = await grab(p3);
+    L.rec('T-310 com a rede cortada depois do primeiro carregamento: consulta e recarga do cenario ja baixado continuam funcionando', off.body[0][0] === 'offline' && off2.schema.length === 6 && !off2.errVisible, `consulta=${JSON.stringify(off.body)} tabelas=${off2.schema.length}`);
     await c3.close(); }
 
   // ===== Idioma (SQL-52) =====
   { const { c, pg } = await open(br, L.BASE, 'en', 'light');
-    await loadCsv(pg, 'basic.csv'); await run(pg, 'SELECT id, nome FROM basic LIMIT 3'); await run(pg, 'SELECT * FROM nada');
+    await loadSample(pg); await run(pg, 'SELECT id, nome FROM clientes LIMIT 3'); await run(pg, 'SELECT * FROM nada');
     const en = await grab(pg); await pg.click('[data-lang=pt]'); const pt = await grab(pg);
     await pg.click('[data-lang=en]'); const en2 = await grab(pg);
-    L.rec('SQL-52 troca EN->PT com resultado, erro e esquema na tela: rotulos, dica, legenda e esquema mudam; mensagem do motor permanece no idioma original; dados nao somem', en.errT === 'SQL error' && pt.errT === 'Erro de SQL' && pt.errM === en.errM && /no such table/.test(pt.errM) && pt.errH !== en.errH && en.cap.startsWith('3 rows') && pt.cap.startsWith('3 linhas') && pt.body.length === 3 && /10\.000 linhas/.test(pt.schema[0].cap) && /10,000 rows/.test(en.schema[0].cap) && en2.errT === 'SQL error' && pt.runText === 'Executar', `en: "${en.errT}" "${en.cap}" "${en.schema[0].cap}" | pt: "${pt.errT}" "${pt.errM}" "${pt.cap}" "${pt.schema[0].cap}" status="${pt.status}"`);
+    L.rec('SQL-52 troca EN->PT com resultado, erro e esquema na tela: rotulos, dica, legenda e esquema mudam; mensagem do motor permanece no idioma original; dados nao somem', en.errT === 'SQL error' && pt.errT === 'Erro de SQL' && pt.errM === en.errM && /no such table/.test(pt.errM) && pt.errH !== en.errH && en.cap.startsWith('3 rows') && pt.cap.startsWith('3 linhas') && pt.body.length === 3 && /banco de exemplo$/.test(pt.schema[0].cap) && /sample database$/.test(en.schema[0].cap) && en2.errT === 'SQL error' && pt.runText === 'Executar', `en: "${en.errT}" "${en.cap}" "${en.schema[0].cap}" | pt: "${pt.errT}" "${pt.errM}" "${pt.cap}" "${pt.schema[0].cap}" status="${pt.status}"`);
     await c.close(); }
 
   // ===== Teclado (SQL-51) =====
@@ -370,32 +242,31 @@ const SQL_TYPE = { integer: 'INTEGER', decimal: 'REAL', decimal_br: 'REAL' };
     const { c, pg } = await open(br, L.BASE, lang, theme, 360);
     const m = () => pg.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
     const res = [['inicial', await m()]];
-    await loadCsv(pg, 'wide.csv'); res.push(['wide carregada', await m()]);
-    await run(pg, 'SELECT * FROM wide LIMIT 5'); res.push(['resultado largo', await m()]);
-    await loadCsv(pg, 'basic.csv'); await run(pg, 'SELECT * FROM basic'); res.push(['basic 1000 linhas', await m()]);
-    await loadCsv(pg, 'xss.csv'); await run(pg, 'SELECT * FROM xss'); res.push(['xss', await m()]);
+    await loadSample(pg, 'atendimento'); res.push(['atendimento carregado (seletor, ER e esquema)', await m()]);
+    await run(pg, 'SELECT * FROM interacoes LIMIT 5'); res.push(['resultado largo', await m()]);
+    await run(pg, 'SELECT * FROM interacoes'); res.push(['interacoes 566 linhas', await m()]);
+    await pg.click('#sqlPicker .sc-er summary'); res.push(['diagrama ER aberto', await m()]);
     await run(pg, 'SELEC 1'); res.push(['erro', await m()]);
-    await loadCsv(pg, 'latin1.csv'); res.push(['aviso', await m()]);
+    await loadSample(pg, 'loja-exemplo'); res.push(['aviso de substituicao', await m()]);
     await run(pg, 'SELECT 1 WHERE 0'); res.push(['sem linhas', await m()]);
     L.rec(`RSP/SQL-360px (${lang}/${theme}): sem rolagem horizontal da pagina em todos os estados`, res.every(([, x]) => x.sw <= x.cw), JSON.stringify(res));
     if (AXE) {
       const out = [];
-      const states = [['inicial', async () => { await pg.reload({ waitUntil: 'networkidle' }); await ready(pg); }], ['tabela carregada + resultado', async () => { await loadCsv(pg, 'basic.csv'); await run(pg, 'SELECT * FROM basic LIMIT 20'); }], ['aviso', async () => { await loadCsv(pg, 'latin1.csv'); }], ['erro de SQL', async () => { await run(pg, 'SELEC 1'); }], ['sem linhas', async () => { await run(pg, 'SELECT 1 WHERE 0'); }], ['tempo limite', async () => { await pg.selectOption('#sqlTimeout', '5'); await pg.fill('#sqlEditor', 'WITH RECURSIVE c(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM c) SELECT count(*) FROM c'); await pg.click('#sqlRun'); await pg.waitForFunction(() => document.getElementById('sqlTool').dataset.state !== 'running', null, { timeout: 15000 }); await ready(pg); }]];
+      const states = [['inicial', async () => { await pg.reload({ waitUntil: 'networkidle' }); await ready(pg); }], ['cenario carregado + resultado', async () => { await loadSample(pg, 'logistica'); await run(pg, 'SELECT * FROM entregas LIMIT 20'); }], ['aviso de substituicao', async () => { await loadSample(pg, 'rh'); }], ['erro de SQL', async () => { await run(pg, 'SELEC 1'); }], ['sem linhas', async () => { await run(pg, 'SELECT 1 WHERE 0'); }], ['tempo limite', async () => { await pg.selectOption('#sqlTimeout', '5'); await pg.fill('#sqlEditor', 'WITH RECURSIVE c(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM c) SELECT count(*) FROM c'); await pg.click('#sqlRun'); await pg.waitForFunction(() => document.getElementById('sqlTool').dataset.state !== 'running', null, { timeout: 15000 }); await ready(pg); }]];
       for (const [st, fn] of states) {
         await fn(); await pg.evaluate(AXE);
         const r = await pg.evaluate(async () => { const r = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } }); return r.violations.map(v => ({ id: v.id, impact: v.impact, n: v.nodes.length, t: v.nodes.slice(0, 2).map(x => x.target.join(' ')) })); });
         out.push(`${st}: ${r.length ? JSON.stringify(r) : 'sem violacoes'}`);
       }
-      L.rec(`A11-02 axe (${lang}/${theme}/360) nos estados dinamicos (inicial, tabela+resultado, aviso, erro, sem linhas, tempo limite): zero violacoes`, out.every(s => /sem violacoes/.test(s)), out.join('\n'));
+      L.rec(`A11-02 axe (${lang}/${theme}/360) nos estados dinamicos (inicial, cenario+resultado, aviso, erro, sem linhas, tempo limite): zero violacoes`, out.every(s => /sem violacoes/.test(s)), out.join('\n'));
     }
     await c.close();
   }
   { const { c, pg } = await open(br, L.BASE, 'en', 'dark', 1280);
-    await loadCsv(pg, 'basic.csv'); await run(pg, 'SELECT * FROM basic LIMIT 20'); await pg.evaluate(AXE);
+    await loadSample(pg, 'marketing-digital'); await run(pg, 'SELECT * FROM leads LIMIT 20'); await pg.evaluate(AXE);
     const r = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => v.id + ' ' + v.impact));
-    L.rec('A11-02 axe (en/dark/1280) tabela carregada com resultado: zero violacoes', r.length === 0, JSON.stringify(r)); await c.close(); }
+    L.rec('A11-02 axe (en/dark/1280) cenario carregado com resultado: zero violacoes', r.length === 0, JSON.stringify(r)); await c.close(); }
 
-  fs.rmSync(WDIR, { recursive: true, force: true });
   await br.close(); srv.stop();
   process.exit(L.results.some(r => !r.ok) ? 1 : 0);
 })().catch(e => { console.log('FAIL erro do teste :: ' + (e && e.stack || e)); process.exit(1); });

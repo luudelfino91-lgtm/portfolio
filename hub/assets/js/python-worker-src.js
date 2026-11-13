@@ -10,7 +10,7 @@
 
    Protocolo (tudo texto, numeros e ArrayBuffer):
      runner -> worker: {t:'init', indexURL}                      carrega (canario, depois Pyodide)
-                       {t:'run', id, code, files|null}           executa; files substitui /data/*
+                       {t:'run', id, code, tables|null}          executa; tables = [{name, buf}] CSV do cenario (D11) e substitui /data/*
      worker -> runner: {t:'status', s:'canary-ok'|'loading'|'ready'}
                        {t:'refused', reason, detail}             canario falhou: NAO roda codigo
                        {t:'fatal', detail}
@@ -78,7 +78,7 @@
       return { ok: true };
     }
 
-    // ---- arquivos do usuario em /data/<nome> (so open()/csv; sem pandas)
+    // ---- tabelas do cenario escolhido em /data/<tabela>.csv (D11: nao ha arquivo do usuario; so open()/csv; sem pandas ainda)
     function safeName(n) {
       n = String(n || '').split(/[\\/]/).pop().replace(/[^\p{L}\p{N}._-]+/gu, '_').replace(/^\.+/, '').slice(0, 100);
       return n || 'data.csv';
@@ -113,6 +113,9 @@
       var mod = await import(indexURL + 'pyodide.mjs');
       pyodide = await mod.loadPyodide({
         indexURL: indexURL,
+        // PONTO DE EXTENSAO (pandas, futuro; NAO implementado): a lista abaixo e FECHADA de proposito. Para incluir pandas/numpy,
+        // um agente de seguranca deve decidir hospedar os wheels no proprio site (nunca CDN: a CSP do runner so permite 'self'),
+        // medir o peso e reabilitar loadPackage SO para uma lista fixa de nomes; os CSV de /data/ ja servem de entrada (pd.read_csv).
         packages: [],                       // lista fechada: nenhum pacote
         stdin: function () { return null; }, // input() -> EOFError
         stdout: function (s) { emit('out', s); },
@@ -128,7 +131,7 @@
       cur = d.id; lines = 0; bytes = 0; truncated = false; buf = []; bufBytes = 0; lastFlush = performance.now();
       var ok = true, g = null;
       try {
-        if (d.files) syncFiles(d.files);
+        if (d.tables) syncFiles(d.tables);
         self.postMessage({ t: 'started', id: cur });
         g = pyodide.globals.get('dict')();
         g.set('__name__', '__main__');

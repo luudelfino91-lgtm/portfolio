@@ -50,10 +50,10 @@ Prioridade: P0 = MVP, P1 = planejado, não bloqueia o MVP, P2 = desejável. MVP 
 | RF-02 | Link do Hub para o portfólio. O link inverso (Portfólio para Hub, rodapé de `index.html`) foi autorizado em G1-c e é a tarefa T-214, em PR separado do portfólio, fora do MVP | P0 | 2 |
 | RF-03 | Alternância PT/EN no Hub, com persistência da escolha e mesmo idioma do portfólio | P0 | 2 |
 | RF-04 | Tema claro/escuro e tokens de identidade visual reutilizados do portfólio por referência a `assets/css/styles.css` | P0 | 2 |
-| RF-05 | Carregar CSV local de até 10 MB (arrastar/selecionar), mostrar pré-visualização tabular, contagem de linhas/colunas e tipos inferidos | P0 | 3 |
+| RF-05 | ~~Carregar CSV local de até 10 MB (arrastar/selecionar)~~, mostrar pré-visualização tabular, contagem de linhas/colunas e tipos inferidos. **SUPERADO PELA D11 (sem upload):** vira explorador das tabelas dos 5 cenários embutidos (prévia, contagens, tipos); sem arquivo do usuário e sem limite de 10 MB | P0 | 3 |
 | RF-06 | Perfil rápido por coluna (nulos, distintos, mín/máx) | P1 | 3 |
 | RF-07 | SQL playground: editor, execução com `sql.js`, resultado em tabela, mensagens de erro legíveis (depende do CSV, C2) | P0 | 3 |
-| RF-08 | Carregar o CSV como tabela consultável no SQL playground | P0 | 3 |
+| RF-08 | ~~Carregar o CSV como tabela consultável no SQL playground~~ **SUPERADO PELA D11 (sem upload):** o SQL carrega o `.sql` do cenário escolhido | P0 | 3 |
 | RF-09 | Dataset de exemplo embutido e 5 exercícios guiados de SQL com verificação de resposta | P1 | 3 |
 | RF-10 | Exportar resultado como CSV | P1 | 3 |
 | RF-11 | Python playground com Pyodide (executar código, ver saída, erros) | P1 | 4 |
@@ -76,7 +76,7 @@ Fora do MVP (P2), **sem RF nem tarefa até serem formalizados** (C6): página `s
 | RNF-02 | Processamento 100% no navegador; nenhum dado do usuário enviado. "Externa" = outra origem; "saída" = dado do usuário em qualquer requisição | Teste automatizado com canário (método 5.2); aba Network sem requisição para outra origem |
 | RNF-03 | Sem cookies de rastreamento e sem analytics de terceiros. **Confirmada pelo Lucas** (`decision-log.md`). PRV-06 e PRV-08 são P0 definitivos (T-209) | PRV-06 e PRV-08 |
 | RNF-04 | **REVOGADO** (era 300 KB de peso inicial). Substituído por RNF-13 e RNF-14 conforme C3 | n/a |
-| RNF-05 | CSV de até **10 MB** carrega sem long task > 1 s (critério do MVP). **10 MB = 10 MiB = 10.485.760 bytes**; a interface mostra "10 MB". 50 MB é meta a validar por medição, sem ser critério | Fixture `limit-10mb.csv` (exatamente 10.485.760 bytes; critério), `over-limit.csv` (10.485.761 bytes, recusado) e `big-50mb.csv` (medição) com `PerformanceObserver`, Chrome headless, sem throttling |
+| RNF-05 | **SUPERADO PELA D11 (sem upload; não há CSV do usuário nem limite de 10 MB).** Texto histórico: CSV de até **10 MB** carrega sem long task > 1 s (critério do MVP). **10 MB = 10 MiB = 10.485.760 bytes**; a interface mostra "10 MB". 50 MB é meta a validar por medição, sem ser critério | Fixture `limit-10mb.csv` (exatamente 10.485.760 bytes; critério), `over-limit.csv` (10.485.761 bytes, recusado) e `big-50mb.csv` (medição) com `PerformanceObserver`, Chrome headless, sem throttling |
 | RNF-06 | Acessibilidade: navegação por teclado, `lang` correto, contraste AA verificado por cálculo com os pares de cor listados e axe. Lighthouse acessibilidade >= 90 é indicador complementar, não prova de AA | A11-02, A11-04 a A11-08, A11-10; `lighthouse@13.6.0`, mobile, mediana de 3 |
 | RNF-07 | Responsivo de 360 px (menor viewport suportado) a desktop | RSP-01 em 360, 768 e 1280 px |
 | RNF-08 | Identidade visual preservada: só tokens de `styles.css` (por referência) e fontes locais do Hub (D3a aprovada) | Busca por cores fixas (HUB-23) e revisão visual |
@@ -106,7 +106,7 @@ Regra de contagem (RNF-13 e RNF-14): bytes transferidos, cache vazio, página ú
 | Risco | Mitigação |
 |---|---|
 | Pyodide (~10 MB+) pesa e pressiona o limite do Pages | MVP exclui Python; decidir D3c (Pyodide) antes da Fase 4 |
-| CSV grande trava o navegador | Limite de 10 MB como critério do MVP, medição de 50 MB como meta (só registro) e Web Worker com Parar/Cancelar como parte do MVP (RF-19, T-306, C10.1) |
+| ~~CSV grande trava o navegador~~ (**superado pela D11**: sem upload, o risco não existe mais) | Histórico, superado pela D11: limite de 10 MB como critério do MVP, medição de 50 MB como meta (só registro) e Web Worker com Parar/Cancelar como parte do MVP (RF-19, T-306, C10.1) |
 | Divergência de hospedagem (README cita Vercel) | Decidir D2 e corrigir README |
 | Mudança em `assets/` quebra o Hub, que referencia `styles.css` | T-211: regressão visual obrigatória quando `assets/` mudar |
 | Segurança de PIX (chave pessoal exposta) | Decidir D5; usar só chave que o Lucas aceite tornar pública |

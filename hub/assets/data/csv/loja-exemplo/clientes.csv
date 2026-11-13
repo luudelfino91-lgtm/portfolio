@@ -1,0 +1,41 @@
+id,nome,email,cidade,data_cadastro
+1,Paulo Nogueira,cliente01@example.com,Porto Claro,2025-01-07
+2,Fabio Valente,cliente02@example.com,Rio Manso,2025-01-03
+3,Olivia Dias,cliente03@example.com,Monte Verde,2025-01-01
+4,Leo Farias,cliente04@example.com,Serra Alta,2025-01-04
+5,Fabio Teixeira,cliente05@example.com,Lagoa Nova,2025-01-05
+6,Diego Valente,cliente06@example.com,Campo Belo,2025-01-02
+7,Gisele Lacerda,cliente07@example.com,,2025-01-02
+8,Nuno Valente,cliente08@example.com,Monte Verde,2025-01-08
+9,Gisele Almeida,cliente09@example.com,Serra Alta,2025-01-04
+10,Sergio Queiroz,cliente10@example.com,Monte Verde,2025-01-04
+11,Fabio Honorato,cliente11@example.com,Lagoa Nova,2025-01-08
+12,Vitor Macedo,cliente12@example.com,Rio Manso,2025-01-02
+13,Jorge Pacheco,,Lagoa Nova,2025-01-08
+14,Olivia Farias,cliente14@example.com,,2025-01-05
+15,Olivia Esteves,cliente15@example.com,Lagoa Nova,2025-01-01
+16,Gisele Lacerda,cliente16@example.com,Serra Alta,2025-01-08
+17,Paulo Ramos,cliente17@example.com,Vila Azul,2025-01-04
+18,Tania Saldanha,cliente18@example.com,Lagoa Nova,2025-01-03
+19,Marta Esteves,cliente19@example.com,Lagoa Nova,2025-01-07
+20,Rita Lacerda,cliente20@example.com,Rio Manso,2025-01-04
+21,Elisa Barros,cliente21@example.com,,2025-01-08
+22,Paulo Queiroz,cliente22@example.com,Vila Azul,2025-01-08
+23,Bruno Lacerda,cliente23@example.com,Porto Claro,2025-01-01
+24,Vitor Ramos,cliente24@example.com,Porto Claro,2025-01-06
+25,Karen Macedo,cliente25@example.com,Porto Claro,2025-01-05
+26,Tania Macedo,,Vila Azul,2025-01-04
+27,Karen Esteves,cliente27@example.com,Vila Azul,2025-01-06
+28,Olivia Dias,cliente28@example.com,,2025-01-07
+29,Ana Esteves,cliente29@example.com,Rio Manso,2025-01-06
+30,Leo Teixeira,cliente30@example.com,Rio Manso,2025-01-01
+31,Tania Cardoso,cliente31@example.com,Campo Belo,2025-01-04
+32,Jorge Honorato,cliente32@example.com,Monte Verde,2025-01-06
+33,Karen Lacerda,cliente33@example.com,Rio Manso,2025-01-03
+34,Rita Barros,cliente34@example.com,Campo Belo,2025-01-06
+35,Vitor Farias,cliente35@example.com,,2025-01-01
+36,Nuno Dias,cliente36@example.com,Campo Belo,2025-01-08
+37,Rita Gomes,cliente37@example.com,Campo Belo,2025-01-08
+38,Fabio Nogueira,cliente38@example.com,Serra Alta,2025-01-04
+39,Olivia Pacheco,,Monte Verde,2025-01-06
+40,Gisele Pacheco,cliente40@example.com,Serra Alta,2025-01-07

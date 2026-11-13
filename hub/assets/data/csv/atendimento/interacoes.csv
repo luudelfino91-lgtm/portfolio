@@ -1,0 +1,567 @@
+id,ticket_id,autor_tipo,agente_id,data_hora,mensagem
+1,1,cliente,,2025-01-06T13:17:00,Mensagem do cliente sobre: Problema com fatura
+2,1,agente,18,2025-01-06T23:00:00,Resposta padrao do atendimento
+3,1,cliente,,2025-01-07T06:50:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+4,2,cliente,,2025-01-06T21:23:00,Mensagem do cliente sobre: Recuperacao de senha
+5,2,agente,9,2025-01-07T12:06:00,Resposta padrao do atendimento
+6,3,cliente,,2025-01-12T22:13:00,Mensagem do cliente sobre: Duvida sobre o plano
+7,3,agente,13,2025-01-12T23:51:00,Resposta padrao do atendimento
+8,4,cliente,,2025-01-13T02:49:00,Mensagem do cliente sobre: Lentidao no sistema
+9,5,cliente,,2025-01-14T11:19:00,Mensagem do cliente sobre: Problema com fatura
+10,6,cliente,,2025-01-14T14:03:00,Mensagem do cliente sobre: Problema com fatura
+11,6,agente,2,2025-01-14T21:39:00,Resposta padrao do atendimento
+12,7,cliente,,2025-01-15T01:19:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+13,7,agente,17,2025-01-15T16:20:00,Resposta padrao do atendimento
+14,7,cliente,,2025-01-16T06:08:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+15,8,cliente,,2025-01-15T16:27:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+16,9,cliente,,2025-01-15T16:33:00,Mensagem do cliente sobre: Lentidao no sistema
+17,10,cliente,,2025-01-17T06:52:00,Mensagem do cliente sobre: Recuperacao de senha
+18,10,agente,19,2025-01-17T08:14:00,Resposta padrao do atendimento
+19,10,cliente,,2025-01-17T22:23:00,Mensagem do cliente sobre: Recuperacao de senha
+20,11,cliente,,2025-01-19T02:35:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+21,11,agente,1,2025-01-19T09:06:00,Resposta padrao do atendimento
+22,12,cliente,,2025-01-19T15:58:00,Mensagem do cliente sobre: Cobranca duplicada
+23,13,cliente,,2025-01-20T12:31:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+24,14,cliente,,2025-01-21T20:12:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+25,15,cliente,,2025-01-25T09:34:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+26,15,agente,8,2025-01-26T08:20:00,Resposta padrao do atendimento
+27,16,cliente,,2025-01-25T11:28:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+28,17,cliente,,2025-01-26T00:10:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+29,17,agente,3,2025-01-26T02:24:00,Resposta padrao do atendimento
+30,17,cliente,,2025-01-26T06:44:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+31,18,cliente,,2025-01-27T05:12:00,Mensagem do cliente sobre: Cobranca duplicada
+32,19,cliente,,2025-01-28T07:29:00,Mensagem do cliente sobre: Recuperacao de senha
+33,19,agente,7,2025-01-28T09:28:00,Resposta padrao do atendimento
+34,19,cliente,,2025-01-28T12:09:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+35,20,cliente,,2025-01-30T04:00:00,Mensagem do cliente sobre: Duvida sobre o plano
+36,21,cliente,,2025-01-31T15:56:00,Mensagem do cliente sobre: Pedido de cancelamento
+37,21,agente,16,2025-01-31T16:24:00,Resposta padrao do atendimento
+38,22,cliente,,2025-02-02T16:11:00,Mensagem do cliente sobre: Cobranca duplicada
+39,23,cliente,,2025-02-03T19:11:00,Mensagem do cliente sobre: Pedido de cancelamento
+40,23,agente,5,2025-02-04T21:52:00,Resposta padrao do atendimento
+41,24,cliente,,2025-02-04T04:57:00,Mensagem do cliente sobre: Lentidao no sistema
+42,24,agente,9,2025-02-05T00:38:00,Resposta padrao do atendimento
+43,24,cliente,,2025-02-05T19:08:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+44,25,cliente,,2025-02-08T21:45:00,Mensagem do cliente sobre: Recuperacao de senha
+45,26,cliente,,2025-02-09T11:20:00,Mensagem do cliente sobre: Recuperacao de senha
+46,26,agente,3,2025-02-09T15:47:00,Resposta padrao do atendimento
+47,26,cliente,,2025-02-09T19:05:00,Mensagem do cliente sobre: Recuperacao de senha
+48,27,cliente,,2025-02-09T19:36:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+49,27,agente,10,2025-02-10T00:35:00,Resposta padrao do atendimento
+50,27,cliente,,2025-02-10T09:50:00,Mensagem do cliente sobre: Pedido de cancelamento
+51,28,cliente,,2025-02-11T18:12:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+52,28,agente,15,2025-02-11T20:54:00,Resposta padrao do atendimento
+53,28,cliente,,2025-02-12T10:06:00,Mensagem do cliente sobre: Problema com fatura
+54,29,cliente,,2025-02-12T17:03:00,Mensagem do cliente sobre: Cobranca duplicada
+55,30,cliente,,2025-02-13T17:31:00,Mensagem do cliente sobre: Cobranca duplicada
+56,30,agente,4,2025-02-14T16:15:00,Resposta padrao do atendimento
+57,31,cliente,,2025-02-14T00:06:00,Mensagem do cliente sobre: Recuperacao de senha
+58,32,cliente,,2025-02-15T20:06:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+59,32,agente,4,2025-02-15T21:02:00,Resposta padrao do atendimento
+60,33,cliente,,2025-02-15T22:51:00,Mensagem do cliente sobre: Recuperacao de senha
+61,33,agente,18,2025-02-16T20:34:00,Resposta padrao do atendimento
+62,34,cliente,,2025-02-15T23:01:00,Mensagem do cliente sobre: Duvida sobre o plano
+63,35,cliente,,2025-02-18T00:13:00,Mensagem do cliente sobre: Pedido de cancelamento
+64,36,cliente,,2025-02-18T06:39:00,Mensagem do cliente sobre: Pedido de cancelamento
+65,37,cliente,,2025-02-18T11:20:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+66,37,agente,13,2025-02-18T14:31:00,Resposta padrao do atendimento
+67,38,cliente,,2025-02-19T16:15:00,Mensagem do cliente sobre: Problema com fatura
+68,39,cliente,,2025-02-22T16:07:00,Mensagem do cliente sobre: Lentidao no sistema
+69,39,agente,6,2025-02-22T17:50:00,Resposta padrao do atendimento
+70,39,cliente,,2025-02-23T00:23:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+71,40,cliente,,2025-02-23T14:04:00,Mensagem do cliente sobre: Problema com fatura
+72,41,cliente,,2025-02-23T15:17:00,Mensagem do cliente sobre: Pedido de cancelamento
+73,41,agente,19,2025-02-23T17:04:00,Resposta padrao do atendimento
+74,42,cliente,,2025-02-23T19:06:00,Mensagem do cliente sobre: Pedido de cancelamento
+75,43,cliente,,2025-02-24T01:15:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+76,43,agente,9,2025-02-24T02:48:00,Resposta padrao do atendimento
+77,43,cliente,,2025-02-24T05:30:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+78,44,cliente,,2025-02-24T05:24:00,Mensagem do cliente sobre: Cobranca duplicada
+79,45,cliente,,2025-02-24T06:11:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+80,45,agente,18,2025-02-24T11:22:00,Resposta padrao do atendimento
+81,46,cliente,,2025-02-24T14:52:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+82,47,cliente,,2025-02-26T04:58:00,Mensagem do cliente sobre: Recuperacao de senha
+83,47,agente,16,2025-02-26T16:10:00,Resposta padrao do atendimento
+84,48,cliente,,2025-02-27T17:18:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+85,48,agente,19,2025-02-28T03:10:00,Resposta padrao do atendimento
+86,49,cliente,,2025-03-01T11:19:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+87,50,cliente,,2025-03-03T22:59:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+88,50,agente,18,2025-03-04T12:58:00,Resposta padrao do atendimento
+89,51,cliente,,2025-03-05T10:34:00,Mensagem do cliente sobre: Lentidao no sistema
+90,51,agente,15,2025-03-06T03:23:00,Resposta padrao do atendimento
+91,52,cliente,,2025-03-05T18:47:00,Mensagem do cliente sobre: Recuperacao de senha
+92,53,cliente,,2025-03-06T11:34:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+93,54,cliente,,2025-03-07T06:03:00,Mensagem do cliente sobre: Pedido de cancelamento
+94,55,cliente,,2025-03-07T06:03:00,Mensagem do cliente sobre: Pedido de cancelamento
+95,55,agente,5,2025-03-08T03:06:00,Resposta padrao do atendimento
+96,56,cliente,,2025-03-07T11:59:00,Mensagem do cliente sobre: Duvida sobre o plano
+97,56,agente,7,2025-03-07T15:33:00,Resposta padrao do atendimento
+98,56,cliente,,2025-03-07T15:56:00,Mensagem do cliente sobre: Lentidao no sistema
+99,57,cliente,,2025-03-08T09:38:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+100,57,agente,10,2025-03-08T11:09:00,Resposta padrao do atendimento
+101,58,cliente,,2025-03-08T19:07:00,Mensagem do cliente sobre: Problema com fatura
+102,58,agente,11,2025-03-08T23:57:00,Resposta padrao do atendimento
+103,59,cliente,,2025-03-09T03:18:00,Mensagem do cliente sobre: Duvida sobre o plano
+104,59,agente,19,2025-03-09T06:58:00,Resposta padrao do atendimento
+105,60,cliente,,2025-03-11T21:29:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+106,61,cliente,,2025-03-15T03:27:00,Mensagem do cliente sobre: Cobranca duplicada
+107,61,agente,11,2025-03-15T22:26:00,Resposta padrao do atendimento
+108,61,cliente,,2025-03-16T10:09:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+109,62,cliente,,2025-03-15T14:43:00,Mensagem do cliente sobre: Duvida sobre o plano
+110,63,cliente,,2025-03-17T05:48:00,Mensagem do cliente sobre: Cobranca duplicada
+111,63,agente,9,2025-03-17T14:55:00,Resposta padrao do atendimento
+112,64,cliente,,2025-03-17T07:27:00,Mensagem do cliente sobre: Cobranca duplicada
+113,65,cliente,,2025-03-17T12:54:00,Mensagem do cliente sobre: Lentidao no sistema
+114,65,agente,9,2025-03-17T23:07:00,Resposta padrao do atendimento
+115,66,cliente,,2025-03-19T03:09:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+116,67,cliente,,2025-03-19T15:16:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+117,67,agente,2,2025-03-20T00:27:00,Resposta padrao do atendimento
+118,67,cliente,,2025-03-20T03:08:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+119,68,cliente,,2025-03-23T00:13:00,Mensagem do cliente sobre: Duvida sobre o plano
+120,68,agente,14,2025-03-23T22:22:00,Resposta padrao do atendimento
+121,69,cliente,,2025-03-23T00:59:00,Mensagem do cliente sobre: Cobranca duplicada
+122,70,cliente,,2025-03-23T03:25:00,Mensagem do cliente sobre: Recuperacao de senha
+123,70,agente,9,2025-03-23T03:52:00,Resposta padrao do atendimento
+124,70,cliente,,2025-03-23T04:09:00,Mensagem do cliente sobre: Recuperacao de senha
+125,71,cliente,,2025-03-26T22:12:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+126,71,agente,11,2025-03-27T09:10:00,Resposta padrao do atendimento
+127,72,cliente,,2025-03-27T08:42:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+128,73,cliente,,2025-03-27T14:37:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+129,74,cliente,,2025-03-27T22:57:00,Mensagem do cliente sobre: Duvida sobre o plano
+130,74,agente,8,2025-03-28T16:44:00,Resposta padrao do atendimento
+131,75,cliente,,2025-03-27T23:08:00,Mensagem do cliente sobre: Recuperacao de senha
+132,75,agente,17,2025-03-28T03:57:00,Resposta padrao do atendimento
+133,76,cliente,,2025-03-29T23:54:00,Mensagem do cliente sobre: Recuperacao de senha
+134,76,agente,8,2025-03-30T03:56:00,Resposta padrao do atendimento
+135,76,cliente,,2025-03-30T13:35:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+136,77,cliente,,2025-03-30T10:48:00,Mensagem do cliente sobre: Lentidao no sistema
+137,77,agente,6,2025-03-31T06:22:00,Resposta padrao do atendimento
+138,78,cliente,,2025-03-30T19:31:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+139,78,agente,2,2025-03-31T02:38:00,Resposta padrao do atendimento
+140,79,cliente,,2025-03-31T07:40:00,Mensagem do cliente sobre: Duvida sobre o plano
+141,79,agente,16,2025-03-31T09:47:00,Resposta padrao do atendimento
+142,80,cliente,,2025-03-31T21:45:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+143,81,cliente,,2025-04-04T04:39:00,Mensagem do cliente sobre: Duvida sobre o plano
+144,82,cliente,,2025-04-05T17:15:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+145,82,agente,8,2025-04-05T20:54:00,Resposta padrao do atendimento
+146,82,cliente,,2025-04-05T23:21:00,Mensagem do cliente sobre: Problema com fatura
+147,83,cliente,,2025-04-06T00:47:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+148,84,cliente,,2025-04-06T21:45:00,Mensagem do cliente sobre: Pedido de cancelamento
+149,85,cliente,,2025-04-07T14:13:00,Mensagem do cliente sobre: Lentidao no sistema
+150,86,cliente,,2025-04-08T21:57:00,Mensagem do cliente sobre: Pedido de cancelamento
+151,87,cliente,,2025-04-10T10:05:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+152,88,cliente,,2025-04-11T03:31:00,Mensagem do cliente sobre: Lentidao no sistema
+153,88,agente,15,2025-04-12T14:21:00,Resposta padrao do atendimento
+154,89,cliente,,2025-04-14T11:48:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+155,89,agente,15,2025-04-14T20:28:00,Resposta padrao do atendimento
+156,89,cliente,,2025-04-15T05:33:00,Mensagem do cliente sobre: Duvida sobre o plano
+157,90,cliente,,2025-04-15T00:36:00,Mensagem do cliente sobre: Recuperacao de senha
+158,91,cliente,,2025-04-16T11:15:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+159,91,agente,2,2025-04-16T15:43:00,Resposta padrao do atendimento
+160,92,cliente,,2025-04-16T14:48:00,Mensagem do cliente sobre: Recuperacao de senha
+161,92,agente,3,2025-04-17T09:36:00,Resposta padrao do atendimento
+162,93,cliente,,2025-04-17T22:25:00,Mensagem do cliente sobre: Cobranca duplicada
+163,94,cliente,,2025-04-18T14:04:00,Mensagem do cliente sobre: Problema com fatura
+164,94,agente,7,2025-04-18T14:43:00,Resposta padrao do atendimento
+165,95,cliente,,2025-04-22T05:18:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+166,95,agente,14,2025-04-22T14:20:00,Resposta padrao do atendimento
+167,95,cliente,,2025-04-22T23:54:00,Mensagem do cliente sobre: Recuperacao de senha
+168,96,cliente,,2025-04-22T07:46:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+169,96,agente,8,2025-04-22T21:22:00,Resposta padrao do atendimento
+170,96,cliente,,2025-04-23T00:08:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+171,97,cliente,,2025-04-22T09:05:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+172,97,agente,16,2025-04-23T05:57:00,Resposta padrao do atendimento
+173,98,cliente,,2025-04-22T10:35:00,Mensagem do cliente sobre: Cobranca duplicada
+174,98,agente,1,2025-04-22T15:24:00,Resposta padrao do atendimento
+175,99,cliente,,2025-04-22T11:21:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+176,99,agente,3,2025-04-22T13:19:00,Resposta padrao do atendimento
+177,99,cliente,,2025-04-22T14:04:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+178,100,cliente,,2025-04-23T04:42:00,Mensagem do cliente sobre: Lentidao no sistema
+179,101,cliente,,2025-04-25T12:58:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+180,101,agente,19,2025-04-25T14:12:00,Resposta padrao do atendimento
+181,101,cliente,,2025-04-25T15:03:00,Mensagem do cliente sobre: Recuperacao de senha
+182,102,cliente,,2025-04-26T23:39:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+183,102,agente,8,2025-04-28T04:47:00,Resposta padrao do atendimento
+184,103,cliente,,2025-04-27T01:40:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+185,104,cliente,,2025-05-01T04:24:00,Mensagem do cliente sobre: Problema com fatura
+186,104,agente,15,2025-05-02T14:02:00,Resposta padrao do atendimento
+187,104,cliente,,2025-05-02T14:22:00,Mensagem do cliente sobre: Pedido de cancelamento
+188,105,cliente,,2025-05-06T01:58:00,Mensagem do cliente sobre: Cobranca duplicada
+189,105,agente,6,2025-05-06T05:26:00,Resposta padrao do atendimento
+190,106,cliente,,2025-05-06T16:06:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+191,107,cliente,,2025-05-08T06:34:00,Mensagem do cliente sobre: Cobranca duplicada
+192,108,cliente,,2025-05-09T07:04:00,Mensagem do cliente sobre: Lentidao no sistema
+193,108,agente,14,2025-05-09T10:30:00,Resposta padrao do atendimento
+194,109,cliente,,2025-05-10T15:37:00,Mensagem do cliente sobre: Cobranca duplicada
+195,110,cliente,,2025-05-13T04:08:00,Mensagem do cliente sobre: Recuperacao de senha
+196,111,cliente,,2025-05-13T10:13:00,Mensagem do cliente sobre: Pedido de cancelamento
+197,112,cliente,,2025-05-15T14:55:00,Mensagem do cliente sobre: Lentidao no sistema
+198,112,agente,9,2025-05-15T15:00:00,Resposta padrao do atendimento
+199,113,cliente,,2025-05-17T00:16:00,Mensagem do cliente sobre: Cobranca duplicada
+200,113,agente,4,2025-05-17T00:51:00,Resposta padrao do atendimento
+201,114,cliente,,2025-05-17T01:55:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+202,115,cliente,,2025-05-17T17:07:00,Mensagem do cliente sobre: Problema com fatura
+203,116,cliente,,2025-05-18T15:24:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+204,116,agente,14,2025-05-19T03:27:00,Resposta padrao do atendimento
+205,116,cliente,,2025-05-19T08:51:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+206,117,cliente,,2025-05-19T03:04:00,Mensagem do cliente sobre: Lentidao no sistema
+207,118,cliente,,2025-05-19T10:47:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+208,119,cliente,,2025-05-19T19:04:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+209,120,cliente,,2025-05-21T09:19:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+210,120,agente,8,2025-05-21T10:23:00,Resposta padrao do atendimento
+211,121,cliente,,2025-05-22T06:34:00,Mensagem do cliente sobre: Cobranca duplicada
+212,122,cliente,,2025-05-22T07:35:00,Mensagem do cliente sobre: Duvida sobre o plano
+213,123,cliente,,2025-05-23T01:07:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+214,124,cliente,,2025-05-23T01:11:00,Mensagem do cliente sobre: Problema com fatura
+215,124,agente,13,2025-05-23T19:18:00,Resposta padrao do atendimento
+216,125,cliente,,2025-05-23T09:59:00,Mensagem do cliente sobre: Pedido de cancelamento
+217,126,cliente,,2025-05-24T05:37:00,Mensagem do cliente sobre: Problema com fatura
+218,126,agente,20,2025-05-25T19:51:00,Resposta padrao do atendimento
+219,127,cliente,,2025-05-24T15:14:00,Mensagem do cliente sobre: Lentidao no sistema
+220,127,agente,4,2025-05-24T17:50:00,Resposta padrao do atendimento
+221,127,cliente,,2025-05-25T02:53:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+222,128,cliente,,2025-05-24T15:32:00,Mensagem do cliente sobre: Problema com fatura
+223,128,agente,1,2025-05-24T20:30:00,Resposta padrao do atendimento
+224,128,cliente,,2025-05-24T22:07:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+225,129,cliente,,2025-05-25T09:44:00,Mensagem do cliente sobre: Duvida sobre o plano
+226,129,agente,4,2025-05-25T16:39:00,Resposta padrao do atendimento
+227,129,cliente,,2025-05-26T02:34:00,Mensagem do cliente sobre: Recuperacao de senha
+228,130,cliente,,2025-05-26T23:38:00,Mensagem do cliente sobre: Recuperacao de senha
+229,130,agente,17,2025-05-27T01:08:00,Resposta padrao do atendimento
+230,130,cliente,,2025-05-27T06:48:00,Mensagem do cliente sobre: Problema com fatura
+231,131,cliente,,2025-05-27T09:29:00,Mensagem do cliente sobre: Lentidao no sistema
+232,131,agente,8,2025-05-28T10:18:00,Resposta padrao do atendimento
+233,132,cliente,,2025-05-28T00:12:00,Mensagem do cliente sobre: Lentidao no sistema
+234,132,agente,16,2025-05-28T09:05:00,Resposta padrao do atendimento
+235,133,cliente,,2025-05-29T09:17:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+236,133,agente,6,2025-05-29T20:16:00,Resposta padrao do atendimento
+237,134,cliente,,2025-05-29T23:52:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+238,135,cliente,,2025-05-30T18:33:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+239,135,agente,10,2025-05-31T01:01:00,Resposta padrao do atendimento
+240,136,cliente,,2025-05-31T07:42:00,Mensagem do cliente sobre: Duvida sobre o plano
+241,136,agente,4,2025-05-31T13:03:00,Resposta padrao do atendimento
+242,137,cliente,,2025-05-31T13:06:00,Mensagem do cliente sobre: Pedido de cancelamento
+243,137,agente,19,2025-05-31T17:30:00,Resposta padrao do atendimento
+244,137,cliente,,2025-06-01T02:41:00,Mensagem do cliente sobre: Recuperacao de senha
+245,138,cliente,,2025-06-01T01:33:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+246,138,agente,18,2025-06-01T03:52:00,Resposta padrao do atendimento
+247,139,cliente,,2025-06-01T06:12:00,Mensagem do cliente sobre: Recuperacao de senha
+248,139,agente,5,2025-06-01T14:54:00,Resposta padrao do atendimento
+249,139,cliente,,2025-06-01T17:21:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+250,140,cliente,,2025-06-01T11:54:00,Mensagem do cliente sobre: Duvida sobre o plano
+251,140,agente,10,2025-06-01T15:27:00,Resposta padrao do atendimento
+252,140,cliente,,2025-06-01T18:17:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+253,141,cliente,,2025-06-04T02:38:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+254,141,agente,8,2025-06-04T14:16:00,Resposta padrao do atendimento
+255,142,cliente,,2025-06-04T04:51:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+256,142,agente,10,2025-06-05T15:48:00,Resposta padrao do atendimento
+257,142,cliente,,2025-06-05T17:34:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+258,143,cliente,,2025-06-06T18:25:00,Mensagem do cliente sobre: Duvida sobre o plano
+259,144,cliente,,2025-06-08T05:47:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+260,144,agente,15,2025-06-08T06:51:00,Resposta padrao do atendimento
+261,144,cliente,,2025-06-08T07:26:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+262,145,cliente,,2025-06-09T09:56:00,Mensagem do cliente sobre: Lentidao no sistema
+263,146,cliente,,2025-06-09T21:01:00,Mensagem do cliente sobre: Duvida sobre o plano
+264,146,agente,19,2025-06-10T10:55:00,Resposta padrao do atendimento
+265,147,cliente,,2025-06-10T06:40:00,Mensagem do cliente sobre: Problema com fatura
+266,147,agente,7,2025-06-10T21:36:00,Resposta padrao do atendimento
+267,147,cliente,,2025-06-11T03:48:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+268,148,cliente,,2025-06-13T01:49:00,Mensagem do cliente sobre: Problema com fatura
+269,149,cliente,,2025-06-13T17:47:00,Mensagem do cliente sobre: Cobranca duplicada
+270,149,agente,7,2025-06-13T18:07:00,Resposta padrao do atendimento
+271,149,cliente,,2025-06-13T18:32:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+272,150,cliente,,2025-06-13T18:04:00,Mensagem do cliente sobre: Duvida sobre o plano
+273,150,agente,17,2025-06-13T18:28:00,Resposta padrao do atendimento
+274,151,cliente,,2025-06-14T19:04:00,Mensagem do cliente sobre: Problema com fatura
+275,152,cliente,,2025-06-15T03:46:00,Mensagem do cliente sobre: Pedido de cancelamento
+276,153,cliente,,2025-06-15T10:35:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+277,154,cliente,,2025-06-20T03:47:00,Mensagem do cliente sobre: Cobranca duplicada
+278,155,cliente,,2025-06-21T05:05:00,Mensagem do cliente sobre: Problema com fatura
+279,155,agente,4,2025-06-21T16:14:00,Resposta padrao do atendimento
+280,156,cliente,,2025-06-21T17:42:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+281,156,agente,6,2025-06-22T00:39:00,Resposta padrao do atendimento
+282,157,cliente,,2025-06-22T05:47:00,Mensagem do cliente sobre: Pedido de cancelamento
+283,157,agente,7,2025-06-22T05:54:00,Resposta padrao do atendimento
+284,157,cliente,,2025-06-22T06:11:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+285,158,cliente,,2025-06-22T23:57:00,Mensagem do cliente sobre: Recuperacao de senha
+286,158,agente,9,2025-06-23T00:15:00,Resposta padrao do atendimento
+287,158,cliente,,2025-06-23T01:12:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+288,159,cliente,,2025-06-23T00:29:00,Mensagem do cliente sobre: Problema com fatura
+289,160,cliente,,2025-06-23T22:35:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+290,161,cliente,,2025-06-25T08:36:00,Mensagem do cliente sobre: Duvida sobre o plano
+291,161,agente,20,2025-06-25T10:45:00,Resposta padrao do atendimento
+292,162,cliente,,2025-06-25T17:55:00,Mensagem do cliente sobre: Recuperacao de senha
+293,162,agente,9,2025-06-26T16:23:00,Resposta padrao do atendimento
+294,163,cliente,,2025-06-26T04:19:00,Mensagem do cliente sobre: Cobranca duplicada
+295,163,agente,19,2025-06-26T23:15:00,Resposta padrao do atendimento
+296,164,cliente,,2025-06-27T20:26:00,Mensagem do cliente sobre: Problema com fatura
+297,165,cliente,,2025-06-30T00:32:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+298,166,cliente,,2025-07-01T02:53:00,Mensagem do cliente sobre: Cobranca duplicada
+299,166,agente,6,2025-07-02T04:45:00,Resposta padrao do atendimento
+300,166,cliente,,2025-07-02T14:43:00,Mensagem do cliente sobre: Duvida sobre o plano
+301,167,cliente,,2025-07-01T06:34:00,Mensagem do cliente sobre: Recuperacao de senha
+302,168,cliente,,2025-07-01T17:56:00,Mensagem do cliente sobre: Recuperacao de senha
+303,169,cliente,,2025-07-01T18:47:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+304,170,cliente,,2025-07-02T16:17:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+305,171,cliente,,2025-07-02T20:40:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+306,172,cliente,,2025-07-03T20:02:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+307,172,agente,18,2025-07-03T20:55:00,Resposta padrao do atendimento
+308,173,cliente,,2025-07-06T14:41:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+309,173,agente,9,2025-07-06T22:37:00,Resposta padrao do atendimento
+310,174,cliente,,2025-07-06T15:14:00,Mensagem do cliente sobre: Pedido de cancelamento
+311,175,cliente,,2025-07-06T18:42:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+312,175,agente,12,2025-07-06T19:39:00,Resposta padrao do atendimento
+313,176,cliente,,2025-07-07T00:42:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+314,176,agente,6,2025-07-07T01:00:00,Resposta padrao do atendimento
+315,176,cliente,,2025-07-07T01:24:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+316,177,cliente,,2025-07-07T10:50:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+317,178,cliente,,2025-07-08T12:16:00,Mensagem do cliente sobre: Lentidao no sistema
+318,179,cliente,,2025-07-08T19:24:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+319,179,agente,12,2025-07-09T00:46:00,Resposta padrao do atendimento
+320,179,cliente,,2025-07-09T03:17:00,Mensagem do cliente sobre: Lentidao no sistema
+321,180,cliente,,2025-07-09T00:46:00,Mensagem do cliente sobre: Problema com fatura
+322,180,agente,19,2025-07-09T15:29:00,Resposta padrao do atendimento
+323,180,cliente,,2025-07-10T05:03:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+324,181,cliente,,2025-07-09T19:38:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+325,181,agente,12,2025-07-10T01:26:00,Resposta padrao do atendimento
+326,181,cliente,,2025-07-10T17:45:00,Mensagem do cliente sobre: Cobranca duplicada
+327,182,cliente,,2025-07-11T23:18:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+328,183,cliente,,2025-07-12T12:55:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+329,183,agente,10,2025-07-12T15:11:00,Resposta padrao do atendimento
+330,183,cliente,,2025-07-12T19:46:00,Mensagem do cliente sobre: Duvida sobre o plano
+331,184,cliente,,2025-07-13T08:58:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+332,184,agente,1,2025-07-13T12:01:00,Resposta padrao do atendimento
+333,185,cliente,,2025-07-13T20:01:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+334,186,cliente,,2025-07-14T23:36:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+335,187,cliente,,2025-07-15T06:30:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+336,187,agente,8,2025-07-15T07:56:00,Resposta padrao do atendimento
+337,188,cliente,,2025-07-15T22:22:00,Mensagem do cliente sobre: Recuperacao de senha
+338,189,cliente,,2025-07-16T04:01:00,Mensagem do cliente sobre: Duvida sobre o plano
+339,190,cliente,,2025-07-16T07:10:00,Mensagem do cliente sobre: Pedido de cancelamento
+340,190,agente,19,2025-07-16T10:03:00,Resposta padrao do atendimento
+341,190,cliente,,2025-07-16T12:09:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+342,191,cliente,,2025-07-16T16:32:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+343,192,cliente,,2025-07-17T19:46:00,Mensagem do cliente sobre: Cobranca duplicada
+344,193,cliente,,2025-07-17T23:12:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+345,193,agente,7,2025-07-18T03:50:00,Resposta padrao do atendimento
+346,193,cliente,,2025-07-18T10:26:00,Mensagem do cliente sobre: Lentidao no sistema
+347,194,cliente,,2025-07-18T15:19:00,Mensagem do cliente sobre: Lentidao no sistema
+348,194,agente,7,2025-07-18T20:09:00,Resposta padrao do atendimento
+349,195,cliente,,2025-07-18T20:17:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+350,195,agente,17,2025-07-18T23:40:00,Resposta padrao do atendimento
+351,196,cliente,,2025-07-21T02:05:00,Mensagem do cliente sobre: Problema com fatura
+352,197,cliente,,2025-07-22T00:37:00,Mensagem do cliente sobre: Lentidao no sistema
+353,197,agente,4,2025-07-22T03:00:00,Resposta padrao do atendimento
+354,197,cliente,,2025-07-22T19:48:00,Mensagem do cliente sobre: Recuperacao de senha
+355,198,cliente,,2025-07-23T15:16:00,Mensagem do cliente sobre: Duvida sobre o plano
+356,199,cliente,,2025-07-24T18:15:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+357,199,agente,1,2025-07-25T07:39:00,Resposta padrao do atendimento
+358,200,cliente,,2025-07-25T00:30:00,Mensagem do cliente sobre: Recuperacao de senha
+359,201,cliente,,2025-07-29T07:28:00,Mensagem do cliente sobre: Pedido de cancelamento
+360,201,agente,13,2025-07-29T17:53:00,Resposta padrao do atendimento
+361,201,cliente,,2025-07-30T01:43:00,Mensagem do cliente sobre: Recuperacao de senha
+362,202,cliente,,2025-07-29T19:34:00,Mensagem do cliente sobre: Lentidao no sistema
+363,202,agente,16,2025-07-30T02:05:00,Resposta padrao do atendimento
+364,202,cliente,,2025-07-30T05:48:00,Mensagem do cliente sobre: Problema com fatura
+365,203,cliente,,2025-08-02T09:23:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+366,203,agente,20,2025-08-02T14:47:00,Resposta padrao do atendimento
+367,203,cliente,,2025-08-02T19:09:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+368,204,cliente,,2025-08-03T09:29:00,Mensagem do cliente sobre: Cobranca duplicada
+369,205,cliente,,2025-08-04T14:13:00,Mensagem do cliente sobre: Pedido de cancelamento
+370,206,cliente,,2025-08-04T21:37:00,Mensagem do cliente sobre: Lentidao no sistema
+371,206,agente,17,2025-08-05T11:30:00,Resposta padrao do atendimento
+372,206,cliente,,2025-08-05T13:44:00,Mensagem do cliente sobre: Problema com fatura
+373,207,cliente,,2025-08-05T23:42:00,Mensagem do cliente sobre: Lentidao no sistema
+374,208,cliente,,2025-08-06T04:32:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+375,209,cliente,,2025-08-06T05:01:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+376,209,agente,15,2025-08-06T11:14:00,Resposta padrao do atendimento
+377,209,cliente,,2025-08-06T16:46:00,Mensagem do cliente sobre: Cobranca duplicada
+378,210,cliente,,2025-08-06T13:41:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+379,210,agente,14,2025-08-06T19:52:00,Resposta padrao do atendimento
+380,211,cliente,,2025-08-06T21:38:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+381,212,cliente,,2025-08-07T12:34:00,Mensagem do cliente sobre: Problema com fatura
+382,213,cliente,,2025-08-07T20:50:00,Mensagem do cliente sobre: Lentidao no sistema
+383,214,cliente,,2025-08-09T17:41:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+384,215,cliente,,2025-08-11T08:50:00,Mensagem do cliente sobre: Pedido de cancelamento
+385,216,cliente,,2025-08-11T12:23:00,Mensagem do cliente sobre: Cobranca duplicada
+386,216,agente,9,2025-08-12T08:42:00,Resposta padrao do atendimento
+387,217,cliente,,2025-08-12T01:12:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+388,217,agente,6,2025-08-12T15:50:00,Resposta padrao do atendimento
+389,218,cliente,,2025-08-13T00:23:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+390,218,agente,11,2025-08-13T10:32:00,Resposta padrao do atendimento
+391,219,cliente,,2025-08-15T13:05:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+392,220,cliente,,2025-08-16T01:23:00,Mensagem do cliente sobre: Pedido de cancelamento
+393,220,agente,19,2025-08-16T12:05:00,Resposta padrao do atendimento
+394,220,cliente,,2025-08-16T20:19:00,Mensagem do cliente sobre: Pedido de cancelamento
+395,221,cliente,,2025-08-16T18:16:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+396,221,agente,1,2025-08-16T21:08:00,Resposta padrao do atendimento
+397,221,cliente,,2025-08-17T18:10:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+398,222,cliente,,2025-08-19T08:00:00,Mensagem do cliente sobre: Duvida sobre o plano
+399,222,agente,9,2025-08-19T09:45:00,Resposta padrao do atendimento
+400,223,cliente,,2025-08-19T12:38:00,Mensagem do cliente sobre: Lentidao no sistema
+401,223,agente,11,2025-08-19T17:14:00,Resposta padrao do atendimento
+402,223,cliente,,2025-08-19T20:34:00,Mensagem do cliente sobre: Cobranca duplicada
+403,224,cliente,,2025-08-22T02:48:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+404,225,cliente,,2025-08-22T15:56:00,Mensagem do cliente sobre: Problema com fatura
+405,226,cliente,,2025-08-23T15:23:00,Mensagem do cliente sobre: Pedido de cancelamento
+406,227,cliente,,2025-08-24T14:15:00,Mensagem do cliente sobre: Cobranca duplicada
+407,228,cliente,,2025-08-25T07:12:00,Mensagem do cliente sobre: Lentidao no sistema
+408,228,agente,5,2025-08-25T16:04:00,Resposta padrao do atendimento
+409,228,cliente,,2025-08-25T22:57:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+410,229,cliente,,2025-08-25T09:50:00,Mensagem do cliente sobre: Lentidao no sistema
+411,230,cliente,,2025-08-25T17:43:00,Mensagem do cliente sobre: Lentidao no sistema
+412,231,cliente,,2025-08-26T01:42:00,Mensagem do cliente sobre: Lentidao no sistema
+413,231,agente,8,2025-08-26T02:59:00,Resposta padrao do atendimento
+414,232,cliente,,2025-08-26T07:56:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+415,232,agente,15,2025-08-27T16:37:00,Resposta padrao do atendimento
+416,233,cliente,,2025-08-26T21:27:00,Mensagem do cliente sobre: Lentidao no sistema
+417,233,agente,5,2025-08-27T05:09:00,Resposta padrao do atendimento
+418,234,cliente,,2025-08-27T11:24:00,Mensagem do cliente sobre: Problema com fatura
+419,235,cliente,,2025-08-27T21:43:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+420,236,cliente,,2025-08-29T12:14:00,Mensagem do cliente sobre: Lentidao no sistema
+421,236,agente,14,2025-08-30T03:12:00,Resposta padrao do atendimento
+422,237,cliente,,2025-08-29T18:35:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+423,238,cliente,,2025-08-30T05:52:00,Mensagem do cliente sobre: Lentidao no sistema
+424,238,agente,19,2025-08-30T09:06:00,Resposta padrao do atendimento
+425,238,cliente,,2025-08-30T11:11:00,Mensagem do cliente sobre: Cobranca duplicada
+426,239,cliente,,2025-09-01T06:25:00,Mensagem do cliente sobre: Pedido de cancelamento
+427,240,cliente,,2025-09-01T10:28:00,Mensagem do cliente sobre: Cobranca duplicada
+428,240,agente,3,2025-09-01T11:59:00,Resposta padrao do atendimento
+429,240,cliente,,2025-09-01T13:58:00,Mensagem do cliente sobre: Recuperacao de senha
+430,241,cliente,,2025-09-01T13:31:00,Mensagem do cliente sobre: Lentidao no sistema
+431,241,agente,18,2025-09-01T22:26:00,Resposta padrao do atendimento
+432,241,cliente,,2025-09-02T01:14:00,Mensagem do cliente sobre: Lentidao no sistema
+433,242,cliente,,2025-09-02T06:19:00,Mensagem do cliente sobre: Lentidao no sistema
+434,243,cliente,,2025-09-02T17:58:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+435,243,agente,8,2025-09-02T18:34:00,Resposta padrao do atendimento
+436,244,cliente,,2025-09-03T23:23:00,Mensagem do cliente sobre: Pedido de cancelamento
+437,244,agente,18,2025-09-04T08:35:00,Resposta padrao do atendimento
+438,245,cliente,,2025-09-04T09:46:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+439,246,cliente,,2025-09-06T00:43:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+440,246,agente,18,2025-09-06T00:50:00,Resposta padrao do atendimento
+441,247,cliente,,2025-09-06T19:36:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+442,247,agente,9,2025-09-07T18:32:00,Resposta padrao do atendimento
+443,248,cliente,,2025-09-08T21:26:00,Mensagem do cliente sobre: Pedido de cancelamento
+444,249,cliente,,2025-09-09T14:41:00,Mensagem do cliente sobre: Recuperacao de senha
+445,249,agente,19,2025-09-09T15:06:00,Resposta padrao do atendimento
+446,250,cliente,,2025-09-09T16:27:00,Mensagem do cliente sobre: Cobranca duplicada
+447,250,agente,12,2025-09-09T20:03:00,Resposta padrao do atendimento
+448,251,cliente,,2025-09-11T06:47:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+449,252,cliente,,2025-09-11T10:26:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+450,252,agente,10,2025-09-11T10:56:00,Resposta padrao do atendimento
+451,253,cliente,,2025-09-11T13:21:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+452,253,agente,8,2025-09-12T01:13:00,Resposta padrao do atendimento
+453,254,cliente,,2025-09-12T06:02:00,Mensagem do cliente sobre: Duvida sobre o plano
+454,255,cliente,,2025-09-14T13:55:00,Mensagem do cliente sobre: Recuperacao de senha
+455,256,cliente,,2025-09-14T22:27:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+456,256,agente,17,2025-09-15T17:36:00,Resposta padrao do atendimento
+457,257,cliente,,2025-09-15T22:54:00,Mensagem do cliente sobre: Problema com fatura
+458,258,cliente,,2025-09-16T02:45:00,Mensagem do cliente sobre: Pedido de cancelamento
+459,258,agente,7,2025-09-16T11:03:00,Resposta padrao do atendimento
+460,259,cliente,,2025-09-17T11:22:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+461,260,cliente,,2025-09-17T23:38:00,Mensagem do cliente sobre: Duvida sobre o plano
+462,261,cliente,,2025-09-18T09:11:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+463,262,cliente,,2025-09-19T03:38:00,Mensagem do cliente sobre: Problema com fatura
+464,263,cliente,,2025-09-19T21:50:00,Mensagem do cliente sobre: Recuperacao de senha
+465,264,cliente,,2025-09-21T05:22:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+466,265,cliente,,2025-09-21T13:38:00,Mensagem do cliente sobre: Lentidao no sistema
+467,265,agente,19,2025-09-22T04:13:00,Resposta padrao do atendimento
+468,265,cliente,,2025-09-22T14:35:00,Mensagem do cliente sobre: Lentidao no sistema
+469,266,cliente,,2025-09-22T08:30:00,Mensagem do cliente sobre: Recuperacao de senha
+470,266,agente,14,2025-09-22T08:46:00,Resposta padrao do atendimento
+471,267,cliente,,2025-09-22T08:51:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+472,267,agente,4,2025-09-22T18:47:00,Resposta padrao do atendimento
+473,268,cliente,,2025-09-24T05:51:00,Mensagem do cliente sobre: Recuperacao de senha
+474,269,cliente,,2025-09-24T22:43:00,Mensagem do cliente sobre: Lentidao no sistema
+475,270,cliente,,2025-09-25T05:33:00,Mensagem do cliente sobre: Pedido de cancelamento
+476,271,cliente,,2025-09-25T09:35:00,Mensagem do cliente sobre: Problema com fatura
+477,272,cliente,,2025-09-25T13:23:00,Mensagem do cliente sobre: Recuperacao de senha
+478,272,agente,5,2025-09-26T07:17:00,Resposta padrao do atendimento
+479,272,cliente,,2025-09-26T22:31:00,Mensagem do cliente sobre: Problema com fatura
+480,273,cliente,,2025-09-26T07:39:00,Mensagem do cliente sobre: Recuperacao de senha
+481,273,agente,16,2025-09-26T11:03:00,Resposta padrao do atendimento
+482,273,cliente,,2025-09-26T14:43:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+483,274,cliente,,2025-09-27T08:00:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+484,274,agente,4,2025-09-27T22:43:00,Resposta padrao do atendimento
+485,275,cliente,,2025-09-27T21:11:00,Mensagem do cliente sobre: Pedido de cancelamento
+486,275,agente,3,2025-09-28T04:53:00,Resposta padrao do atendimento
+487,276,cliente,,2025-09-28T12:44:00,Mensagem do cliente sobre: Duvida sobre o plano
+488,276,agente,4,2025-09-29T03:08:00,Resposta padrao do atendimento
+489,277,cliente,,2025-09-30T15:24:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+490,277,agente,3,2025-09-30T21:52:00,Resposta padrao do atendimento
+491,278,cliente,,2025-09-30T22:22:00,Mensagem do cliente sobre: Pedido de cancelamento
+492,278,agente,11,2025-10-01T21:05:00,Resposta padrao do atendimento
+493,278,cliente,,2025-10-02T06:14:00,Mensagem do cliente sobre: Problema com fatura
+494,279,cliente,,2025-10-01T01:30:00,Mensagem do cliente sobre: Cobranca duplicada
+495,279,agente,1,2025-10-01T06:51:00,Resposta padrao do atendimento
+496,280,cliente,,2025-10-01T10:03:00,Mensagem do cliente sobre: Duvida sobre o plano
+497,280,agente,9,2025-10-01T20:50:00,Resposta padrao do atendimento
+498,281,cliente,,2025-10-01T23:19:00,Mensagem do cliente sobre: Duvida sobre o plano
+499,281,agente,3,2025-10-02T19:41:00,Resposta padrao do atendimento
+500,282,cliente,,2025-10-02T18:28:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+501,282,agente,17,2025-10-02T18:35:00,Resposta padrao do atendimento
+502,283,cliente,,2025-10-04T00:47:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+503,283,agente,6,2025-10-04T08:47:00,Resposta padrao do atendimento
+504,284,cliente,,2025-10-06T09:54:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+505,284,agente,4,2025-10-06T10:05:00,Resposta padrao do atendimento
+506,285,cliente,,2025-10-06T18:49:00,Mensagem do cliente sobre: Duvida sobre o plano
+507,286,cliente,,2025-10-08T16:25:00,Mensagem do cliente sobre: Pedido de cancelamento
+508,286,agente,18,2025-10-08T17:04:00,Resposta padrao do atendimento
+509,286,cliente,,2025-10-08T19:57:00,Mensagem do cliente sobre: Pedido de cancelamento
+510,287,cliente,,2025-10-10T13:53:00,Mensagem do cliente sobre: Cobranca duplicada
+511,287,agente,6,2025-10-10T20:26:00,Resposta padrao do atendimento
+512,288,cliente,,2025-10-12T17:25:00,Mensagem do cliente sobre: Pedido de cancelamento
+513,288,agente,4,2025-10-13T13:14:00,Resposta padrao do atendimento
+514,289,cliente,,2025-10-12T19:22:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+515,290,cliente,,2025-10-14T16:33:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+516,290,agente,5,2025-10-17T03:53:00,Resposta padrao do atendimento
+517,291,cliente,,2025-10-15T11:29:00,Mensagem do cliente sobre: Cobranca duplicada
+518,291,agente,15,2025-10-16T17:15:00,Resposta padrao do atendimento
+519,292,cliente,,2025-10-16T00:36:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+520,292,agente,8,2025-10-16T01:16:00,Resposta padrao do atendimento
+521,292,cliente,,2025-10-16T02:06:00,Mensagem do cliente sobre: Recuperacao de senha
+522,293,cliente,,2025-10-16T00:57:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+523,293,agente,11,2025-10-16T09:48:00,Resposta padrao do atendimento
+524,293,cliente,,2025-10-17T01:58:00,Mensagem do cliente sobre: Duvida sobre o plano
+525,294,cliente,,2025-10-16T07:53:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+526,295,cliente,,2025-10-16T14:22:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+527,295,agente,7,2025-10-17T22:12:00,Resposta padrao do atendimento
+528,296,cliente,,2025-10-19T00:01:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+529,297,cliente,,2025-10-19T12:45:00,Mensagem do cliente sobre: Cobranca duplicada
+530,297,agente,4,2025-10-19T16:37:00,Resposta padrao do atendimento
+531,298,cliente,,2025-10-19T14:15:00,Mensagem do cliente sobre: Lentidao no sistema
+532,299,cliente,,2025-10-20T11:27:00,Mensagem do cliente sobre: Problema com fatura
+533,299,agente,1,2025-10-20T15:45:00,Resposta padrao do atendimento
+534,299,cliente,,2025-10-20T16:52:00,Mensagem do cliente sobre: Problema com fatura
+535,300,cliente,,2025-10-21T04:11:00,Mensagem do cliente sobre: Recuperacao de senha
+536,300,agente,9,2025-10-21T08:02:00,Resposta padrao do atendimento
+537,301,cliente,,2025-10-21T04:59:00,Mensagem do cliente sobre: Recuperacao de senha
+538,301,agente,12,2025-10-21T13:21:00,Resposta padrao do atendimento
+539,302,cliente,,2025-10-21T11:08:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+540,303,cliente,,2025-10-21T23:27:00,Mensagem do cliente sobre: Lentidao no sistema
+541,304,cliente,,2025-10-22T09:37:00,Mensagem do cliente sobre: Nao consigo acessar a conta
+542,304,agente,1,2025-10-23T20:16:00,Resposta padrao do atendimento
+543,305,cliente,,2025-10-22T23:18:00,Mensagem do cliente sobre: Problema com fatura
+544,306,cliente,,2025-10-24T09:07:00,Mensagem do cliente sobre: Problema com fatura
+545,307,cliente,,2025-10-25T16:06:00,Mensagem do cliente sobre: Duvida sobre o plano
+546,308,cliente,,2025-10-26T20:25:00,Mensagem do cliente sobre: Problema com fatura
+547,309,cliente,,2025-10-27T16:14:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+548,309,agente,8,2025-10-28T07:12:00,Resposta padrao do atendimento
+549,309,cliente,,2025-10-28T15:22:00,Mensagem do cliente sobre: Lentidao no sistema
+550,310,cliente,,2025-10-27T20:57:00,Mensagem do cliente sobre: Lentidao no sistema
+551,310,agente,17,2025-10-28T00:42:00,Resposta padrao do atendimento
+552,311,cliente,,2025-10-28T03:33:00,Mensagem do cliente sobre: Cobranca duplicada
+553,312,cliente,,2025-10-28T23:24:00,Mensagem do cliente sobre: Alteracao de dados cadastrais
+554,312,agente,10,2025-10-30T12:34:00,Resposta padrao do atendimento
+555,313,cliente,,2025-10-30T02:49:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+556,314,cliente,,2025-10-31T02:38:00,Mensagem do cliente sobre: Lentidao no sistema
+557,314,agente,6,2025-11-01T00:01:00,Resposta padrao do atendimento
+558,314,cliente,,2025-11-01T14:52:00,Mensagem do cliente sobre: Recuperacao de senha
+559,315,cliente,,2025-10-31T09:53:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+560,316,cliente,,2025-10-31T20:19:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+561,317,cliente,,2025-10-31T20:49:00,Mensagem do cliente sobre: Erro ao exportar relatorio
+562,318,cliente,,2025-11-01T00:10:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+563,319,cliente,,2025-11-01T14:59:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+564,320,cliente,,2025-11-02T06:35:00,Mensagem do cliente sobre: Solicitacao de nova funcionalidade
+565,320,agente,15,2025-11-02T17:42:00,Resposta padrao do atendimento
+566,320,cliente,,2025-11-02T19:45:00,Mensagem do cliente sobre: Lentidao no sistema

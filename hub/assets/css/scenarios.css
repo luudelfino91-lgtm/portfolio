@@ -1,0 +1,31 @@
+/* =====================================================================
+   Seletor de cenario (D11), comum ao explorador, ao SQL e ao Python.
+   Cartoes = <input type="radio"> nativos. So tokens do portfolio/hub.css; sem cores novas.
+   ===================================================================== */
+.sc-picker{margin:0;padding:0;border:0;min-width:0;display:flex;flex-direction:column;gap:10px}
+.sc-legend{padding:0;font-weight:700;font-size:clamp(18px,2.2vw,22px)}
+.sc-hint{flex-basis:auto}
+.sc-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:12px;min-width:0}
+.sc-card{position:relative;display:flex;align-items:flex-start;gap:10px;min-width:0;min-height:var(--tap);padding:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);cursor:pointer}
+.sc-card:hover{border-color:var(--line-strong)}
+.sc-card.is-on{border-color:var(--plum);box-shadow:inset 0 0 0 1px var(--plum);background:var(--orchid-soft)}
+.sc-card.is-disabled{opacity:.6;cursor:not-allowed}
+.sc-input{flex:none;width:24px;height:24px;margin:0;accent-color:var(--plum);cursor:inherit}
+.sc-body{display:flex;flex-direction:column;gap:4px;min-width:0;border-radius:var(--r-md)}
+.sc-input:focus-visible+.sc-body{outline:3px solid var(--plum);outline-offset:6px}
+:root[data-theme="dark"] .sc-input:focus-visible+.sc-body{outline-color:var(--focus-dark)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sc-input:focus-visible+.sc-body{outline-color:var(--focus-dark)}}
+.sc-name{font-size:16px;font-weight:700;color:var(--ink)}
+.sc-desc{font-size:14px;color:var(--ink-2);overflow-wrap:anywhere}
+.sc-meta{font:400 12px/1.4 var(--f-mono);color:var(--ink-2)}
+.sc-card.is-on .sc-desc,.sc-card.is-on .sc-meta{color:var(--plum-ink)}
+
+.sc-er{border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface);padding:0 14px 12px}
+.sc-er summary{cursor:pointer;font-weight:600;min-height:var(--tap);display:flex;align-items:center}
+.sc-er summary:focus-visible{outline:3px solid var(--plum);outline-offset:2px}
+:root[data-theme="dark"] .sc-er summary:focus-visible{outline-color:var(--focus-dark)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sc-er summary:focus-visible{outline-color:var(--focus-dark)}}
+.sc-er-pre{margin:8px 0 0;padding:12px 14px;overflow:auto;max-width:100%;font:400 13px/1.55 var(--f-mono);background:var(--surface-2);color:var(--ink);border:1px solid var(--line);border-radius:var(--r-md);white-space:pre}
+.sc-er-pre:focus-visible{outline:3px solid var(--plum);outline-offset:2px}
+:root[data-theme="dark"] .sc-er-pre:focus-visible{outline-color:var(--focus-dark)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sc-er-pre:focus-visible{outline-color:var(--focus-dark)}}

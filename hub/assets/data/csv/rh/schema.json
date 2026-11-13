@@ -1,0 +1,227 @@
+{
+ "slug": "rh",
+ "tables": [
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nome",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "centro_custo",
+     "pk": false,
+     "type": "TEXT"
+    }
+   ],
+   "name": "departamentos"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nome",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "departamentos.id",
+     "name": "departamento_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nivel",
+     "pk": false,
+     "type": "INTEGER"
+    }
+   ],
+   "name": "cargos"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "nome",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "email",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "cargos.id",
+     "name": "cargo_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "departamentos.id",
+     "name": "departamento_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "funcionarios.id",
+     "name": "gestor_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "data_admissao",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "data_desligamento",
+     "pk": false,
+     "type": "TEXT"
+    }
+   ],
+   "name": "funcionarios"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "funcionarios.id",
+     "name": "funcionario_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "data_inicio",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "salario",
+     "pk": false,
+     "type": "REAL"
+    },
+    {
+     "fk": "",
+     "name": "motivo",
+     "pk": false,
+     "type": "TEXT"
+    }
+   ],
+   "name": "salarios_historico"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "funcionarios.id",
+     "name": "funcionario_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "funcionarios.id",
+     "name": "avaliador_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "periodo",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "nota",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "comentario",
+     "pk": false,
+     "type": "TEXT"
+    }
+   ],
+   "name": "avaliacoes"
+  },
+  {
+   "columns": [
+    {
+     "fk": "",
+     "name": "id",
+     "pk": true,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "funcionarios.id",
+     "name": "funcionario_id",
+     "pk": false,
+     "type": "INTEGER"
+    },
+    {
+     "fk": "",
+     "name": "tipo",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "data_inicio",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "data_fim",
+     "pk": false,
+     "type": "TEXT"
+    },
+    {
+     "fk": "",
+     "name": "dias",
+     "pk": false,
+     "type": "INTEGER"
+    }
+   ],
+   "name": "ausencias"
+  }
+ ]
+}

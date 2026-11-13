@@ -1,0 +1,81 @@
+id,campanha_id,canal_id,nome,formato,status
+1,1,3,Anuncio 001,imagem,ativo
+2,2,4,Anuncio 002,imagem,encerrado
+3,3,6,Anuncio 003,banner,ativo
+4,4,3,Anuncio 004,banner,encerrado
+5,5,5,Anuncio 005,banner,ativo
+6,6,2,Anuncio 006,texto,ativo
+7,7,4,Anuncio 007,video curto,ativo
+8,8,2,Anuncio 008,carrossel,encerrado
+9,9,2,Anuncio 009,video curto,encerrado
+10,10,1,Anuncio 010,banner,encerrado
+11,11,4,Anuncio 011,video curto,encerrado
+12,12,2,Anuncio 012,texto,encerrado
+13,13,3,Anuncio 013,carrossel,ativo
+14,14,6,Anuncio 014,video curto,ativo
+15,15,1,Anuncio 015,carrossel,encerrado
+16,16,2,Anuncio 016,video curto,pausado
+17,17,1,Anuncio 017,texto,ativo
+18,18,1,Anuncio 018,imagem,encerrado
+19,19,1,Anuncio 019,banner,ativo
+20,20,2,Anuncio 020,video curto,ativo
+21,21,4,Anuncio 021,video curto,ativo
+22,22,3,Anuncio 022,banner,pausado
+23,23,2,Anuncio 023,banner,ativo
+24,24,4,Anuncio 024,imagem,encerrado
+25,1,2,Anuncio 025,video curto,ativo
+26,2,1,Anuncio 026,banner,encerrado
+27,3,2,Anuncio 027,texto,ativo
+28,4,2,Anuncio 028,carrossel,ativo
+29,5,6,Anuncio 029,texto,encerrado
+30,6,6,Anuncio 030,banner,ativo
+31,7,3,Anuncio 031,banner,ativo
+32,8,3,Anuncio 032,carrossel,encerrado
+33,9,1,Anuncio 033,imagem,ativo
+34,10,3,Anuncio 034,banner,pausado
+35,11,2,Anuncio 035,texto,encerrado
+36,12,2,Anuncio 036,video curto,ativo
+37,13,1,Anuncio 037,imagem,encerrado
+38,14,1,Anuncio 038,banner,ativo
+39,15,5,Anuncio 039,carrossel,ativo
+40,16,2,Anuncio 040,imagem,pausado
+41,17,4,Anuncio 041,carrossel,encerrado
+42,18,2,Anuncio 042,video curto,ativo
+43,19,2,Anuncio 043,banner,pausado
+44,20,5,Anuncio 044,texto,ativo
+45,21,2,Anuncio 045,carrossel,encerrado
+46,22,3,Anuncio 046,video curto,ativo
+47,23,2,Anuncio 047,imagem,ativo
+48,24,2,Anuncio 048,carrossel,encerrado
+49,1,1,Anuncio 049,banner,ativo
+50,2,6,Anuncio 050,texto,encerrado
+51,3,1,Anuncio 051,texto,ativo
+52,4,3,Anuncio 052,video curto,encerrado
+53,5,1,Anuncio 053,texto,encerrado
+54,6,1,Anuncio 054,carrossel,encerrado
+55,7,4,Anuncio 055,carrossel,encerrado
+56,8,4,Anuncio 056,video curto,encerrado
+57,9,4,Anuncio 057,banner,encerrado
+58,10,3,Anuncio 058,imagem,ativo
+59,11,2,Anuncio 059,texto,encerrado
+60,12,5,Anuncio 060,carrossel,encerrado
+61,13,1,Anuncio 061,texto,encerrado
+62,14,1,Anuncio 062,imagem,encerrado
+63,15,6,Anuncio 063,carrossel,ativo
+64,16,1,Anuncio 064,video curto,ativo
+65,17,5,Anuncio 065,video curto,encerrado
+66,18,2,Anuncio 066,imagem,ativo
+67,19,4,Anuncio 067,texto,encerrado
+68,20,5,Anuncio 068,banner,encerrado
+69,21,3,Anuncio 069,video curto,ativo
+70,22,5,Anuncio 070,imagem,ativo
+71,23,1,Anuncio 071,carrossel,encerrado
+72,24,2,Anuncio 072,carrossel,ativo
+73,1,2,Anuncio 073,texto,ativo
+74,2,2,Anuncio 074,video curto,ativo
+75,3,4,Anuncio 075,banner,encerrado
+76,4,4,Anuncio 076,banner,encerrado
+77,5,5,Anuncio 077,video curto,ativo
+78,6,5,Anuncio 078,texto,ativo
+79,7,2,Anuncio 079,imagem,encerrado
+80,8,2,Anuncio 080,banner,encerrado

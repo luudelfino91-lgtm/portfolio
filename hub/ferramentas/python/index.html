@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title data-i="hub.title.python">Python playground · Data &amp; AI Community Hub</title>
-<meta name="description" content="Run Python in your browser, in an isolated frame. Your code and files never leave your device." data-ia="content:hub.desc.python">
+<meta name="description" content="Run Python in your browser, in an isolated frame, on five built-in sample datasets. Your code never leaves your device." data-ia="content:hub.desc.python">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../../assets/css/styles.css">
@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="../../assets/css/csv.css">
 <link rel="stylesheet" href="../../assets/css/sql.css">
 <link rel="stylesheet" href="../../assets/css/python.css">
+<link rel="stylesheet" href="../../assets/css/scenarios.css">
 <script src="../../assets/js/theme.js"></script>
 <script src="../../assets/js/i18n.js" defer></script>
 </head>
@@ -46,7 +47,7 @@
       <h1 id="h1" data-i="hub.tool.python.name">Python playground</h1>
     </section>
     <p class="lede csv-lede" data-i="hub.py.lede">Write Python and run it in this browser tab. The code runs in an isolated frame that cannot reach the internet, this page or your other data.</p>
-    <p class="notice" id="pyPrivacy"><span data-i="hub.py.priv">Privacy: your code, your files and the output never leave this browser. Nothing is sent to any server, and nothing is saved.</span></p>
+    <p class="notice" id="pyPrivacy"><span data-i="hub.py.priv">Privacy: your code and the output never leave this browser. There is no file upload: Python only sees the sample tables of the scenario you choose. Nothing is sent to any server, and nothing is saved.</span></p>
 
     <div class="csv-tool py-tool" id="pyTool" data-state="idle" data-engine="none">
       <section class="sql-sec" aria-labelledby="pyEdH">
@@ -67,17 +68,11 @@
         <p class="csv-note" id="pyLimits" data-i="hub.py.limits">Limits: code up to 200 KB; output up to 2,000 lines or 256 KiB (the rest is discarded); memory up to 4 GiB (on phones the browser may close the tab sooner). Variables do not persist between runs; Stop and the time limit end the session and Python reloads on the next Run.</p>
       </section>
 
-      <section class="sql-sec" aria-labelledby="pyFileH">
-        <h2 id="pyFileH" data-i="hub.py.file.h">CSV file (optional)</h2>
-        <div class="csv-opts">
-          <div class="sql-load">
-            <input class="csv-file" id="pyFile" type="file" accept=".csv,.tsv,.txt,text/csv,text/plain,text/tab-separated-values">
-            <label class="btn btn-dark csv-pick" for="pyFile"><span data-i="hub.py.file.btn">Choose a CSV file</span></label>
-          </div>
-          <button class="btn btn-ghost" id="pyFileRm" type="button" hidden><span data-i="hub.py.file.remove">Remove file</span></button>
-          <p class="csv-note" id="pyFileNote" data-i="hub.py.file.note">Limit: 10 MB. The file appears inside Python as /data/ followed by its name; read it with open() or the csv module. pandas is not included.</p>
-        </div>
-        <p class="csv-status" id="pyFileInfo" role="status" aria-live="polite"></p>
+      <section class="sql-sec" aria-labelledby="pyDataH">
+        <h2 id="pyDataH" data-i="hub.py.data.h">Data</h2>
+        <div id="pyPicker"></div>
+        <p class="csv-status" id="pyDataFiles"></p>
+        <p class="csv-note" id="pyDataNote" data-i="hub.py.data.note">Each table is a CSV file in /data/ with a header row; read it with open() or the csv module (for example open("{example}")). An empty cell is a missing value (NULL). The files are copied from this site into Python when you press Run, and there is no way to add other files. pandas is not included.</p>
       </section>
 
       <p class="csv-status" id="pyStatus" role="status" aria-live="polite"></p>
@@ -108,6 +103,7 @@
   </footer>
 </div>
 <script src="../../assets/js/nav.js" defer></script>
+<script src="../../assets/js/scenarios.js" defer></script>
 <script src="../../assets/js/python.js" defer></script>
 </body>
 </html>
