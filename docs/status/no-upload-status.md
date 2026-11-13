@@ -35,6 +35,8 @@ O explorador **não usa sql.js nem Worker**. Lê o CSV exportado (parser própri
 | CSV-01 a CSV-53 (leitura de arquivo, delimitador, codificação, BOM, vazio, falso, limite 10 MB, cancelar a 40%, arrastar) | Removidos; `tests/hub/csv.js` reescrito (39 checagens do explorador) | Testavam recursos que D11 eliminou. Sem arquivo do usuário não há delimitador, codificação nem limite a verificar |
 | SQL-10 a SQL-18 e SQL-41 (CSV como tabela, nomes saneados, 10 MB, nomes maliciosos de coluna) | Removidos de `tests/hub/sql.js` | A funcionalidade não existe mais. A defesa de texto (`textContent`) é coberta por NOUP e pelos testes de resultado |
 | T-306(a) 10 MB (CSV-51/52/53, SQL-18) | Removido | Sem arquivo grande. SQL-32/33 (timeout, Parar) mantidos |
+| SQL-31 (teto de resultado) | **Reescrito, existe** | Antes usava CSV grande; agora `WITH RECURSIVE` gera 5.000 linhas: exibe exatamente 1.000 e a legenda "mostrando 1.000 de 5.000" com a nota do limite (PT/EN); e uma consulta de 25 colunas confere o orçamento de células (20.000 células = 800 linhas) |
+| NOUP-09 (novo) | Criado | `loadTable` do explorador recusa tabela fora da definição do cenário (option injetada `../../../README`): erro por `textContent`, zero requisições |
 | PY-11 (CSV do usuário, nome saneado, remover, 10 MB) | Reescrito | Agora: 5 cenários na mesma sessão, linhas, vazios e cabeçalho iguais ao sqlite3, só tabelas do cenário buscadas, cache, `/data` intacto após sobrescrever, 404, vazio, Parar durante a busca |
 | SEC-P3-01 (leitura de arquivo hostil) | Removido | Superfície eliminada; substituído por NOUP |
 | HUB-03 / a11y (`#csvFile`) | Ajustados para `#csvTool` | O controle não existe mais |

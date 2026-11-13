@@ -152,6 +152,8 @@
     say('hub.csv.status.loading', { name: t('hub.sc.' + slug + '.name') });
     result.setAttribute('aria-busy', 'true'); renderError();
     var def = schemas[slug].tables.filter(function (x) { return x.name === table; })[0];
+    // so busca tabelas da definicao do cenario (o valor do <select> nao e confiavel: nada de montar URL com ele)
+    if (!def) { result.setAttribute('aria-busy', 'false'); fail('data', { table: String(table).slice(0, 60), detail: 'unknown table' }); return Promise.resolve(); }
     return fetchText(BASE + slug + '/' + table + '.csv').then(function (txt) {
       if (my !== job) return;
       var all = parseCsv(txt), header = all[0] || [], rows = all.slice(1);

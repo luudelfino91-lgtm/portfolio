@@ -41,9 +41,9 @@ const { execSync } = require('child_process');
   const S = require('./scope'); const fs = require('fs'), os = require('os'), path = require('path');
   const all = S.changed(L.REPO);
   // Alteracao do portfolio APROVADA pelo Lucas (link Portfolio->Hub no rodape + contraste --ink-3): somente estes 3 arquivos.
-  const APPROVED = ['index.html', 'assets/css/styles.css', 'assets/js/i18n.js'];
+  const APPROVED = ['index.html', 'assets/css/styles.css', 'assets/js/i18n.js', '.gitignore']; // .gitignore: __pycache__/ e *.pyc (revisao D11, B1)
   const out = S.offending(L.REPO).filter(f => !APPROVED.includes(f));
-  L.rec('REG-01/T-210 nenhum arquivo fora de docs/, hub/, tests/, .claude/ alterado, exceto os 3 aprovados (diff commitado + working tree + porcelain)', out.length === 0, 'arquivos fora do escopo: ' + JSON.stringify(out) + ' (total alterados: ' + all.length + ')');
+  L.rec('REG-01/T-210 nenhum arquivo fora de docs/, hub/, tests/, .claude/ alterado, exceto os 3 aprovados e .gitignore (B1) (diff commitado + working tree + porcelain)', out.length === 0, 'arquivos fora do escopo: ' + JSON.stringify(out) + ' (total alterados: ' + all.length + ')');
   { const sh = (c, d) => execSync(c, { cwd: d, stdio: 'pipe', encoding: 'utf8' });
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'hub-neg-')); const res = [];
     try {

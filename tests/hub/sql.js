@@ -99,6 +99,15 @@ const nf = (n, lang) => new Intl.NumberFormat(lang === 'pt' ? 'pt-BR' : 'en-US')
       const inl = 'SELECT COUNT(*) AS n FROM (SELECT 1 AS v) WHERE v IN (' + '1,'.repeat(48000) + '1)'; // ~96 KB
       const tIn = Date.now(); await run(pg, inl); g = await grab(pg);
       L.rec(`SQL-30 ${tag} consulta de ${Math.round(inl.length / 1024)} KB (lista IN com 48.001 itens): executa, resultado correto, sem travar`, inl.length > 90000 && !g.errVisible && g.body[0][0] === '1', `bytes=${inl.length} resultado=${JSON.stringify(g.body)} erro="${g.errM}" tempo=${Date.now() - tIn} ms`);
+      // SQL-31 (reescrito em D11, sem upload): teto de linhas (1.000) e orcamento de celulas (20.000 = linhas x colunas)
+      await run(pg, 'WITH RECURSIVE n(i) AS (SELECT 1 UNION ALL SELECT i+1 FROM n WHERE i<5000) SELECT i FROM n'); g = await grab(pg);
+      const n1k = lang === 'pt' ? '1.000' : '1,000', n5k = lang === 'pt' ? '5.000' : '5,000';
+      L.rec(`SQL-31 ${tag} 5.000 linhas geradas: exibe exatamente 1.000 linhas, legenda "mostrando ${n1k} de ${n5k}" e nota do limite, sem erro`,
+        !g.errVisible && g.body.length === 1000 && g.body[0][0] === '1' && g.body[999][0] === '1000' && g.cap.includes(n1k) && g.cap.includes(n5k) && g.note.includes(n1k) && /(Only the first|Só as primeiras)/.test(g.note), JSON.stringify({ rows: g.body.length, cap: g.cap, note: g.note }));
+      const cols25 = Array.from({ length: 25 }, (_, k) => `i+${k} AS c${k}`).join(', '); // 25 colunas: 20.000 / 25 = 800 linhas
+      await run(pg, `WITH RECURSIVE n(i) AS (SELECT 1 UNION ALL SELECT i+1 FROM n WHERE i<5000) SELECT ${cols25} FROM n`); g = await grab(pg);
+      L.rec(`SQL-31 ${tag} 25 colunas x 5.000 linhas: o orcamento de celulas limita a 800 linhas (20.000 celulas), com legenda e nota`,
+        !g.errVisible && g.body.length === 800 && g.header.length === 25 && g.cap.includes('800') && g.cap.includes(n5k) && /(Only the first|Só as primeiras)/.test(g.note) && g.note.includes('800'), JSON.stringify({ rows: g.body.length, cols: g.header.length, cap: g.cap, note: g.note }));
       // duplo Ctrl+Enter (SQL-34)
       await pg.fill('#sqlEditor', 'SELECT 34'); await pg.keyboard.press('Control+Enter'); await pg.keyboard.press('Control+Enter'); await ready(pg); g = await grab(pg);
       L.rec(`SQL-34 ${tag} duplo Ctrl+Enter: uma execucao por vez, resultado consistente`, g.body.length === 1 && g.body[0][0] === '34' && !g.errVisible, JSON.stringify(g.body));

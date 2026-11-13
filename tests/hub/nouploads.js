@@ -62,6 +62,19 @@ const FORBID = [['type="file"/type=file', /type\s*=\s*["']?file/i], ['FileReader
   const want = { 'hub/': base, 'hub/ferramentas/': base, 'hub/privacidade/': base, 'hub/ferramentas/csv/': base, 'hub/ferramentas/sql/': base.replace("script-src 'self'", "script-src 'self' 'wasm-unsafe-eval'").replace("base-uri", "worker-src 'self'; base-uri"), 'hub/ferramentas/python/': base.replace("connect-src 'self'; ", "connect-src 'self'; frame-src 'self'; ") };
   const diffs = Object.entries(want).filter(([p, w]) => csp(p) !== w).map(([p, w]) => p + ' => ' + csp(p));
   L.rec("NOUP-08 CSP das 6 paginas = a esperada: explorador SEM worker-src e SEM wasm-unsafe-eval (mais restrita que antes); SQL igual a de antes; Python so trocou connect-src 'none' por 'self' (para buscar os CSV do cenario na mesma origem); demais iguais", diffs.length === 0, JSON.stringify(diffs));
+  // ---- 8) NOUP-09: o <select> de tabelas nao e confiavel; valor fora da definicao do cenario nao gera fetch
+  for (const lang of ['en', 'pt']) {
+    const c3 = await L.ctx(br, { lang }); const pg3 = await c3.newPage(); const log3 = L.newLog(); L.watch(pg3, log3);
+    await pg3.goto(`${L.BASE}/hub/ferramentas/csv/`, { waitUntil: 'networkidle' });
+    await pg3.waitForFunction(() => document.getElementById('csvTool').dataset.state === 'ready');
+    const reqs0 = log3.requests.length;
+    await pg3.evaluate(() => { const o = document.createElement('option'); o.value = '../../../README'; o.textContent = 'x'; const s = document.getElementById('csvTable'); s.appendChild(o); s.value = o.value; s.dispatchEvent(new Event('change', { bubbles: true })); });
+    await pg3.waitForFunction(() => document.getElementById('csvTool').dataset.state === 'error', null, { timeout: 5000 }).catch(() => {});
+    const r = await pg3.evaluate(() => ({ state: document.getElementById('csvTool').dataset.state, errVisible: !document.getElementById('csvErr').hidden, t: document.getElementById('csvErrT').textContent, m: document.getElementById('csvErrM').textContent }));
+    const extra = log3.requests.slice(reqs0);
+    L.rec(`NOUP-09 (${lang}) tabela fora da definicao do cenario (option injetada "../../../README"): erro exibido por textContent, estado "error", zero requisicoes novas`, r.state === 'error' && r.errVisible && r.t.length > 0 && r.m.includes('../../../README') && extra.length === 0 && log3.pageerrors.length === 0, JSON.stringify({ r, extra, pe: log3.pageerrors.length }));
+    await c3.close();
+  }
   await br.close(); srv.stop();
   process.exit(L.results.some(r => !r.ok) ? 1 : 0);
 })().catch(e => { console.log('FAIL erro do teste :: ' + (e && e.stack || e)); process.exit(1); });
