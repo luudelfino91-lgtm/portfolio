@@ -4,24 +4,26 @@ Fontes servidas pelo próprio Hub; nenhuma página do Hub carrega `fonts.googlea
 
 | Arquivo | Família (nome usado por `styles.css`) | Pacote npm (versão) | Pesos |
 |---|---|---|---|
-| `bricolage-grotesque-latin-wght-normal.woff2` | Bricolage Grotesque | `@fontsource-variable/bricolage-grotesque` 5.3.0 | variável 200-800 (usados: 500, 650, 750) |
-| `figtree-latin-wght-normal.woff2` | Figtree | `@fontsource-variable/figtree` 5.3.0 | variável 300-900 (usados: 400-700) |
+| `poppins-latin-400-normal.woff2` | Poppins | `@fontsource/poppins` 5.3.0 | 400 |
+| `poppins-latin-500-normal.woff2` | Poppins | `@fontsource/poppins` 5.3.0 | 500 |
+| `poppins-latin-600-normal.woff2` | Poppins | `@fontsource/poppins` 5.3.0 | 600 |
+| `poppins-latin-700-normal.woff2` | Poppins | `@fontsource/poppins` 5.3.0 | 700 |
 | `jetbrains-mono-latin-400-normal.woff2` | JetBrains Mono | `@fontsource/jetbrains-mono` 5.3.0 | 400 |
 | `jetbrains-mono-latin-500-normal.woff2` | JetBrains Mono | `@fontsource/jetbrains-mono` 5.3.0 | 500 |
 
 Procedência: `npm pack <pacote>` no registro npm, arquivos copiados de `package/files/` sem modificação.
-
-Observação: o arquivo variável do Bricolage tem só o eixo de peso (o portfólio pede também o eixo `opsz` 12..96 ao Google; a versão com `opsz` pesa 77 KB e estouraria o orçamento de 120 KB). Diferença visual possível em títulos grandes; revisar na regressão visual.
 
 Atualizar: refazer o `npm pack` com a versão nova, trocar os arquivos e atualizar esta tabela.
 
 ## Integridade (sha256)
 
 ```
-a97804dc9fbe5fc972a08018c5eda4dab7ef2346f64c57e61419d05e6de4ea1c  bricolage-grotesque-latin-wght-normal.woff2
-4ba7d3d096695818fe0686be4f1e82c6b05134e18a22260336130335027462dd  figtree-latin-wght-normal.woff2
 14425ba9c695763c1547f48a206b7aa60350a33ae23de09f0407877f3fcd89eb  jetbrains-mono-latin-400-normal.woff2
 cb182feeed4d798ff6961d3c79f7026279448fca0676438aaecb21f3fc39553a  jetbrains-mono-latin-500-normal.woff2
+7d93459d86585bfcdbb7e0376056226adb25821ee54b96236fe2123e9560929f  poppins-latin-400-normal.woff2
+cd36de204aca2d5fa263a731f7c20009b5e3d754ba1f1e03c33e93a48f3e7446  poppins-latin-500-normal.woff2
+f4e80d9dfd374d02989b87a27b5ed4cb78fbb177c27f1478e9a8b0afb7513149  poppins-latin-600-normal.woff2
+9338e65fc077355c7a87ae0d64cc101e23b9bf8ad78ae65f0f319c857311b526  poppins-latin-700-normal.woff2
 ```
 
 Ressalva: a procedência (`@fontsource` 5.3.0) foi declarada pelo desenvolvedor e não foi refeita por terceiro independente. Os hashes só provam que os arquivos não mudaram desde o registro.

@@ -17,8 +17,7 @@ O tema escuro redefine os mesmos tokens em `styles.css` (`prefers-color-scheme` 
 
 ## Tipografia
 
-- **Bricolage Grotesque** — títulos e números de destaque
-- **Figtree** — texto corrido e interface
+- **Poppins** — família única: títulos e números de destaque em SemiBold/Bold (600/700); texto corrido e interface em Regular/Medium (400/500). Substitui Bricolage Grotesque + Figtree, descartadas por soarem informais demais para a marca.
 - **JetBrains Mono** — rótulos técnicos, nomes de arquivo, datas
 
 ## Marca
