@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-i="hub.title.priv">Privacy · Data &amp; AI Community Hub</title>
+<meta name="description" content="What the Data &amp; AI Community Hub does and does not do with your data." data-ia="content:hub.desc.priv">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/css/styles.css">
+<link rel="stylesheet" href="../assets/css/hub.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/js/i18n.js" defer></script>
+</head>
+<body class="hub" id="top">
+<a class="hub-skip btn btn-dark" href="#main" data-i="hub.skip">Skip to content</a>
+<div class="wrap">
+  <header class="nav">
+    <div class="nav-in">
+      <a class="brand" href="../" aria-label="Lucas Delfino data &amp; ai hub" data-ia="aria-label:hub.brand.aria">
+        <span class="mark" aria-hidden="true"><span></span></span>
+        <span class="brand-text">Lucas Delfino <small data-i="hub.brand.small">data &amp; ai hub</small></span>
+      </a>
+      <nav class="links" id="links" aria-label="Main" data-ia="aria-label:hub.nav.main">
+        <a href="../ferramentas/"><span data-i="hub.nav.tools">Tools</span></a><a href="./" class="on" aria-current="page"><span data-i="hub.nav.privacy">Privacy</span></a><a href="../../"><span data-i="hub.nav.portfolio">Portfolio</span><span class="arrow" aria-hidden="true"> ↗</span></a>
+      </nav>
+      <div class="nav-actions">
+        <div class="lang" role="group" aria-label="Language" data-ia="aria-label:hub.lang.group"><button type="button" data-lang="en" lang="en" aria-pressed="true">EN</button><button type="button" data-lang="pt" lang="pt-BR" aria-pressed="false">PT</button></div>
+        <button class="icon-btn" id="themeBtn" type="button" aria-pressed="false" aria-label="Dark theme" data-ia="aria-label:hub.theme.dark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+        <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="links" aria-label="Menu" data-ia="aria-label:hub.menu.label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <nav class="crumb" aria-label="You are here" data-ia="aria-label:hub.crumb.label"><ol><li><a href="../"><span data-i="hub.crumb.home">Home</span></a></li><li aria-current="page"><span data-i="hub.nav.privacy">Privacy</span></li></ol></nav>
+    <section class="hub-hero hub-hero--sub" aria-labelledby="h1">
+      <h1 id="h1" data-i="hub.priv.h1">Privacy</h1>
+      <p class="lede" data-i="hub.priv.lede">Short and honest: what this Hub does with your data.</p>
+    </section>
+    <div class="hub-prose">
+      <h2 data-i="hub.priv.s1.h">Your data stays in your browser</h2>
+      <p data-i="hub.priv.s1.p">The Hub is a set of static pages. It has no server that receives files or queries, and it asks for no account. The tools are not available yet; this is a design commitment that will be checked by tests before they launch.</p>
+      <h2 data-i="hub.priv.s2.h">Cookies and tracking</h2>
+      <p data-i="hub.priv.s2.p">Hub pages set no cookies and include no analytics, advertising or tracking scripts.</p>
+      <h2 data-i="hub.priv.s3.h">What is stored on your device</h2>
+      <p data-i="hub.priv.s3.p">Only two small preferences, kept in your browser’s localStorage and never sent anywhere:</p>
+      <ul>
+        <li><code>ld-lang</code> <span data-i="hub.priv.s3.lang">your language choice (en or pt), shared with the portfolio.</span></li>
+        <li><code>ld-theme</code> <span data-i="hub.priv.s3.theme">your theme choice (light or dark), shared with the portfolio.</span></li>
+      </ul>
+      <p data-i="hub.priv.s3.clear">You can remove both at any time in your browser settings.</p>
+      <h2 data-i="hub.priv.s4.h">Fonts and third parties</h2>
+      <p data-i="hub.priv.s4.p1">Hub pages serve their fonts from this site and make no requests to other domains.</p>
+      <p><span data-i="hub.priv.s4.p2">The portfolio is a separate part of the site and still loads its fonts from Google Fonts.</span> <a href="../../"><span data-i="hub.priv.s4.link">Go to the portfolio</span></a></p>
+    </div>
+  </main>
+
+  <footer>
+    <p><span data-i="hub.foot.note">Data &amp; AI Community Hub · by Lucas Delfino</span></p>
+    <nav class="hub-foot-nav" aria-label="Footer" data-ia="aria-label:hub.foot.nav">
+      <a href="../ferramentas/"><span data-i="hub.nav.tools">Tools</span></a>
+      <a href="./"><span data-i="hub.nav.privacy">Privacy</span></a>
+      <a href="../../"><span data-i="hub.nav.portfolio">Portfolio</span><span class="arrow" aria-hidden="true"> ↗</span></a>
+      <a href="#top"><span data-i="hub.foot.top">Back to top</span></a>
+    </nav>
+  </footer>
+</div>
+<script src="../assets/js/nav.js" defer></script>
+</body>
+</html>

@@ -397,7 +397,7 @@ Regras gerais: o QA só marca "Executado: passou" com evidência anexada (comand
 
 ### Fase 1 (Planejamento, esta)
 - Entrada: documentos de PRD, backlog, arquitetura, UX existem.
-- Saída: este plano revisado; itens "aberto" da seção 7 (3 na contagem atual) corrigidos nos documentos donos (backlog, PRD, hub-ux) ou aceitos como ressalva escrita do Lucas; decisões D2/D3/D5/D8 registradas ou premissas confirmadas, conforme o que cada uma bloqueia em C2 (D2 e D3-fontes: Fase 2; D3 sql.js/Papa Parse: Fase 3; D5: Fase 6; D8: Fase 7).
+- Saída: este plano revisado; itens "aberto" da seção 7 (1 na contagem atual, pendente de resposta do Lucas) corrigidos nos documentos donos (backlog, PRD, hub-ux) ou aceitos como ressalva escrita do Lucas; decisões D2/D3/D5/D8 registradas ou premissas confirmadas, conforme o que cada uma bloqueia em C2 (D2 e D3-fontes: Fase 2; D3 sql.js/Papa Parse: Fase 3; D5: Fase 6; D8: Fase 7).
 
 ### Fase 2 (Casca do Hub)
 - Entrada: Fase 0 (G1) e Fase 1 aprovadas; URLs de C1; D2 e D3 (fontes locais) decididas; ADR de T-201 que registra a aprovação de `solution-architecture.md` (C9); linha de base de regressão gerada (REG-02, REG-32, REG-61) **antes de qualquer mudança**; servidor local disponível; lista fechada de HUB-02 = 2 cartões ativos, CSV e SQL (C10.2).
@@ -424,7 +424,7 @@ Esta seção não edita o backlog. Conferida em 2026-11-12 lendo `docs/roadmap/b
 | 2 | T-310, PRD "offline" | Sem Service Worker, recarregar offline não é garantido | **Corrigido em T-310** (rede cortada com a aba aberta; sem Service Worker). PRV-11 deve seguir isso |
 | 3 | T-306 | "Não congela > 1 s": método e arquivo; agora Worker é MVP (C10.1) | **Corrigido em T-306** [MVP]: (a) 10 MB como critério com `limit-10mb.csv`, (b) 50 MB só registro; Cancelar e SQL-32/33 P0 (conferido no backlog em 2026-11-12) |
 | 4 | RNF-05 | "Notebook comum" subjetivo | **Corrigido no PRD** (RNF-05: 10 MB, `PerformanceObserver`, Chrome headless sem throttling); regra de teste em CSV-51/SQL-18 |
-| 5 | RNF-04 vs arquitetura 3.2 | 300 KB vs 150 KB | **Aberto**: nenhuma tarefa do backlog cita o orçamento de 150 KB; regra de teste em HUB-40 (C3) |
+| 5 | RNF-04 vs arquitetura 3.2 | 300 KB vs 150 KB | **Corrigido em T-209**: cita 150 KB (shell) e 120 KB (fontes), verificável por HUB-40 (C3) |
 | 6 | T-205 | Exceções e dono do script | **Corrigido em T-205** |
 | 7 | T-203 | Lista fechada de cartões | **Corrigido em T-203**: 2 cartões ativos (CSV, SQL), sem Apoie/PIX (C10.2) |
 | 8 | T-201, T-207, RF-17 | Rota inexistente sem roteador | **Corrigido em T-207** (C4) |
@@ -432,7 +432,7 @@ Esta seção não edita o backlog. Conferida em 2026-11-12 lendo `docs/roadmap/b
 | 10 | T-208 | "Como antes" sem linha de base | **Corrigido em T-210** (T-208 depende dela) |
 | 11 | T-208, T-701, RNF-06 | Lighthouse sem parâmetros | **Corrigido em T-208 e T-701** (indicador, mobile, mediana de 3). A versão `13.6.0` do backlog veio só do registro npm: segue "a fixar após verificação" (2.1) |
 | 12 | T-206 | "Contraste AA" sem ferramenta | **Corrigido em T-206** (cálculo, tabela 10.2 do hub-ux.md, que ainda está em criação) |
-| 13 | T-302 | Delimitadores, codificações, "legível" | **Aberto**: delimitadores, causa e ação e `expected.json` estão em T-302; codificações (CSV-15, P1) não estão listadas |
+| 13 | T-302 | Delimitadores, codificações, "legível" | **Corrigido em T-302**: inclui CSV-14/15 com `bom.csv` e `latin1.csv` |
 | 14 | T-303 | "Conferidos manualmente" | **Corrigido em T-303** |
 | 15 | T-304 | "Sem quebrar a página" | **Corrigido em T-304** |
 | 16 | T-305 | Regras de saneamento | **Corrigido em T-305** |
@@ -445,12 +445,12 @@ Esta seção não edita o backlog. Conferida em 2026-11-12 lendo `docs/roadmap/b
 | 23 | T-402 | "Ou limite documentado" | **Corrigido em T-402** |
 | 24 | T-703 | Pré-visualização | **Corrigido em T-703** |
 | 25 | RNF-11, RNF-12 | Pages real exige deploy | **Corrigido em T-213** |
-| 26 | RNF-03 | "Confirmar com Lucas" | **Aberto**: nenhuma tarefa registra a confirmação antes de PRV-06 e PRV-08 virarem P0 definitivos |
+| 26 | RNF-03 | "Confirmar com Lucas" | **Registrado como suposição** no PRD e no backlog (pergunta 14 do roadmap): PRV-06 e PRV-08 só viram P0 definitivos após a confirmação. **Pendente de resposta do Lucas**, não é erro de documento |
 | 27 | T-801 a T-807 | Conflito com "zero diff" | **Corrigido em T-211** e no cabeçalho da trilha paralela |
 | 28 | T-307 | Regra de comparação | **Corrigido em T-307** |
 | 29 | T-310, T-311 | Nome `big-10mb.csv` e lista de fixtures (C10.4) | **Corrigido em T-310/T-311**: nome canônico `limit-10mb.csv`; T-311 aponta para a lista da seção 3.2 |
 
-Contagem atual (conferida no backlog em 2026-11-12): 26 corrigidos e 3 abertos (itens 5, 13, 26). Aberto: nenhuma tarefa do backlog cita o orçamento de 150 KB (item 5); codificações CSV-15 não estão em T-302 (item 13); nenhuma tarefa registra a confirmação do Lucas para RNF-03 (item 26). T-208 já usa 360 px (L3 fechado).
+Contagem atual (conferida no backlog em 2026-11-12): 28 corrigidos e 1 pendente de resposta do Lucas (item 26, RNF-03). T-208 já usa 360 px (L3 fechado).
 
 ### 7.1 Pontos de atenção que não são critérios, mas afetam os testes
 

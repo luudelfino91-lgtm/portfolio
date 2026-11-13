@@ -1,0 +1,119 @@
+/* =====================================================================
+   Hub CSS: só o que é próprio do Hub. Tokens, .nav, .btn, .chip, .eyebrow,
+   .lang e .wrap vêm de assets/css/styles.css do portfólio (referência,
+   sem cópia). Tokens novos ficam no escopo .hub (hub-ux 10.2).
+   Todo par de cor segue a tabela 10.2 de docs/design/hub-ux.md.
+   ===================================================================== */
+
+/* ---- Fontes locais (D3a): mesmos nomes de família do styles.css ---- */
+@font-face{font-family:"Bricolage Grotesque";font-style:normal;font-weight:200 800;font-display:swap;src:url("../fonts/bricolage-grotesque-latin-wght-normal.woff2") format("woff2")}
+@font-face{font-family:"Figtree";font-style:normal;font-weight:300 900;font-display:swap;src:url("../fonts/figtree-latin-wght-normal.woff2") format("woff2")}
+@font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:400;font-display:swap;src:url("../fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:500;font-display:swap;src:url("../fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2")}
+
+/* ---- Tokens novos, só dentro de .hub ---- */
+.hub{
+  --err:#B3261E; --warn:#8A5A00; --hub-ink-3:#6E677D;
+  --focus-dark:#CD9CDA; --tap:44px;
+  --ink-3:var(--hub-ink-3); /* corrige o contraste de --ink-3 no tema claro, só no Hub */
+}
+:root[data-theme="dark"] .hub{--err:#F2A39D; --warn:#E8C170; --hub-ink-3:#8F869B}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .hub{--err:#F2A39D; --warn:#E8C170; --hub-ink-3:#8F869B}
+}
+
+/* ---- Base ---- */
+.hub main{padding-block:28px 8px}
+.hub main:focus{outline:0}
+
+/* Link de pular */
+.hub-skip{position:fixed;top:12px;left:20px;z-index:100;transform:translateY(-200%)}
+.hub-skip:focus{transform:none}
+
+/* Cabeçalho: alvos de toque de 44px */
+.hub .icon-btn{width:var(--tap);height:var(--tap)}
+.hub .lang{padding:0}
+.hub .lang button{min-width:var(--tap);min-height:var(--tap)}
+.hub .links a{display:inline-flex;align-items:center;min-height:var(--tap)}
+.hub .links a.on{background:var(--ink);color:var(--bg)}
+.hub .brand{min-height:var(--tap)}
+.hub .brand small{color:var(--hub-ink-3)}
+.hub .nav-actions{gap:8px}
+
+/* Hero */
+.hub-hero{padding-block:44px 28px}
+.hub-hero--sub{padding-block:20px 24px}
+.hub-hero h1{font-size:clamp(34px,5.2vw,60px);font-weight:750;margin-top:20px}
+.hub-hero--sub h1{font-size:clamp(30px,4.2vw,46px);margin-top:0}
+.hub-hero .lede{font-size:18px;color:var(--ink-2);max-width:60ch;margin-top:18px}
+.hub-hero .ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.hub .btn{min-height:var(--tap);justify-content:center}
+
+/* Seções */
+.hub-sec{padding-block:36px 8px}
+.hub-sec h2{font-size:clamp(26px,3.4vw,38px);font-weight:750}
+.hub-sec-p{color:var(--ink-2);max-width:60ch;margin-top:10px;font-size:17px}
+
+/* Cartões (hub-ux 8.11): um só link por cartão, esticado por ::after */
+.hub-grid{list-style:none;margin:24px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.hub-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;transition:border-color .15s ease,box-shadow .15s ease}
+.hub-card:hover{border-color:var(--line-strong);box-shadow:var(--shadow)}
+.hub-card h2,.hub-card h3{font-size:clamp(20px,2.4vw,24px);font-weight:700}
+.hub-card h2 a,.hub-card h3 a{text-decoration:none}
+.hub-card a::after{content:"";position:absolute;inset:0;border-radius:var(--r-lg)}
+.hub-card a:focus-visible{outline:0}
+.hub-card a:focus-visible::after{outline:2px solid var(--plum);outline-offset:3px}
+.hub-card p{color:var(--ink-2);font-size:15px;margin:0}
+.hub-go{margin-top:auto;color:var(--plum)}
+.hub-state{color:var(--ink-2)}
+
+/* Aviso informativo (hub-ux 8.8, variante info) */
+.notice{margin:36px 0 0;padding:14px 16px;border-radius:var(--r-md);border-left:3px solid var(--plum);background:var(--orchid-soft);color:var(--plum-ink);font-size:15px}
+.notice a{color:var(--plum-ink);font-weight:600;text-underline-offset:3px}
+
+/* Estado vazio (hub-ux 8.10) */
+.empty{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:var(--r-lg);padding:40px 24px}
+.empty svg{width:32px;height:32px;color:var(--ink-3)}
+.empty h2{font-size:20px;font-weight:650}
+.empty p{color:var(--ink-2);max-width:56ch}
+
+/* Migalhas (hub-ux 8.16) */
+.crumb{padding-top:12px}
+.crumb ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 8px;font:400 13px/1.4 var(--f-mono);color:var(--ink-2)}
+.crumb li{display:flex;align-items:center;min-height:var(--tap)}
+.crumb li+li::before{content:"/" / "";margin-right:8px}
+.crumb a{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);min-width:var(--tap);color:var(--ink-2);text-underline-offset:3px}
+.crumb a:hover{color:var(--ink)}
+.crumb [aria-current]{color:var(--ink)}
+
+/* Texto corrido (privacidade) */
+.hub-prose{max-width:70ch;padding-bottom:8px}
+.hub-prose h2{font-size:clamp(20px,2.4vw,26px);font-weight:700;margin-top:36px}
+.hub-prose p,.hub-prose li{color:var(--ink-2);margin-top:12px}
+.hub-prose ul{margin:0;padding-left:22px}
+.hub-prose a{color:var(--plum);text-underline-offset:3px}
+.hub-prose code{font-family:var(--f-mono);font-size:.9em;background:var(--surface-2);color:var(--ink);padding:2px 6px;border-radius:6px}
+
+/* Rodapé: --ink-2 em vez de --ink-3 (hub-ux 8.15) */
+.hub footer{color:var(--ink-2);border-top:1px solid var(--line);margin-top:56px;align-items:center}
+.hub-foot-nav{display:flex;flex-wrap:wrap;gap:0 8px}
+.hub-foot-nav a{display:inline-flex;align-items:center;min-height:var(--tap);padding-inline:8px;text-decoration:none}
+.hub footer a:hover{color:var(--ink);text-decoration:underline}
+
+/* Monograma via CSS: o texto "LD" decorativo fica fora do DOM (WCAG 2.5.3) */
+.hub .mark>span::before{content:"LD"}
+
+/* ---- Compacto (<= 640px) ---- */
+@media (max-width:640px){
+  .hub-grid{grid-template-columns:minmax(0,1fr)}
+  .hub-card{padding:20px}
+  .hub-hero{padding-block:28px 20px}
+  .hub .brand small{display:none}
+  .hub .brand-text{white-space:nowrap}
+  .hub .nav-in{padding-left:10px}
+  .hub .nav-actions{gap:4px}
+}
+@media (max-width:420px){.hub .brand-text{display:none}.hub .brand{min-width:var(--tap);justify-content:center}} /* só o monograma; o link mantém o nome por aria-label */
+@media (prefers-reduced-motion:reduce){
+  .hub-card,.hub-skip{transition:none}
+}
