@@ -27,8 +27,29 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="assets/css/styles.css">
+<link rel="stylesheet" href="assets/css/luz.css">
+<script>/* abertura: uma vez por sessão; ?intro=1 força; movimento reduzido pula */
+(function(){var f=/[?&]intro=1/.test(location.search),v=null;try{v=sessionStorage.getItem("ld-intro")}catch(e){}
+var rm=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+if(f||(!v&&!rm&&location.hash.indexOf("#/")!==0))document.documentElement.classList.add("intro-on");})();</script>
+<style>html:not(.intro-on) #intro{display:none}</style>
 </head>
 <body>
+<div class="intro" id="intro" role="presentation" aria-label="Opening: the light turns on and reveals the site" data-ia="aria-label:i.aria">
+  <div class="scan"></div>
+  <div class="lamp" id="lamp">
+    <span class="cord"></span>
+    <div class="halo"></div>
+    <svg viewBox="0 0 200 300" aria-hidden="true">
+      <path class="bulbfill" d="M88 78 C88 100 46 112 46 160 A54 54 0 1 0 154 160 C154 112 112 100 112 78 Z"/>
+      <path class="ln socket" d="M86 20 H114 V66 H86 Z M86 34 H114 M86 48 H114 M92 66 L96 76 H104 L108 66"/>
+      <path class="ln glass" d="M88 78 C88 100 46 112 46 160 A54 54 0 1 0 154 160 C154 112 112 100 112 78"/>
+      <path class="ln fil" d="M95 78 L80 176 L92 162 L102 168 L114 146 L126 134 L105 78"/>
+      <g class="pull"><path class="ln chain" d="M114 28 Q134 28 134 44 L134 112"/><circle class="knob" cx="134" cy="119" r="5.5"/></g>
+    </svg>
+  </div>
+  <button class="skip" type="button" id="introSkip"><span data-i="i.skip">Skip</span> ›</button>
+</div>
 <div class="wrap">
   <!-- ================= NAV ================= -->
   <header class="nav">
@@ -38,16 +59,16 @@
         <span>Lucas Delfino<small data-i="b.small">data · credit · collections</small></span>
       </a>
       <nav class="links" id="links" aria-label="Main" data-ia="aria-label:a.main">
+        <a href="#produtos" data-nav="produtos"><span data-i="n.prod">Products</span></a>
         <a href="#projetos" data-nav="projetos"><span data-i="n.proj">Projects</span></a>
         <a href="#trajetoria" data-nav="trajetoria"><span data-i="n.jour">Journey</span></a>
-        <a href="#stack" data-nav="stack">Stack</a>
         <a href="certificacoes.html"><span data-i="n.cert">Certifications</span></a>
         <a href="#contato" data-nav="contato"><span data-i="n.cont">Contact</span></a>
       </nav>
       <div class="nav-actions">
         <div class="lang" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="pt" aria-pressed="false">PT</button></div>
         <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle light/dark theme" data-ia="aria-label:a.theme">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path class="b-fill" d="M9 16.5c0-2-3-3.6-3-7.3a6 6 0 0 1 12 0c0 3.7-3 5.3-3 7.3z" stroke="none"/><path d="M9 16.5c0-2-3-3.6-3-7.3a6 6 0 0 1 12 0c0 3.7-3 5.3-3 7.3z"/><path d="M9.5 19h5M10.5 21.5h3"/><path d="M10 12.5l1.3-1.5 1.4 1 1.3-2"/></svg>
         </button>
         <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Open menu" data-ia="aria-label:a.menu" aria-expanded="false" aria-controls="links">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
@@ -70,7 +91,6 @@
           <a class="btn btn-ghost" href="https://www.linkedin.com/in/lucasdelfino-/" target="_blank" rel="noopener">LinkedIn <span class="arrow">↗</span></a>
           <a class="btn btn-ghost" href="https://github.com/luudelfino91-lgtm" target="_blank" rel="noopener">GitHub <span class="arrow">↗</span></a>
         </div>
-        <p class="permit"><span data-i="h.permit">Brazilian citizen. For Ireland I would need an employment permit, and I'm glad to handle the paperwork and the application fee to make it easy for the employer.</span></p>
       </div>
       <aside class="id-card reveal" aria-label="Introduction card" data-ia="aria-label:h.card">
         <div class="portrait"><img src="assets/img/lucas.webp" alt="Portrait of Lucas Delfino" data-ia="alt:h.alt"></div>
@@ -85,8 +105,18 @@
       <div class="stat"><b>10+</b><span><span data-i="s.1">years in credit and collections operations</span></span></div>
       <div class="stat"><b>13</b><span><span data-i="s.2">manual processes automated in Python</span></span></div>
       <div class="stat"><b>96 h</b><span><span data-i="s.3">per month returned to the team for analysis</span></span></div>
-      <div class="stat"><b>1st</b><span><span data-i="s.4">place in the MBA Data Challenge 4 (Squad 71)</span></span></div>
+      <div class="stat"><b><span data-i="s.4b">1st</span></b><span><span data-i="s.4">place in the MBA Data Challenge 4 (Squad 71)</span></span></div>
     </div>
+
+    <!-- ================= PRODUTOS ================= -->
+    <section class="block" id="produtos">
+      <div class="sec-head"><div>
+        <span class="eyebrow"><span data-i="pr.eb">Products</span></span>
+        <h2><span data-i="pr.h2">Ideas that <span class="grad">left the drawing board</span></span></h2>
+        <p><span data-i="pr.p">Beyond reports, I build tools that other people use on their own. Open them, try them and see how they were made.</span></p>
+      </div></div>
+      <div class="products" id="prodGrid"></div>
+    </section>
 
     <!-- ================= PROJETOS ================= -->
     <section class="block" id="projetos">
@@ -94,18 +124,14 @@
         <div>
           <span class="eyebrow"><span data-i="p.eb">Portfolio</span></span>
           <h2><span data-i="p.h2">Reports born from <span class="grad">business questions</span></span></h2>
-          <p><span data-i="p.p">A visual summary of each piece of work, with the problem and the solution in a few lines. For the technical detail, each project's case covers modelling, DAX and decisions.</span></p>
+          <p><span data-i="p.p">Each card shows the problem and the number that matters. The case covers the question, the data and the modelling decisions.</span></p>
         </div>
       </div>
-      <div class="portfolio">
-        <aside class="index" aria-label="Portfolio sections" data-ia="aria-label:p.aside">
-          <h4><span data-i="p.h4">Lanes</span></h4>
-          <ol id="laneIndex"></ol>
-          <p class="note"><span data-i="p.note">Everything in one scroll. Jump straight to the type of work you're interested in.</span></p>
-          <div class="filter" id="toolFilter" aria-label="Filter by tool" data-ia="aria-label:p.filter"></div>
-        </aside>
-        <div id="lanes"></div>
+      <div class="work-bar">
+        <div class="seg" id="laneSeg" role="group" aria-label="Filter by type of work" data-ia="aria-label:p.seg"></div>
+        <span class="work-hint" id="workHint"></span>
       </div>
+      <div class="work-grid" id="workGrid"></div>
     </section>
 
     <!-- ================= RECONHECIMENTO ================= -->
@@ -143,7 +169,8 @@
           <p><span data-i="j.p">I went through every seat in the operation before reaching BI. That is why my indicators start from the question of the person on the front line, not from the visuals.</span></p>
           <div class="phase-key"><span><i style="background:var(--orchid)"></i><span data-i="j.k1">Operations</span></span><span><i style="background:var(--plum)"></i><span data-i="j.k2">Data</span></span></div>
         </div>
-        <ol class="timeline" id="timeline"></ol>
+        <div class="tl-col"><ol class="timeline short" id="timeline"></ol>
+        <button class="btn btn-ghost more-btn" type="button" id="moreJourney" aria-expanded="false" aria-controls="timeline"><span data-i="j.more">See the full journey</span> <span class="arrow">↓</span></button></div>
       </div>
     </section>
 
@@ -223,5 +250,6 @@
 <script src="assets/js/data-en.js"></script>
 <script src="assets/js/i18n.js"></script>
 <script src="assets/js/app.js"></script>
+<script src="assets/js/luz.js"></script>
 </body>
 </html>

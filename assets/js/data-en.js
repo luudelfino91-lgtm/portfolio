@@ -6,11 +6,35 @@
    ===================================================================== */
 const EN = {
   lanes: {
+    produtos:  {name:"Products I built",      desc:"Public applications built from scratch: people use them, study with them and come back the next day."},
     autoral:   {name:"Independent study",     desc:"My own research using public data on the market I work in."},
     negocio:   {name:"Business reports",      desc:"Projects built around real business problems: sales, finance, insurance, pharma, people, retail and industry."},
     automacao: {name:"Operations automation", desc:"The work that never becomes a public dashboard but gives hours back to the team every month."}
   },
   projects: {
+    "pca10-lab": {
+      domain:"Consortium · Education", file:"Web app · Beta",
+      lede:"A free, gamified platform for consortium professionals in Brazil to prepare for ABAC's PCA-10 certification exam.",
+      side:"A 10-question diagnostic, 4 practice tests, an Exam Mode in the real exam format, training by module, a review queue for mistakes and a monthly leaderboard. The bank holds 148 questions, and the order of questions and answers changes every session.",
+      kpi:{v:"148", l:"questions across 4 modules"}, tags:["Gamification","Installable app","LGPD (Brazil's GDPR)","Beta"],
+      gallery:["Home: the next step up front (diagnostic, practice test or Exam Mode), today's goal and readiness by module","On mobile: the same home screen, with a bottom navigation bar"],
+      case:{
+        pergunta:"How do you help consortium professionals prepare for the PCA-10 without paying for a course, and without studying blind?",
+        dados:["An original bank of 148 questions written from public regulation (Law 11,795/2008, Central Bank rules, the Consumer Code, the AML law and LGPD).","Four modules: Legislation, Operations and processes, Financial calculations and Ethics.","Progress saved in the browser and synced to the cloud (Supabase, with per-user access rules) once the person signs in."],
+        tecnicas:["A 10-question diagnostic that shows the weakest module before the practice tests.","Exam Mode with 50 questions in the exam's proportions: 15 Legislation, 20 Operations, 10 Calculations and 5 Ethics.","An 80% target per module, readiness level, daily streak, achievements and a monthly leaderboard.","Email or Google sign-in, captcha-protected sign-up, terms of use and a privacy policy under LGPD.","Installable as an app, with top navigation on desktop and a bottom bar on mobile."],
+        resultado:"A Beta app, open to anyone, that turns exam prep into a daily routine with per-module targets. Not affiliated with ABAC; the questions are still being reviewed by a certified professional."}
+    },
+    "community-hub": {
+      domain:"Community · Data education", file:"hub/ · in-browser tools",
+      lede:"Free tools to practise data skills right in the browser: a data explorer, a SQL playground and a Python playground.",
+      side:"It runs on five built-in sample datasets (sales, marketing, logistics, HR and customer service). Nothing is uploaded, there is no sign-up and no tracking. Python runs in the browser and is only downloaded when you press Run.",
+      kpi:{v:"3", l:"tools ready to use"}, tags:["No sign-up","No tracking","5 sample datasets"],
+      case:{
+        pergunta:"How do you let someone practise SQL and Python without installing anything or sending data anywhere?",
+        dados:["Five built-in sample scenarios: sales, marketing, logistics, HR and customer service."],
+        tecnicas:["A data explorer with row and column counts, types and a preview of each table.","A SQL playground on the five sample databases, right in the page.","A Python playground in an isolated frame, with the scenario's tables as CSV files.","No tracking cookies and no third-party requests.","Bilingual (Portuguese and English), with light and dark themes, like the portfolio."],
+        resultado:"A place for people starting out in data to practise with no barrier: open it, pick a scenario and write the first query."}
+    },
     "panorama-consorcios": {
       domain:"Consortium market · Financial markets", file:"Independent study · 4 pages",
       lede:"An independent study of the Brazilian consortium market (a group-based savings and credit scheme used to buy cars, property and more), built on public ABAC and BACEN data from Jan 2019 to May 2026 and told in acts, like a news feature.",

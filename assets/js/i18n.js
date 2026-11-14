@@ -28,11 +28,21 @@
  "s.1": "anos em operações de crédito e cobrança",
  "s.2": "processos manuais automatizados em Python",
  "s.3": "por mês devolvidas ao time para análise",
+ "s.4b": "1º",
  "s.4": "lugar no Data Challenge 4 do MBA (Squad 71)",
  "p.eb": "Portfólio",
- "p.h2": "Relatórios que nasceram de <span class=\"grad\">perguntas de negócio</span>",
- "p.p": "Um resumo visual de cada trabalho, com o problema e a solução em poucas linhas. Quem quiser o detalhe técnico encontra modelagem, DAX e decisões no case de cada projeto.",
- "p.aside": "Seções do portfólio",
+"n.prod": "Produtos",
+"pr.eb": "Produtos",
+"pr.h2": "Ideias que <span class=\"grad\">saíram do papel</span>",
+"pr.p": "Além dos relatórios, construo ferramentas que outras pessoas usam por conta própria. Abra, teste e veja como foram feitas.",
+"p.h2": "Relatórios que nasceram de <span class=\"grad\">perguntas de negócio</span>",
+"p.p": "Cada cartão mostra o problema e o número que importa. O case traz a pergunta, os dados e as decisões de modelagem.",
+"p.seg": "Filtrar por tipo de trabalho",
+"j.more": "Ver trajetória completa",
+"j.less": "Mostrar menos",
+"i.skip": "Pular",
+"i.aria": "Abertura: a luz acende e revela o site",
+   "p.aside": "Seções do portfólio",
  "p.h4": "Trilhas",
  "p.note": "Tudo em uma rolagem só. Pule direto para o tipo de trabalho que te interessa.",
  "p.filter": "Filtrar por ferramenta",
@@ -87,7 +97,7 @@
  "f.3": "Voltar ao topo ↑"
 };
   if(window.PT_EXTRA) for(var k in window.PT_EXTRA) PT[k]=window.PT_EXTRA[k];
-  var UI = { en: {"viewCase": "View technical case", "openReport": "Open report", "published": "PUBLISHED REPORT", "internal": "INTERNAL PROJECT", "preview": "ILLUSTRATIVE PREVIEW", "openInteractive": "Open interactive report ↗", "seeHow": "See how it was built →", "ariaOpen": "Open report", "ariaCase": "View case", "altShot": "Screenshot of the report {t}", "altMock": "Illustrative preview of the report {t}", "project": "project", "projects": "projects", "all": "All", "back": "← Back to portfolio", "domain": "Domain", "tools": "Tools", "topics": "Topics", "github": "View on GitHub ↗", "hQuestion": "The business question", "hData": "Data and modelling", "hBuilt": "How it was built", "hPages": "Report pages", "hResult": "Outcome", "next": "Next case: {t}", "mockSteps": ["extract", "clean", "validate", "send"], "mockNote": "13 routines · scheduled · 0 clicks"}, pt: {"viewCase": "Ver case técnico", "openReport": "Abrir relatório", "published": "RELATÓRIO PUBLICADO", "internal": "PROJETO INTERNO", "preview": "PRÉVIA ILUSTRATIVA", "openInteractive": "Abrir relatório interativo ↗", "seeHow": "Ver como foi feito →", "ariaOpen": "Abrir relatório", "ariaCase": "Ver case", "altShot": "Captura do relatório {t}", "altMock": "Prévia ilustrativa do relatório {t}", "project": "projeto", "projects": "projetos", "all": "Todos", "back": "← Voltar ao portfólio", "domain": "Domínio", "tools": "Ferramentas", "topics": "Temas", "github": "Ver no GitHub ↗", "hQuestion": "A pergunta de negócio", "hData": "Dados e modelagem", "hBuilt": "Como foi construído", "hPages": "Páginas do relatório", "hResult": "Resultado", "next": "Próximo case: {t}", "mockSteps": ["extrair", "tratar", "validar", "enviar"], "mockNote": "13 rotinas · agendadas · 0 cliques"} };
+  var UI = { en: {"viewCaseShort": "View case", "openApp": "Open app", "labNums": [["148","questions in the bank"],["4","modules, like the exam"],["50","questions in Exam Mode"],["R$ 0","free for everyone"]], "hubComment": "-- SQL playground · sales sample", "workHint": "Click a card to see the question, the data and how it was built.", "viewCase": "View technical case", "openReport": "Open report", "published": "PUBLISHED REPORT", "internal": "INTERNAL PROJECT", "preview": "ILLUSTRATIVE PREVIEW", "openInteractive": "Open interactive report ↗", "seeHow": "See how it was built →", "ariaOpen": "Open report", "ariaCase": "View case", "altShot": "Screenshot of the report {t}", "altMock": "Illustrative preview of the report {t}", "project": "project", "projects": "projects", "all": "All", "back": "← Back to portfolio", "domain": "Domain", "tools": "Tools", "topics": "Topics", "github": "View on GitHub ↗", "hQuestion": "The business question", "hData": "Data and modelling", "hBuilt": "How it was built", "hPages": "Report pages", "hResult": "Outcome", "next": "Next case: {t}", "mockSteps": ["extract", "clean", "validate", "send"], "mockNote": "13 routines · scheduled · 0 clicks"}, pt: {"viewCaseShort": "Ver case", "openApp": "Abrir app", "labNums": [["148","questões no banco"],["4","módulos, como a prova"],["50","questões no Modo Prova"],["R$ 0","gratuito para todos"]], "hubComment": "-- playground de SQL · base de vendas", "workHint": "Clique em um cartão para ver a pergunta, os dados e como foi construído.", "viewCase": "Ver case técnico", "openReport": "Abrir relatório", "published": "RELATÓRIO PUBLICADO", "internal": "PROJETO INTERNO", "preview": "PRÉVIA ILUSTRATIVA", "openInteractive": "Abrir relatório interativo ↗", "seeHow": "Ver como foi feito →", "ariaOpen": "Abrir relatório", "ariaCase": "Ver case", "altShot": "Captura do relatório {t}", "altMock": "Prévia ilustrativa do relatório {t}", "project": "projeto", "projects": "projetos", "all": "Todos", "back": "← Voltar ao portfólio", "domain": "Domínio", "tools": "Ferramentas", "topics": "Temas", "github": "Ver no GitHub ↗", "hQuestion": "A pergunta de negócio", "hData": "Dados e modelagem", "hBuilt": "Como foi construído", "hPages": "Páginas do relatório", "hResult": "Resultado", "next": "Próximo case: {t}", "mockSteps": ["extrair", "tratar", "validar", "enviar"], "mockNote": "13 rotinas · agendadas · 0 cliques"} };
   var KEY = "ld-lang";
 
   function initial(){

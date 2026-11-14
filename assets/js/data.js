@@ -13,12 +13,42 @@ const IMG = "assets/img/projetos/";
 const PBI = "https://app.powerbi.com/view?r=";
 
 const LANES = [
+  {id:"produtos",  name:"Produtos que construí", desc:"Aplicações abertas ao público, feitas do zero: alguém usa, estuda e volta no dia seguinte."},
   {id:"autoral",   name:"Estudo autoral",        desc:"Pesquisa própria com dados públicos sobre o mercado em que eu atuo."},
   {id:"negocio",   name:"Relatórios de negócio", desc:"Projetos com problemas de negócio reais: comercial, financeiro, seguros, farmacêutico, pessoas, varejo e indústria."},
   {id:"automacao", name:"Automação na operação", desc:"O trabalho que não vira dashboard público, mas devolve horas ao time todo mês."}
 ];
 
 const PROJECTS = [
+  {slug:"pca10-lab", lane:"produtos", domain:"Consórcios · Educação", featured:true,
+   title:"PCA-10 Lab", file:"App web · Beta", mock:"line",
+   lede:"Plataforma gratuita e gamificada para quem trabalha com consórcio estudar para a certificação PCA-10 da ABAC.",
+   side:"Diagnóstico de 10 questões, 4 simulados, Modo Prova no formato da prova, treino por módulo, revisão dos erros e ranking mensal. O banco tem 148 questões, e a ordem das questões e das alternativas muda a cada sessão.",
+   kpi:{v:"148", l:"questões em 4 módulos"}, tools:["JavaScript","Supabase","Cloudflare"], tags:["Gamificação","App instalável","LGPD","Beta"],
+   app:"https://pca10-quest-app.pages.dev", report:"", repo:"", cover:IMG+"pca10-lab-inicio.webp", draft:false,
+   gallery:[
+     {src:IMG+"pca10-lab-inicio.webp", cap:"Início: o próximo passo em destaque (diagnóstico, simulado ou Modo Prova), meta do dia e aptidão por módulo"},
+     {src:IMG+"pca10-lab-celular.webp", cap:"No celular: o mesmo início, com navegação na barra inferior"}],
+   case:{
+     pergunta:"Como ajudar profissionais de consórcio a se prepararem para a PCA-10 sem pagar por um curso, e sem estudar no escuro?",
+     dados:["Banco próprio de 148 questões, redigidas a partir de normas públicas (Lei 11.795/2008, regulação do Banco Central, CDC, Lei 9.613/1998 e LGPD).","Quatro módulos: Legislação, Funcionamento e processos, Cálculos financeiros e Ética.","Progresso salvo no navegador e sincronizado na nuvem (Supabase, com regras de acesso por usuário) quando a pessoa entra na conta."],
+     tecnicas:["Diagnóstico inicial de 10 questões que mostra o módulo mais fraco antes dos simulados.","Modo Prova com 50 questões na proporção da prova: 15 de Legislação, 20 de Funcionamento, 10 de Cálculos e 5 de Ética.","Meta de 80% por módulo, nível de prontidão, sequência diária, conquistas e ranking mensal.","Login por e-mail ou Google, cadastro protegido por captcha, termos de uso e política de privacidade (LGPD).","Instalável como app, com navegação no topo no computador e na barra inferior no celular."],
+     dax:"",
+     resultado:"Um app em Beta, aberto a qualquer pessoa, que transforma a preparação em uma rotina diária com metas por módulo. Sem vínculo com a ABAC; as questões ainda passam por revisão de profissional certificado."}},
+
+  {slug:"community-hub", lane:"produtos", domain:"Comunidade · Educação em dados", featured:true,
+   title:"Data & AI Community Hub", file:"hub/ · ferramentas no navegador", mock:"pipeline",
+   lede:"Ferramentas gratuitas para praticar dados direto no navegador: explorador de dados, playground de SQL e playground de Python.",
+   side:"Funciona com cinco bases de exemplo prontas (vendas, marketing, logística, RH e atendimento). Nada é enviado, não pede cadastro e não tem rastreamento. O Python roda no próprio navegador e só é baixado quando a pessoa clica em Executar.",
+   kpi:{v:"3", l:"ferramentas prontas"}, tools:["SQL","Python","JavaScript"], tags:["Sem cadastro","Sem rastreamento","5 bases de exemplo"],
+   app:"hub/", report:"", repo:"", cover:IMG+"hub-inicio.webp", draft:false,
+   case:{
+     pergunta:"Como deixar alguém praticar SQL e Python sem instalar nada e sem enviar dados para lugar nenhum?",
+     dados:["Cinco cenários de exemplo embutidos: vendas, marketing, logística, RH e atendimento."],
+     tecnicas:["Explorador de dados com contagem de linhas e colunas, tipos e prévia de cada tabela.","Playground de SQL sobre os cinco bancos de exemplo, dentro da própria página.","Playground de Python em um quadro isolado, com as tabelas do cenário em CSV.","Páginas sem cookies de rastreamento e sem requisições a terceiros.","Bilíngue (português e inglês), com tema claro e escuro, como o portfólio."],
+     dax:"",
+     resultado:"Um lugar para quem está começando em dados praticar sem barreira: abre, escolhe um cenário e escreve a primeira consulta."}},
+
   {slug:"panorama-consorcios", lane:"autoral", domain:"Consórcios · Mercado financeiro",
    title:"Panorama Consórcios", file:"Estudo autoral · 4 páginas", mock:"area",
    lede:"Estudo autoral sobre o mercado brasileiro de consórcios, com dados públicos da ABAC e do BACEN de jan/2019 a mai/2026, contado em atos, como uma reportagem.",

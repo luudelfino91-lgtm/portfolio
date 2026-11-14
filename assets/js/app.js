@@ -47,48 +47,77 @@ function mockSVG(p){
   return s+"</svg>";
 }
 
+/* Cartão compacto da grade de trabalhos */
 function projectCard(p){
   const hasReport=!!p.report;
-  const preview = p.cover ? `<img src="${esc(p.cover)}" data-slug="${p.slug}" alt="${esc(t("altShot",{t:p.title}))}" loading="lazy">` : mockSVG(p);
-  const viewHref = hasReport ? p.report : `#/case/${p.slug}`;
-  const ext = hasReport ? ' target="_blank" rel="noopener"' : '';
-  return `<article class="proj" data-tools="${esc(p.tools.join('|'))}" id="p-${p.slug}">
-    <div class="proj-top">
+  const preview = p.cover ? `<img src="${esc(p.cover)}" data-slug="${p.slug}" alt="${esc(t("altShot",{t:p.title}))}" loading="lazy" decoding="async">` : mockSVG(p);
+  const badge = p.internal?t("internal"):(p.cover?t("published"):t("preview"));
+  return `<article class="w-card fx" data-lane="${p.lane}" id="p-${p.slug}">
+    <a class="w-shot" href="#/case/${p.slug}" aria-label="${t("ariaCase")} ${esc(p.title)}" tabindex="-1">${preview}${p.cover&&!p.internal?"":`<span class="badge">${esc(badge)}</span>`}</a>
+    <div class="w-body">
       <div><span class="domain">${esc(p.domain)}</span><h3>${esc(p.title)}</h3></div>
-      <div class="kpi"><b>${esc(p.kpi.v)}</b><span>${esc(p.kpi.l)}</span></div>
-    </div>
-    <div class="proj-body"><p>${esc(p.lede)}</p><p>${esc(p.side)}</p></div>
-    <div class="proj-foot">
-      <div class="tags">${[...p.tools,...p.tags].map(t=>`<span class="chip">${esc(t)}</span>`).join("")}</div>
-      <div class="actions">
-        <a class="btn btn-dark" href="#/case/${p.slug}">${t("viewCase")} <span class="arrow">→</span></a>
+      <div class="w-kpi"><b>${esc(p.kpi.v)}</b><span>${esc(p.kpi.l)}</span></div>
+      <p>${esc(p.lede)}</p>
+      <div class="w-tools">${p.tools.map(x=>`<span class="chip">${esc(x)}</span>`).join("")}</div>
+      <div class="w-acts">
+        <a class="btn btn-dark" href="#/case/${p.slug}">${t("viewCaseShort")} <span class="arrow">→</span></a>
         ${hasReport?`<a class="btn btn-ghost" href="${esc(p.report)}" target="_blank" rel="noopener">${t("openReport")} <span class="arrow">↗</span></a>`:""}
       </div>
-    </div>
-    <div class="frame">
-      <div class="frame-bar"><div class="lights"><i></i><i></i><i></i><span class="mono">${esc(p.file)}</span></div><span class="live">${p.internal?t("internal"):(p.cover?t("published"):t("preview"))}</span></div>
-      <a class="frame-view" href="${esc(viewHref)}"${ext} aria-label="${hasReport?t("ariaOpen"):t("ariaCase")} ${esc(p.title)}">${preview}<span class="play"><span>${hasReport?t("openInteractive"):t("seeHow")}</span></span></a>
     </div>
   </article>`;
 }
 
-let curTool="__all";
+/* Produtos em destaque (apps abertos ao público) */
+function appLink(p){ const ext=/^https?:/.test(p.app); return `href="${esc(p.app)}"${ext?' target="_blank" rel="noopener"':''}`; }
+function productCard(p){
+  const tags=p.tags.map(x=>`<span class="chip">${esc(x)}</span>`).join("");
+  const acts=`<div class="acts"><a class="btn btn-accent" ${appLink(p)}>${t("openApp")} <span class="arrow">${/^https?:/.test(p.app)?"↗":"→"}</span></a><a class="btn btn-ghost" href="#/case/${p.slug}">${t("viewCaseShort")} <span class="arrow">→</span></a></div>`;
+  if(p.slug==="pca10-lab"){
+    const g=p.gallery||[];
+    return `<article class="prod prod-lab fx" id="p-${p.slug}">
+      <span class="kicker">${esc(p.domain)} <span class="pill">Beta</span></span>
+      <h3>${esc(p.title)}</h3>
+      <p>${esc(p.lede)}</p>
+      <div class="meta-n">${t("labNums").map(([v,l])=>`<div><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join("")}</div>
+      <div class="lab-shots" aria-hidden="true">
+        <div class="browser"><div class="bar"><i></i><i></i><i></i><span>pca10-quest-app.pages.dev</span></div><img src="${esc(p.cover)}" alt="" loading="lazy" decoding="async"></div>
+        ${g[1]?`<div class="phone"><img src="${esc(g[1].src)}" alt="" loading="lazy" decoding="async"></div>`:""}
+      </div>
+      <div class="tagrow" style="margin-top:22px">${tags}</div>
+      ${acts}
+    </article>`;
+  }
+  return `<article class="prod prod-hub fx" id="p-${p.slug}">
+    <span class="kicker">${esc(p.domain)}</span>
+    <h3>${esc(p.title)}</h3>
+    <p>${esc(p.lede)}</p>
+    <div class="term" aria-hidden="true"><span class="c">${esc(t("hubComment"))}</span><br><span class="k">SELECT</span> status, <span class="k">COUNT</span>(*) <span class="k">AS</span> pedidos<br><span class="k">FROM</span> pedidos <span class="k">GROUP BY</span> status <span class="k">ORDER BY</span> 2 <span class="k">DESC</span>;<span class="caret"></span>
+      <table><tr><th>status</th><th>pedidos</th></tr><tr><td>entregue</td><td class="n">162</td></tr><tr><td>cancelado</td><td class="n">17</td></tr><tr><td>pago</td><td class="n">12</td></tr><tr><td>enviado</td><td class="n">9</td></tr></table></div>
+    <div class="tagrow">${tags}</div>
+    ${acts}
+  </article>`;
+}
+
+let curLane="__all";
 function renderHome(){
   const LS=LANES.map(LL), PS=PROJECTS.map(LP);
-  $("#laneIndex").innerHTML = LS.map((l,i)=>{const n=PS.filter(p=>p.lane===l.id).length;return `<li><a href="#lane-${l.id}" data-lane="${l.id}" class="${i?'':'on'}"><span>${esc(l.name)}</span><span class="count">${n}</span></a></li>`}).join("");
-  $("#lanes").innerHTML = LS.map(l=>{const ps=PS.filter(p=>p.lane===l.id);
-    return `<div class="lane" id="lane-${l.id}"><div class="lane-head"><div><h3>${esc(l.name)}</h3><p>${esc(l.desc)}</p></div><span class="count">${ps.length} ${ps.length>1?t("projects"):t("project")}</span></div>${ps.map(projectCard).join("")}</div>`}).join("");
-  const tools=[...new Set(PS.flatMap(p=>p.tools))];
-  $("#toolFilter").innerHTML = [["__all",t("all")],...tools.map(x=>[x,x])].map(([v,lab])=>`<button type="button" aria-pressed="${v===curTool}" data-tool="${esc(v)}">${esc(lab)}</button>`).join("");
+  const prods=PS.filter(p=>p.lane==="produtos"), work=PS.filter(p=>p.lane!=="produtos");
+  $("#prodGrid").innerHTML = prods.map(productCard).join("");
+  const lanes=LS.filter(l=>l.id!=="produtos");
+  $("#laneSeg").innerHTML = [["__all",t("all"),work.length],...lanes.map(l=>[l.id,l.name,work.filter(p=>p.lane===l.id).length])]
+    .map(([v,lab,n])=>`<button type="button" aria-pressed="${v===curLane}" data-lane="${esc(v)}">${esc(lab)} <span class="n">${n}</span></button>`).join("");
+  $("#workGrid").innerHTML = work.map(projectCard).join("");
   applyFilter();
   $("#timeline").innerHTML = JOURNEY.map(LJ).map(j=>`<li class="${j.ph}${j.now?' now':''}"><div class="t-when">${esc(j.when)}</div><div class="t-role">${esc(j.role)}</div><div class="t-org">${esc(j.org)}</div><p class="t-desc">${esc(j.desc)}</p></li>`).join("");
+  if(window.LUZ) LUZ.refresh();
 }
 function applyFilter(){
-  document.querySelectorAll("#toolFilter button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.tool===curTool));
-  document.querySelectorAll(".proj").forEach(c=>c.classList.toggle("hidden",curTool!=="__all"&&!c.dataset.tools.split("|").includes(curTool)));
-  document.querySelectorAll(".lane").forEach(l=>l.hidden=!l.querySelector(".proj:not(.hidden)"));
+  document.querySelectorAll("#laneSeg button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.lane===curLane));
+  document.querySelectorAll("#workGrid .w-card").forEach(c=>c.hidden=curLane!=="__all"&&c.dataset.lane!==curLane);
+  const lane=LANES.map(LL).find(l=>l.id===curLane);
+  $("#workHint").textContent = lane ? lane.desc : t("workHint");
 }
-$("#toolFilter").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return; curTool=b.dataset.tool; applyFilter();});
+$("#laneSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return; curLane=b.dataset.lane; applyFilter();});
 
 function renderCase(slug){
   const p0=PROJECTS.find(x=>x.slug===slug); if(!p0) return false;
@@ -110,6 +139,7 @@ function renderCase(slug){
         <div><dt>${t("tools")}</dt><dd>${esc(p.tools.join(" · "))}</dd></div>
         <div><dt>${t("topics")}</dt><dd>${esc(p.tags.join(" · "))}</dd></div></dl>
         <div class="actions">
+          ${p.app?`<a class="btn btn-accent" ${appLink(p)}>${t("openApp")} ${/^https?:/.test(p.app)?"↗":"→"}</a>`:""}
           ${p.report?`<a class="btn btn-accent" href="${esc(p.report)}" target="_blank" rel="noopener">${t("openReport")} ↗</a>`:""}
           ${p.repo?`<a class="btn btn-ghost" href="${esc(p.repo)}" target="_blank" rel="noopener">${t("github")}</a>`:""}
         </div>
@@ -143,10 +173,9 @@ renderHome(); route(); addEventListener("hashchange",route);
 /* Destaque de seção ativa (índice e menu) */
 const spy=new IntersectionObserver(es=>es.forEach(e=>{ if(!e.isIntersecting) return;
   const id=e.target.id;
-  if(id.startsWith("lane-")) document.querySelectorAll("#laneIndex a").forEach(a=>a.classList.toggle("on",a.dataset.lane===id.slice(5)));
-  else document.querySelectorAll("[data-nav]").forEach(a=>a.classList.toggle("on",a.dataset.nav===id));
+  document.querySelectorAll("[data-nav]").forEach(a=>a.classList.toggle("on",a.dataset.nav===id));
 }),{rootMargin:"-45% 0px -50% 0px"});
-document.querySelectorAll(".lane,#projetos,#trajetoria,#stack,#contato").forEach(el=>spy.observe(el));
+document.querySelectorAll("#produtos,#projetos,#trajetoria,#stack,#contato").forEach(el=>spy.observe(el));
 
 /* Tema */
 $("#themeBtn").addEventListener("click",()=>{const r=document.documentElement;
@@ -167,6 +196,5 @@ document.addEventListener("error",e=>{
 /* Troca de idioma: refaz cards, trilhas, trajetória e o case aberto */
 onLang.push(()=>{
   renderHome();
-  document.querySelectorAll(".lane").forEach(el=>spy.observe(el));
   route();
 });
