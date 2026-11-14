@@ -149,8 +149,16 @@ $("#laneSeg").addEventListener("click",e=>{const b=e.target.closest("button");if
 function caseVideo(v){
   const reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
   if(!v.ready) return `<div class="cv-wait"><span class="mono">${esc(t("videoSoon"))}</span></div>`;
-  return `<video class="cv" ${reduce?"controls preload=\"none\"":"autoplay muted loop playsinline preload=\"metadata\""} poster="${esc(v.poster)}" aria-label="${esc(v.cap)}"><source src="${esc(v.src)}" type="video/mp4"></video>`;
+  const k=isDark()&&v.srcDark?"Dark":"";
+  return `<video class="cv" ${reduce?"controls preload=\"none\"":"autoplay muted loop playsinline preload=\"metadata\""} poster="${esc(v["poster"+k]||v.poster)}" aria-label="${esc(v.cap)}" data-src="${esc(v.src)}" data-src-dark="${esc(v.srcDark||"")}" data-poster="${esc(v.poster)}" data-poster-dark="${esc(v.posterDark||"")}"><source src="${esc(v["src"+k]||v.src)}" type="video/mp4"></video>`;
 }
+function isDark(){const r=document.documentElement;return r.dataset.theme?r.dataset.theme==="dark":!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);}
+/* Troca o vídeo do case quando o tema muda (claro e escuro têm gravações próprias) */
+function syncCaseVideo(){document.querySelectorAll("video.cv[data-src-dark]").forEach(el=>{if(!el.dataset.srcDark)return;
+  const k=isDark()?"Dark":"", src=el.dataset["src"+k]||el.dataset.src, s=el.querySelector("source");
+  if(s&&s.getAttribute("src")!==src){const play=!el.paused||el.autoplay;el.poster=el.dataset["poster"+k]||el.dataset.poster;s.setAttribute("src",src);el.load();if(play)el.play().catch(()=>{});}});}
+new MutationObserver(syncCaseVideo).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",syncCaseVideo);
 /* Diagrama "como as peças se encaixam" em HTML/CSS */
 function caseFlow(fl){
   const col=(c,i)=>`<div class="fl-col fl-${i}"><span class="fl-h">${esc(c[0])}</span><ul>${c[1].map(x=>`<li${i==1?' class="mono"':''}>${esc(x)}</li>`).join("")}</ul></div>`;

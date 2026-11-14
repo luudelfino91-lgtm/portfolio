@@ -193,8 +193,9 @@ const PROJECTS = [
            ["bases_powerbi_banco","hoje 07:45","amanhã 07:45",""],["vendas_diario_email","hoje 08:10","amanhã 08:10","repetida 1×"],
            ["verifica_pendencias","hoje 08:30","amanhã 08:30",""],["horas_extras_diario","hoje 09:00","amanhã 09:00",""]]},
    case:{
-     video:{src:"assets/video/orquestrador-demo.mp4", poster:"assets/video/orquestrador-capa.webp", ready:false,
-       cap:"Réplica do painel real com dados fictícios: uma falha passageira se corrige sozinha, uma tarefa é disparada à mão e o verificador de pendências manda o e-mail do dia."},
+     video:{src:"assets/video/orquestrador-demo.mp4", poster:"assets/video/orquestrador-capa.webp",
+       srcDark:"assets/video/orquestrador-demo-escuro.mp4", posterDark:"assets/video/orquestrador-capa-escuro.webp", ready:true,
+       cap:"Demonstração com dados fictícios: uma rotina falha por erro passageiro, o pipeline roda de novo sozinho e se recupera, o vigia reinicia o Outlook travado e o verificador manda o e-mail do dia."},
      pergunta:"Quanto tempo do time está preso em copiar, colar e conferir arquivos todo dia, e como tirar isso da mão sem criar um monte de robôs que ninguém vigia?",
      contexto:"Toda manhã, alguém baixava relatórios de quatro plataformas de discagem, colava cada um numa planilha de acompanhamento, atualizava as bases do Power BI dos clientes e mandava os resumos por e-mail. Quando uma etapa falhava, ninguém sabia até o gestor perguntar pelo número.",
      nums:[["22","tarefas agendadas rodando sozinhas"],["6","famílias de rotina, da extração ao e-mail"],["4","plataformas de discagem consolidadas num só relatório"],["3 dias","de janela para pegar qualquer execução que faltou"]],

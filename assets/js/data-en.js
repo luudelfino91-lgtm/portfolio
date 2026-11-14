@@ -140,7 +140,7 @@ const EN = {
               ["bases_powerbi_banco","today 07:45","tomorrow 07:45",""],["vendas_diario_email","today 08:10","tomorrow 08:10","retried 1×"],
               ["verifica_pendencias","today 08:30","tomorrow 08:30",""],["horas_extras_diario","today 09:00","tomorrow 09:00",""]]},
       case:{
-        video:{cap:"A replica of the real dashboard with fictional data: a transient failure fixes itself, a task is triggered by hand and the pending-run checker sends the day's email."},
+        video:{cap:"A demo with fictional data: a routine fails on a transient error, the pipeline reruns on its own and recovers, the watchdog restarts a frozen Outlook and the gap checker sends the day's email."},
         pergunta:"How much of the team's time is stuck copying, pasting and checking files every day, and how do you take that off their hands without creating a pile of bots nobody watches?",
         contexto:"Every morning, someone downloaded reports from four dialler platforms, pasted each one into a tracking spreadsheet, refreshed the clients' Power BI datasets and emailed the summaries. When a step failed, nobody knew until the manager asked for the number.",
         nums:[["22","scheduled tasks running on their own"],["6","routine families, from extraction to email"],["4","dialler platforms consolidated into one report"],["3 days","window to catch any run that was missed"]],
