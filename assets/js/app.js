@@ -6,14 +6,40 @@ const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&g
 const LP = p => { if(LANG!=="en"||typeof EN==="undefined") return p; const e=EN.projects[p.slug]; if(!e) return p;
   return {...p,...e, kpi:e.kpi||p.kpi, tags:e.tags||p.tags,
     gallery:p.gallery&&p.gallery.map((g,i)=>({...g,cap:(e.gallery&&e.gallery[i])||g.cap})),
-    case:{...p.case,...(e.case||{})}}; };
+    case:{...p.case,...(e.case||{}), video:p.case&&p.case.video&&{...p.case.video,...((e.case&&e.case.video)||{})}}}; };
 const LL = l => (LANG==="en"&&typeof EN!=="undefined"&&EN.lanes[l.id])?{...l,...EN.lanes[l.id]}:l;
 const LJ = (j,i) => (LANG==="en"&&typeof EN!=="undefined"&&EN.journey[i])?{...j,...EN.journey[i]}:j;
 
 function rng(seed){let h=0;for(const c of seed)h=(h*31+c.charCodeAt(0))>>>0;return()=>((h=(h*1664525+1013904223)>>>0)/4294967296);}
 
 /* Prévia ilustrativa de dashboard (usada quando não há imagem real) */
+/* Mini painel de tarefas (prévia do case de automação): SVG com proporção fixa, então nada estoura */
+function tasksSVG(p){
+  const P=p.panel, W=640, H=400, f="var(--f-mono)";
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("altMock",{t:p.title}))}" xmlns="http://www.w3.org/2000/svg">`;
+  s+=`<rect width="${W}" height="${H}" style="fill:var(--mock-bg)"/>`;
+  /* faixa de cima livre para o selo "Projeto interno" */
+  const kw=(W-48-2*12)/3, ky=68;
+  P.kpis.forEach((k,i)=>{const x=24+i*(kw+12);
+    s+=`<rect x="${x}" y="${ky}" width="${kw}" height="66" rx="6" style="fill:var(--mock-panel);stroke:var(--mock-line)"/>`;
+    s+=`<text x="${x+16}" y="${ky+35}" style="fill:${i==0?'var(--mock-a)':'var(--mock-c)'};font:700 28px var(--f-display)">${esc(k[0])}</text>`;
+    s+=`<text x="${x+16}" y="${ky+54}" style="fill:var(--mock-c);font:500 12px var(--f-body)" opacity=".62">${esc(k[1])}</text>`;});
+  const ty=146;
+  s+=`<rect x="24" y="${ty}" width="${W-48}" height="${H-ty-14}" rx="6" style="fill:var(--mock-panel);stroke:var(--mock-line)"/>`;
+  const cx=[46,256,370,478];
+  P.cols.forEach((c,i)=>{s+=`<text x="${i?cx[i]:cx[0]+8}" y="${ty+22}" style="fill:var(--mock-c);font:600 10px ${f};letter-spacing:.1em" opacity=".5">${esc(c.toUpperCase())}</text>`;});
+  P.rows.forEach((r,i)=>{const y=ty+31+i*33;
+    s+=`<line x1="36" x2="${W-36}" y1="${y}" y2="${y}" style="stroke:var(--mock-line)"/>`;
+    s+=`<circle cx="${cx[0]-2}" cy="${y+18}" r="4.5" style="fill:var(--ok)"/>`;
+    s+=`<text x="${cx[0]+8}" y="${y+22}" style="fill:var(--mock-c);font:500 12.5px ${f}">${esc(r[0])}</text>`;
+    s+=`<text x="${cx[1]}" y="${y+22}" style="fill:var(--mock-c);font:400 11px ${f}" opacity=".7">${esc(r[1])}</text>`;
+    s+=`<text x="${cx[2]}" y="${y+22}" style="fill:var(--mock-c);font:400 11px ${f}" opacity=".7">${esc(r[2])}</text>`;
+    s+=`<rect x="${cx[3]}" y="${y+8}" width="58" height="20" rx="4" style="fill:var(--ok)" opacity=".16"/><text x="${cx[3]+29}" y="${y+22}" text-anchor="middle" style="fill:var(--ok);font:600 10.5px ${f}">${esc(P.ok)}</text>`;
+    if(r[3]) s+=`<text x="${cx[3]+64}" y="${y+22}" style="fill:var(--mock-a);font:600 10.5px ${f}">${esc(r[3])}</text>`;});
+  return s+"</svg>";
+}
 function mockSVG(p){
+  if(p.mock==="tasks"&&p.panel) return tasksSVG(p);
   const r=rng(p.slug), W=640,H=360;
   let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("altMock",{t:p.title}))}" xmlns="http://www.w3.org/2000/svg">`;
   s+=`<rect width="${W}" height="${H}" style="fill:var(--mock-bg)"/>`;
@@ -119,6 +145,28 @@ function applyFilter(){
 }
 $("#laneSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return; curLane=b.dataset.lane; applyFilter();});
 
+/* Vídeo do case: mudo, em loop e sem som; com movimento reduzido, só a capa com controles */
+function caseVideo(v){
+  const reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(!v.ready) return `<div class="cv-wait"><span class="mono">${esc(t("videoSoon"))}</span></div>`;
+  const k=isDark()&&v.srcDark?"Dark":"";
+  return `<video class="cv" ${reduce?"controls preload=\"none\"":"autoplay muted loop playsinline preload=\"metadata\""} poster="${esc(v["poster"+k]||v.poster)}" aria-label="${esc(v.cap)}" data-src="${esc(v.src)}" data-src-dark="${esc(v.srcDark||"")}" data-poster="${esc(v.poster)}" data-poster-dark="${esc(v.posterDark||"")}"><source src="${esc(v["src"+k]||v.src)}" type="video/mp4"></video>`;
+}
+function isDark(){const r=document.documentElement;return r.dataset.theme?r.dataset.theme==="dark":!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);}
+/* Troca o vídeo do case quando o tema muda (claro e escuro têm gravações próprias) */
+function syncCaseVideo(){document.querySelectorAll("video.cv[data-src-dark]").forEach(el=>{if(!el.dataset.srcDark)return;
+  const k=isDark()?"Dark":"", src=el.dataset["src"+k]||el.dataset.src, s=el.querySelector("source");
+  if(s&&s.getAttribute("src")!==src){const play=!el.paused||el.autoplay;el.poster=el.dataset["poster"+k]||el.dataset.poster;s.setAttribute("src",src);el.load();if(play)el.play().catch(()=>{});}});}
+new MutationObserver(syncCaseVideo).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",syncCaseVideo);
+/* Diagrama "como as peças se encaixam" em HTML/CSS */
+function caseFlow(fl){
+  const col=(c,i)=>`<div class="fl-col fl-${i}"><span class="fl-h">${esc(c[0])}</span><ul>${c[1].map(x=>`<li${i==1?' class="mono"':''}>${esc(x)}</li>`).join("")}</ul></div>`;
+  return `<section><h2>${t("hFlow")}</h2><div class="cx-flow" role="img" aria-label="${esc(fl.cols.map(c=>c[0]+": "+c[1].join(", ")).join(" → ")+". "+fl.monitor[0]+": "+fl.monitor[1].join(" → "))}">
+    <div class="fl-row">${fl.cols.map((c,i)=>col(c,i)+(i<fl.cols.length-1?'<span class="fl-arrow" aria-hidden="true">→</span>':"")).join("")}</div>
+    <div class="fl-mon"><span class="fl-h">${esc(fl.monitor[0])}</span><ol>${fl.monitor[1].map((x,i)=>`<li>${esc(x)}</li>${i<fl.monitor[1].length-1?'<span class="fl-arrow" aria-hidden="true">→</span>':""}`).join("")}</ol></div>
+  </div></section>`;
+}
 function renderCase(slug){
   const p0=PROJECTS.find(x=>x.slug===slug); if(!p0) return false;
   const p=LP(p0), c=p.case, lane=LL(LANES.find(l=>l.id===p.lane));
@@ -132,7 +180,8 @@ function renderCase(slug){
     </div>
     ${SHOW_DRAFT_NOTES&&p.draft?`<div class="draft"><b>Rascunho.</b> Texto-base gerado a partir do resumo do projeto. Revise os detalhes técnicos e desligue este aviso em SHOW_DRAFT_NOTES.</div>`:""}
     <div class="frame" style="margin-top:28px"><div class="frame-bar"><div class="lights"><i></i><i></i><i></i><span class="mono">${esc(p.file)}</span></div><span class="live">${p.internal?t("internal"):(p.cover?t("published"):t("preview"))}</span></div>
-      <div class="frame-view">${p.cover?`<img src="${esc(p.cover)}" data-slug="${p.slug}" alt="${esc(t("altShot",{t:p.title}))}">`:mockSVG(p)}</div></div>
+      <div class="frame-view">${c.video?caseVideo(c.video):(p.cover?`<img src="${esc(p.cover)}" data-slug="${p.slug}" alt="${esc(t("altShot",{t:p.title}))}">`:mockSVG(p))}</div></div>
+    ${c.video?`<p class="cv-cap">${esc(c.video.cap)}</p>`:""}
     <div class="case-grid">
       <aside class="meta"><dl style="margin:0;display:grid;gap:18px">
         <div><dt>${t("domain")}</dt><dd>${esc(p.domain)}</dd></div>
@@ -145,11 +194,16 @@ function renderCase(slug){
         </div>
       </aside>
       <div class="case-body">
-        <section><h2>${t("hQuestion")}</h2><p>${esc(c.pergunta)}</p></section>
+        <section><h2>${t("hQuestion")}</h2><p>${esc(c.pergunta)}</p>${c.contexto?`<p class="cx-ctx">${esc(c.contexto)}</p>`:""}</section>
+        ${c.nums?`<section class="cx-nums">${c.nums.map(n=>`<div><b>${esc(n[0])}</b><span>${esc(n[1])}</span></div>`).join("")}</section>`:""}
+        ${c.flow?caseFlow(c.flow):""}
+        ${c.families?`<section><h2>${t("hRuns")}</h2><p class="cx-note">${esc(c.families.note)}</p><div class="cx-fam">${c.families.items.map(f=>`<div><b>${esc(f[0])}</b><h3>${esc(f[1])}</h3><p>${esc(f[2])}</p></div>`).join("")}</div></section>`:""}
+        ${c.example?`<section><h2>${esc(c.example.title)}</h2><p>${esc(c.example.intro)}</p><ol class="cx-steps">${c.example.steps.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></section>`:""}
         <section><h2>${t("hData")}</h2><ul>${c.dados.map(d=>`<li>${esc(d)}</li>`).join("")}</ul></section>
         <section><h2>${t("hBuilt")}</h2><ul>${c.tecnicas.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>${dax}</section>
+        ${c.decisions?`<section><h2>${t("hDecisions")}</h2><div class="cx-dec">${c.decisions.map(d=>`<div><h3>${esc(d[0])}</h3><p>${esc(d[1])}</p></div>`).join("")}</div></section>`:""}
         ${p.gallery?`<section><h2>${t("hPages")}</h2><div class="gallery">${p.gallery.map(g=>`<figure><img src="${esc(g.src)}" alt="${esc(g.cap)}" loading="lazy"><figcaption>${esc(g.cap)}</figcaption></figure>`).join("")}</div></section>`:""}
-        <section><h2>${t("hResult")}</h2><p>${esc(c.resultado)}</p></section>
+        <section><h2>${t("hResult")}</h2><p>${esc(c.resultado)}</p>${c.falta?`<h3 class="cx-sub">${t("hMissing")}</h3><ul>${c.falta.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>`:""}${c.footnote?`<p class="cx-foot">${esc(c.footnote)}</p>`:""}</section>
         <section><a class="btn btn-ghost" href="#/case/${next.slug}">${esc(t("next",{t:next.title}))} <span class="arrow">→</span></a></section>
       </div>
     </div>`;
