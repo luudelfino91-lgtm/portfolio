@@ -216,8 +216,9 @@ html.lit .hero > div > :nth-child(7){transition-delay:.6s} html.lit .hero .id-ca
 html.lit .stats{animation:none}
 
 /* manifesto: seção presa, texto revelado pela rolagem */
-.manifesto{position:relative;height:230vh;margin-top:40px}
-.m-stick{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:center;gap:26px;max-width:980px}
+.manifesto{position:relative;height:165vh;margin-top:56px}
+.m-stick{position:sticky;top:18vh;height:auto;min-height:0;display:flex;flex-direction:column;justify-content:flex-start;gap:22px;max-width:980px;padding-bottom:8vh}
+#produtos{margin-top:-12vh}
 .m-src{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .m-txt{font:600 clamp(28px,4.4vw,56px)/1.16 var(--f-display);letter-spacing:-.025em;text-wrap:balance;margin:0}
 .m-txt .mw{display:inline-block;white-space:nowrap}
@@ -284,3 +285,4 @@ html.lenis{scroll-behavior:auto}
   .fx,.fx-words .w,html.js .hero > div > *,html.js .hero .id-card{opacity:1!important;filter:none!important;transform:none!important;transition:none!important}
   .wrap{filter:none!important;transform:none!important}
 }
+.m-stick .eyebrow{align-self:flex-start}
