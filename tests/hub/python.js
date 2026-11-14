@@ -496,7 +496,7 @@ for n in sorted(os.listdir('/data')):
       const { c, pg } = await open(br, SITE, lang, theme, vp);
       for (const st of ['inicial', 'erro+saida']) {
         if (st === 'erro+saida') { await run(pg, 'print("saida")\nimport sys\nprint("err", file=sys.stderr)\n1/0'); await run(pg, 'print("x")', { secs: 5 }); await pg.fill('#pyTimeout', '5'); await pg.fill('#pyEditor', 'while True: pass'); await pg.click('#pyRun'); await idle(pg); await pg.fill('#pyEditor', 'print(12)'); await pg.click('#pyRun'); await idle(pg); await pg.fill('#pyEditor', '1/0'); await pg.click('#pyRun'); await idle(pg) ; }
-        await pg.evaluate(AXE); n++;
+        await pg.evaluate(() => window.scrollTo(0, 0)); await pg.evaluate(AXE); n++;
         const res = await pg.evaluate(async () => { const r = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } }); return { v: r.violations.map(v => v.id + ' [' + v.impact + '] ' + v.nodes.slice(0, 3).map(x => x.target.join(' ')).join(' | ')), inc: r.incomplete.map(v => v.id + ' x' + v.nodes.length) }; });
         res.v.forEach(v => bad.push(`${lang}/${theme}/${vp}/${st}: ${v}`)); res.inc.forEach(v => inc.add(v));
         const horiz = await pg.evaluate(() => document.documentElement.scrollWidth - innerWidth); if (horiz > 0) bad.push(`${lang}/${theme}/${vp}/${st}: overflow horizontal ${horiz}px`);

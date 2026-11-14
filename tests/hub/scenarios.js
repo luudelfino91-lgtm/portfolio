@@ -159,7 +159,7 @@ const cmpRows = (ui, exp) => ui.length === exp.length && ui.every((r, i) => O.sa
     if (AXE) {
       const out = [];
       for (const [st, fn] of [['inicial', async () => { await pg.reload({ waitUntil: 'networkidle' }); await ready(pg); }], ['cenario novo carregado + consulta de exemplo executada', async () => { await loadSc(pg, 'atendimento'); await pg.click('#sqlSampleQ button[data-q="at_csat"]'); await pg.click('#sqlRun'); await ready(pg); }], ['ER aberto', async () => { await pg.click('#sqlPicker .sc-er summary'); }], ['exercicio sem Vendas carregado (needsample)', async () => { await pg.fill('#sqlExTa-filtro', 'SELECT 1'); await pg.click('#sqlExV-filtro'); }]]) {
-        await fn(); await pg.evaluate(AXE);
+        await fn(); await pg.evaluate(() => window.scrollTo(0, 0)); await pg.evaluate(AXE);
         const r = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => ({ id: v.id, impact: v.impact, n: v.nodes.length, t: v.nodes.slice(0, 2).map(x => x.target.join(' ')) })));
         out.push(`${st}: ${r.length ? JSON.stringify(r) : 'sem violacoes'}`);
       }

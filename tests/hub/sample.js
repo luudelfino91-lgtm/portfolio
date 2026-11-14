@@ -168,14 +168,14 @@ const counts = async pg => { await run(pg, TABLES.map(t => `SELECT '${t}' AS t, 
     L.rec(`SAMPLE-100 360px (${lang}/${theme}): sem rolagem horizontal da pagina nos estados do exemplo`, res.every(([, x]) => x.sw <= x.cw), JSON.stringify(res));
     if (AXE) { const out = [];
       const states = [['inicial', async () => { await pg.reload({ waitUntil: 'networkidle' }); await ready(pg); }], ['exemplo carregado + consulta + resultado', async () => { await loadSample(pg); await pg.click('#sqlSampleQ button[data-q="mes"]'); await pg.click('#sqlRun'); await ready(pg); }], ['exemplo recarregado ja carregado (aviso)', async () => { await loadSample(pg); }], ['arquivo ausente (erro)', async () => { await pg.route('**/loja-exemplo.sql', r => r.fulfill({ status: 500, body: 'x' })); await pg.reload({ waitUntil: 'networkidle' }); await ready(pg); await pg.click('#sqlSampleBtn'); await pg.waitForFunction(() => !document.getElementById('sqlErr').hidden); }]];
-      for (const [st, fn] of states) { await fn(); await pg.evaluate(AXE);
+      for (const [st, fn] of states) { await fn(); await pg.evaluate(() => window.scrollTo(0, 0)); await pg.evaluate(AXE);
         const r = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => ({ id: v.id, impact: v.impact, n: v.nodes.length, t: v.nodes.slice(0, 2).map(x => x.target.join(' ')) })));
         out.push(`${st}: ${r.length ? JSON.stringify(r) : 'sem violacoes'}`); }
       L.rec(`SAMPLE-101 axe (${lang}/${theme}/360) inicial, exemplo+resultado, aviso, erro: zero violacoes`, out.every(s => /sem violacoes/.test(s)), out.join('\n')); }
     await c.close(); }
   { const { c, pg } = await open(br, L.BASE, 'pt', 'dark', 1280);
     await loadSample(pg); await pg.click('#sqlSampleQ button[data-q="sub"]'); await pg.click('#sqlRun'); await ready(pg);
-    if (AXE) { await pg.evaluate(AXE); const r = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => v.id + ' ' + v.impact)); L.rec('SAMPLE-102 axe (pt/dark/1280) exemplo carregado com resultado: zero violacoes', r.length === 0, JSON.stringify(r)); }
+    if (AXE) { await pg.evaluate(() => window.scrollTo(0, 0)); await pg.evaluate(AXE); const r = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => v.id + ' ' + v.impact)); L.rec('SAMPLE-102 axe (pt/dark/1280) exemplo carregado com resultado: zero violacoes', r.length === 0, JSON.stringify(r)); }
     // so teclado: Tab chega ao botao do exemplo, Enter carrega; Tab chega a uma consulta, Enter coloca no editor
     await pg.reload({ waitUntil: 'networkidle' }); await ready(pg); await pg.focus('#sqlSampleBtn'); await pg.keyboard.press('Enter'); await pg.waitForFunction(() => /carregado/.test(document.getElementById('sqlStatus').textContent), null, { timeout: 15000 }); await ready(pg);
     await pg.focus('#sqlSampleQ button[data-q="filtro"]'); await pg.keyboard.press('Enter'); const g = await grab(pg);
