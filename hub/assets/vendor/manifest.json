@@ -1,5 +1,5 @@
 {
-  "_nota": "Verificar com: cd hub/assets/vendor && sha256sum -c SHA256SUMS. Origem: pacotes npm sql.js e pyodide (integridade conferida contra o registro npm na vendorizacao, T-301). Advisories de seguranca: ver docs/security/phase-3-review.md. Papa Parse 5.7.1 foi REMOVIDO em D11 (nao ha mais leitura de CSV de arquivo do usuario; o explorador usa um leitor proprio para os CSV embutidos).",
+  "_nota": "Verificar com: cd hub/assets/vendor && sha256sum -c SHA256SUMS. Origem: pacotes npm sql.js e pyodide (integridade conferida contra o registro npm na vendorizacao, T-301). Advisories de seguranca: ver docs/security/phase-3-review.md. Papa Parse 5.7.1 foi REMOVIDO em D11 (nao ha mais leitura de CSV de arquivo do usuario; o explorador usa um leitor proprio para os CSV embutidos). D12: numpy 2.4.6, pandas 3.0.2, python-dateutil 2.9.0.post0, pytz 2026.1.post1 e six 1.17.0 (wheels da distribuicao oficial do Pyodide 314.0.7, tar.bz2 de 337.536.678 B, sha256 192b5864e6e6d30ab074861af800cb8b4acb0998ef0f9342c3367448aeb86645); o pyodide-lock.json vendorizado passou a ser a versao filtrada.",
   "files": [
     {
       "path": "sqljs/sql-wasm.js",
@@ -62,8 +62,9 @@
       "package": "pyodide",
       "version": "314.0.7",
       "license": "MPL-2.0",
-      "bytes": 119077,
-      "sha256": "5dc2fc119108bc148c7457dc86e7675b5c87e1cafd420b9c34c1eaef7b36c010"
+      "bytes": 1653,
+      "sha256": "62768aa2b02ba64450cc7132addbb1efbf14b7faa7589e13c5a64aa57de88af7",
+      "derived_from": "pyodide-lock.json oficial da distribuicao pyodide-314.0.7 (357 pacotes, 119077 B, sha256 5dc2fc119108bc148c7457dc86e7675b5c87e1cafd420b9c34c1eaef7b36c010), FILTRADO para numpy, pandas, python-dateutil, pytz, six (D12) por docs/testing/vendor-pyodide-lock-filter.py; nenhuma entrada foi alterada"
     },
     {
       "path": "pyodide/LICENSE-MPL-2.0.txt",
@@ -72,6 +73,51 @@
       "license": "MPL-2.0 (texto padrao; o tarball npm nao traz LICENSE)",
       "bytes": 16726,
       "sha256": "fab3dd6bdab226f1c08630b1dd917e11fcb4ec5e1e020e2c16f83a0a13863e85"
+    },
+    {
+      "path": "pyodide/packages/numpy-2.4.6-cp314-cp314-pyemscripten_2026_0_wasm32.whl",
+      "package": "numpy",
+      "version": "2.4.6",
+      "license": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0 (campo License-Expression do METADATA do wheel)",
+      "bytes": 2960568,
+      "sha256": "a292c1f5d7d8a2208cd5e94fc467604c131cabcd2fc14fed6eefde121e7fabdf",
+      "origin": "https://github.com/pyodide/pyodide/releases/download/314.0.7/pyodide-314.0.7.tar.bz2 (pyodide/numpy-2.4.6-cp314-cp314-pyemscripten_2026_0_wasm32.whl; sha256 igual ao campo sha256 do pyodide-lock.json oficial)"
+    },
+    {
+      "path": "pyodide/packages/pandas-3.0.2-cp314-cp314-pyemscripten_2026_0_wasm32.whl",
+      "package": "pandas",
+      "version": "3.0.2",
+      "license": "BSD-3-Clause (METADATA: \"BSD 3-Clause License\")",
+      "bytes": 4177749,
+      "sha256": "45ff57772cc2f366a8582c7d3097cc4e6676342ecd5a3c08184a43462d5a02ae",
+      "origin": "https://github.com/pyodide/pyodide/releases/download/314.0.7/pyodide-314.0.7.tar.bz2 (pyodide/pandas-3.0.2-cp314-cp314-pyemscripten_2026_0_wasm32.whl; sha256 igual ao campo sha256 do pyodide-lock.json oficial)"
+    },
+    {
+      "path": "pyodide/packages/python_dateutil-2.9.0.post0-py2.py3-none-any.whl",
+      "package": "python-dateutil",
+      "version": "2.9.0.post0",
+      "license": "Dual License: Apache-2.0 / BSD-3-Clause (METADATA)",
+      "bytes": 229892,
+      "sha256": "9b13365edf9c188f570baf9c540bbb3029ada2a2dacb9694b3659941693ee9e5",
+      "origin": "https://github.com/pyodide/pyodide/releases/download/314.0.7/pyodide-314.0.7.tar.bz2 (pyodide/python_dateutil-2.9.0.post0-py2.py3-none-any.whl; sha256 igual ao campo sha256 do pyodide-lock.json oficial)"
+    },
+    {
+      "path": "pyodide/packages/pytz-2026.1.post1-py2.py3-none-any.whl",
+      "package": "pytz",
+      "version": "2026.1.post1",
+      "license": "MIT",
+      "bytes": 510489,
+      "sha256": "b8249d6450146e0b61e6d710dc02ebb35a904796c4c2f97fe87d4ac5872db36a",
+      "origin": "https://github.com/pyodide/pyodide/releases/download/314.0.7/pyodide-314.0.7.tar.bz2 (pyodide/pytz-2026.1.post1-py2.py3-none-any.whl; sha256 igual ao campo sha256 do pyodide-lock.json oficial)"
+    },
+    {
+      "path": "pyodide/packages/six-1.17.0-py2.py3-none-any.whl",
+      "package": "six",
+      "version": "1.17.0",
+      "license": "MIT",
+      "bytes": 11050,
+      "sha256": "228c50f73aa7addf2c2ccf2979c256802a59ab69cad8152b31b9443cc8140f42",
+      "origin": "https://github.com/pyodide/pyodide/releases/download/314.0.7/pyodide-314.0.7.tar.bz2 (pyodide/six-1.17.0-py2.py3-none-any.whl; sha256 igual ao campo sha256 do pyodide-lock.json oficial)"
     }
   ]
 }

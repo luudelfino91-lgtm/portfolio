@@ -17,7 +17,13 @@
                        {t:'started', id}
                        {t:'out', id, parts:[[stream, texto], ...]}   stream 'out' | 'err'
                        {t:'done', id, ok}
-   Sem micropip, sem loadPackage: lista de pacotes vazia (MVP so com Python padrao).
+                       {t:'pkgs', id, s:'loading'|'ready', names, bytes}   (D12) so informativo; pacotes sendo baixados/prontos
+                       {t:'done', id, ok, hint?}                 hint = {k:'nomodule', name} (ModuleNotFoundError) | {k:'toodeep'} | {k:'dead'} (Pyodide morreu) | {k:'pkgfail'} | {k:'isolation'}
+   D12 (numpy + pandas): sem micropip e SEM loadPackage exposto ao usuario. Quem carrega pacotes e este Worker, no inicio de cada execucao (antes de iniciar o
+   codigo DESTA execucao; codigo de uma execucao anterior, ex. setInterval, pode continuar rodando: limite conhecido, M1), a partir de uma LISTA FECHADA de 5 pacotes (numpy, pandas, python-dateutil, pytz, six),
+   decidida por analise do AST do codigo (imports) e nao por pedido do usuario. Os wheels vem do proprio site
+   (vendor/pyodide/packages/, URL absoluta derivada de indexURL, sha256 conferido pelo Pyodide contra o pyodide-lock.json
+   FILTRADO, que so conhece esses 5 pacotes). Depois de carregar, o canario roda de novo.
    ===================================================================== */
 (function () {
   'use strict';
@@ -29,6 +35,99 @@
     });
     var pyodide = null, cur = 0;
     var enc = new TextEncoder();
+
+    // ---- D12: lista fechada de pacotes (nome do import -> pacote; dependencias e tamanho do wheel em bytes, do pyodide-lock.json)
+    var IMPORT2PKG = { numpy: 'numpy', pandas: 'pandas', dateutil: 'python-dateutil', pytz: 'pytz', six: 'six' };
+    var PKGS = {
+      'numpy': { deps: [], bytes: 2960568 },
+      'pandas': { deps: ['numpy', 'python-dateutil', 'pytz'], bytes: 4177749 },
+      'python-dateutil': { deps: ['six'], bytes: 229892 },
+      'pytz': { deps: [], bytes: 510489 },
+      'six': { deps: [], bytes: 11050 }
+    };
+    var own = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };
+    var realLoad = null, helper = null, loadedPkgs = {}, gateOpen = false;
+    // Analise (so ast.parse, nada do usuario executa): nomes de modulo de nivel superior em `import x`, `from x import y` (nivel 0),
+    // e chamadas __import__('x') / import_module('x') com literal. Qualquer erro de analise (SyntaxError, recursao...) = nenhum pacote.
+    var DETECT_PY = [
+      'import ast',
+      'def detect(src, known):',
+      '    try:',
+      '        tree = ast.parse(src)',
+      '    except Exception:',
+      '        return []',
+      '    out = set()',
+      '    for n in ast.walk(tree):',
+      '        if isinstance(n, ast.Import):',
+      '            for a in n.names:',
+      '                out.add(a.name.split(".")[0])',
+      '        elif isinstance(n, ast.ImportFrom):',
+      '            if n.level == 0 and n.module:',
+      '                out.add(n.module.split(".")[0])',
+      '        elif isinstance(n, ast.Call) and n.args and isinstance(n.args[0], ast.Constant) and isinstance(n.args[0].value, str):',
+      '            f = n.func',
+      '            name = f.id if isinstance(f, ast.Name) else (f.attr if isinstance(f, ast.Attribute) else None)',
+      '            if name in ("__import__", "import_module"):',
+      '                out.add(n.args[0].value.split(".")[0])',
+      '    return sorted(x for x in out if x in known)'
+    ].join('\n');
+    function detectPackages(code) {
+      var proxy = null, res = [];
+      try {
+        helper.set('__src__', code);
+        proxy = pyodide.runPython('detect(__src__, ' + JSON.stringify(Object.keys(IMPORT2PKG)) + ')', { globals: helper });
+        res = proxy.toJs();
+      } catch (e) { res = []; }
+      finally { try { if (proxy) proxy.destroy(); } catch (e) {} }
+      var pk = [];
+      res.forEach(function (m) { if (own(IMPORT2PKG, m) && pk.indexOf(IMPORT2PKG[m]) < 0) pk.push(IMPORT2PKG[m]); });
+      return pk;
+    }
+    // M2: o parser/AST do CPython no WebAssembly estoura a pilha (fatal, o Pyodide morre) em expressoes de ~1000 niveis: parenteses,
+    // operadores unarios, cadeias de atributos ou de operadores binarios (medido: ate 800 niveis passam). Barreira barata e linear ANTES
+    // de ast.parse e de executar, aplicada ao codigo SEM literais de texto e SEM comentarios (maskLiterals), para nao bloquear dados
+    // legitimos (base64, divisores de hifens, textos com parenteses). Conservadora: em duvida NAO bloqueia; o que escapar (elif/lambda
+    // encadeados, exec de texto gerado...) mata o Pyodide e cai na recuperacao (sonda de vida em run(): hint 'dead').
+    function maskLiterals(code) {
+      var out = [], i = 0, n = code.length;
+      while (i < n) {
+        var c = code[i];
+        if (c === '#') { while (i < n && code[i] !== '\n') i++; out.push(' '); continue; }
+        if (c === '"' || c === "'") {
+          var q = code.substr(i, 3) === c + c + c ? c + c + c : c, ql = q.length;
+          i += ql;
+          while (i < n) {
+            if (code[i] === '\\') { i += 2; continue; }
+            if (code.substr(i, ql) === q) { i += ql; break; }
+            if (ql === 1 && code[i] === '\n') break;   // literal simples sem fechar: para na quebra de linha
+            i++;
+          }
+          out.push(' '); continue;
+        }
+        out.push(c); i++;
+      }
+      return out.join('');
+    }
+    function tooComplex(code) {
+      code = maskLiterals(code);
+      var depth = 0, max = 0;
+      for (var i = 0; i < code.length; i++) {
+        var ch = code.charCodeAt(i);
+        if (ch === 40 || ch === 91 || ch === 123) { if (++depth > max) max = depth; }
+        else if (ch === 41 || ch === 93 || ch === 125) { if (depth > 0) depth--; }
+      }
+      if (max > 140) return 'more than 140 nested brackets';
+      if (/(?:[-+~][ \t]*){751,}/.test(code) || /(?:\bnot[ \t]+){751,}/.test(code)) return 'more than 750 chained unary operators';
+      if (/(?:\.[ \t]*[A-Za-z_][A-Za-z_0-9]*[ \t]*){751,}/.test(code)) return 'more than 750 chained attribute accesses';
+      if (/(?:[-+*\/%|&^][ \t]*[A-Za-z_0-9.]+[ \t]*){751,}/.test(code)) return 'more than 750 chained operators in one expression';
+      return null;
+    }
+    function closure(names) {
+      var seen = [];
+      function add(n) { if (own(PKGS, n) && seen.indexOf(n) < 0) { seen.push(n); PKGS[n].deps.forEach(add); } }
+      names.forEach(add);
+      return seen;
+    }
 
     // ---- saida em lotes com teto (a thread do Worker fica bloqueada durante runPython: sem timers)
     var buf = [], bufBytes = 0, lastFlush = 0, lines = 0, bytes = 0, truncated = false;
@@ -78,7 +177,7 @@
       return { ok: true };
     }
 
-    // ---- tabelas do cenario escolhido em /data/<tabela>.csv (D11: nao ha arquivo do usuario; so open()/csv; sem pandas ainda)
+    // ---- tabelas do cenario escolhido em /data/<tabela>.csv (D11: nao ha arquivo do usuario; open()/csv ou pd.read_csv, D12)
     function safeName(n) {
       n = String(n || '').split(/[\\/]/).pop().replace(/[^\p{L}\p{N}._-]+/gu, '_').replace(/^\.+/, '').slice(0, 100);
       return n || 'data.csv';
@@ -113,25 +212,90 @@
       var mod = await import(indexURL + 'pyodide.mjs');
       pyodide = await mod.loadPyodide({
         indexURL: indexURL,
-        // PONTO DE EXTENSAO (pandas, futuro; NAO implementado): a lista abaixo e FECHADA de proposito. Para incluir pandas/numpy,
-        // um agente de seguranca deve decidir hospedar os wheels no proprio site (nunca CDN: a CSP do runner so permite 'self'),
-        // medir o peso e reabilitar loadPackage SO para uma lista fixa de nomes; os CSV de /data/ ja servem de entrada (pd.read_csv).
-        packages: [],                       // lista fechada: nenhum pacote
+        // D12: o lock e FILTRADO (so numpy, pandas, python-dateutil, pytz, six; sha256 de cada wheel) e os wheels vem do proprio
+        // site, por URL absoluta. Nada e baixado agora: `packages` fica vazio e so o Worker (nunca o usuario) pede pacotes, em run().
+        lockFileURL: indexURL + 'pyodide-lock.json',
+        packageBaseUrl: indexURL + 'packages/',
+        packages: [],
         stdin: function () { return null; }, // input() -> EOFError
         stdout: function (s) { emit('out', s); },
         stderr: function (s) { emit('err', s); }
       });
-      // loadPackage/loadPackagesFromImports desativados (sem micropip, sem wheels hospedados)
+      // Guarda a funcao real e DESATIVA a exposta (pyodide_js.loadPackage / loadPackagesFromImports): o codigo do usuario nao pede pacotes.
+      // A referencia fica numa variavel local deste Worker, fora do alcance do Python. micropip nao existe no lock filtrado.
+      realLoad = pyodide.loadPackage.bind(pyodide);
       var off = function () { throw new Error('Package loading is disabled in this playground.'); };
       try { pyodide.loadPackage = off; pyodide.loadPackagesFromImports = off; } catch (e) {}
+      // A API interna (pyodide_js._api.packageManager) e alcancavel pelo Python. Fechado e PROVADO (PD-08): os metodos do PROTOTIPO que
+      // resolvem, baixam e instalam pacotes (loadPackage, loadPackageInner, addPackageToLoad, recursiveDependencies, downloadPackage,
+      // installPackage, downloadAndInstall) foram substituidos por versoes com portao (so abrem dentro de ensurePackages), o prototipo
+      // e o lock em memoria (lockfile_packages) foram congelados. NAO fechado: a instancia (nao congela: o Pyodide grava nela) e o
+      // objeto _api podem ser SUBSTITUIDOS pelo codigo do usuario (ex.: pm._lock, api.packageManager = {...}); isso so afeta a PROPRIA
+      // sessao (descartavel) e nao da acesso a nada que a CSP nao permita. A defesa real e CSP + sandbox de origem opaca + sha256 dos
+      // wheels: 0 hits para fora, nenhuma requisicao a outra origem. O portao e defesa em profundidade, nao fronteira.
+      try {
+        var api = pyodide._api, pm = api && api.packageManager, PR = pm && Object.getPrototypeOf(pm);
+        if (PR) {
+          // TODOS os metodos do prototipo que baixam, instalam ou resolvem pacotes (lista inspecionada no Chrome: constructor, loadPackage,
+          // loadPackageInner, addPackageToLoad, recursiveDependencies, downloadPackage, installPackage, downloadAndInstall, flushBuffers,
+          // getLoadedPackageChannel, setCallbacks, logStdout, logStderr; os 5 primeiros de acao + os 3 de baixar/instalar ganham portao;
+          // os demais so mexem em buffers de log/callbacks e nao instalam nada)
+          ['loadPackage', 'loadPackageInner', 'addPackageToLoad', 'recursiveDependencies', 'downloadPackage', 'installPackage', 'downloadAndInstall'].forEach(function (k) {
+            var orig = PR[k]; if (typeof orig !== 'function') return;
+            Object.defineProperty(PR, k, { configurable: false, writable: false, value: function () {
+              if (!gateOpen) throw new Error('Package loading is disabled in this playground.');
+              return orig.apply(this, arguments);
+            } });
+          });
+          Object.freeze(PR);
+        }
+        if (api && api.lockfile_packages) Object.freeze(api.lockfile_packages);
+        if (api && api.lockfile && api.lockfile.packages) Object.freeze(api.lockfile.packages);
+      } catch (e) { self.postMessage({ t: 'fatal', detail: 'hardening failed: ' + String((e && e.message) || e).slice(0, 200) }); throw e; }
+      helper = pyodide.globals.get('dict')();   // namespace PRIVADO do detector (o usuario roda em outro dict)
+      pyodide.runPython(DETECT_PY, { globals: helper, filename: '<detector>' });
       self.postMessage({ t: 'status', s: 'ready' });
+    }
+
+    // carrega (se faltar) os pacotes da lista fechada que o codigo importa; depois confere o que ficou carregado e repete o canario
+    async function ensurePackages(names) {
+      var need = closure(names).filter(function (n) { return !loadedPkgs[n]; });
+      if (!need.length) return;
+      var total = need.reduce(function (a, n) { return a + PKGS[n].bytes; }, 0);
+      self.postMessage({ t: 'pkgs', id: cur, s: 'loading', names: need, bytes: total });
+      var errs = [];
+      gateOpen = true;
+      try { await realLoad(names.filter(function (n) { return own(PKGS, n); }), { messageCallback: function () {}, errorCallback: function (m) { errs.push(String(m)); } }); }
+      finally { gateOpen = false; }
+      var got = Object.keys(pyodide.loadedPackages || {});
+      var stray = got.filter(function (n) { return !own(PKGS, n); });
+      if (stray.length) throw new Error('unexpected package loaded: ' + stray.join(','));
+      need.forEach(function (n) { if (got.indexOf(n) < 0) throw new Error('package not loaded: ' + n + (errs.length ? ' (' + errs[0].slice(0, 200) + ')' : '')); loadedPkgs[n] = true; });
+      var c = await canary();   // importar numpy/pandas nao pode ter reaberto eval nem rede
+      if (!c.ok) { var ie = new Error('isolation check failed after loading packages (' + c.reason + ')'); ie.isolation = c.reason; throw ie; }
+      self.postMessage({ t: 'pkgs', id: cur, s: 'ready', names: need, bytes: total });
     }
 
     async function run(d) {
       cur = d.id; lines = 0; bytes = 0; truncated = false; buf = []; bufBytes = 0; lastFlush = performance.now();
-      var ok = true, g = null;
+      var ok = true, g = null, hint = null;
       try {
         if (d.tables) syncFiles(d.tables);
+        var why = tooComplex(String(d.code));
+        if (why) {   // nao analisa nem executa: o parser do CPython no WASM morreria
+          emit('err', 'Code not run: ' + why + ' (the Python parser would crash in this browser build).');
+          flush(); self.postMessage({ t: 'done', id: cur, ok: false, hint: { k: 'toodeep' } }); return;
+        }
+        var want = detectPackages(String(d.code));
+        if (want.length) {
+          try { await ensurePackages(want); }
+          catch (pe) {
+            // falha ao baixar/instalar: o codigo do usuario NAO roda; mensagem no stderr e fim da execucao
+            emit('err', 'Could not load numpy/pandas: ' + String((pe && pe.message) || pe).slice(0, 300));
+            // (se foi o canario repetido que falhou, a pagina encerra a sessao: hint 'isolation')
+            flush(); self.postMessage({ t: 'done', id: cur, ok: false, hint: pe && pe.isolation ? { k: 'isolation', reason: String(pe.isolation) } : { k: 'pkgfail' } }); return;
+          }
+        }
         self.postMessage({ t: 'started', id: cur });
         g = pyodide.globals.get('dict')();
         g.set('__name__', '__main__');
@@ -139,12 +303,27 @@
       } catch (e) {
         ok = false;
         var m = String((e && e.message) || e);
-        emit('err', cleanTb(m).replace(/\n+$/, ''));
+        var shown = cleanTb(m).replace(/\n+$/, '');
+        var mm0 = /ModuleNotFoundError: No module named '([^'\n]{1,60})'/.exec(m);
+        if (mm0) {
+          // B2: a mensagem do Pyodide manda usar micropip/loadPackage, que NAO existem aqui: tira e explica o que vale neste playground
+          shown = shown.split('\n').filter(function (l) { return /^ModuleNotFoundError/.test(l) || !/micropip|loadPackage|included in the Pyodide distribution|You can install it|loading-packages/i.test(l); }).join('\n');
+          var top = mm0[1].split('.')[0];
+          shown += '\n' + (own(IMPORT2PKG, top)
+            ? 'Note: numpy and pandas are loaded only when an import statement is visible in your code (for example "import ' + top + '" at the top). Imports hidden in exec(), getattr or __import__(variable) are not detected.'
+            : 'Note: only the Python standard library, numpy and pandas are available here (nothing can be installed).');
+        }
+        emit('err', shown);
+        var mm = /ModuleNotFoundError: No module named '([^'\n]{1,60})'/.exec(m);
+        if (mm) hint = { k: 'nomodule', name: mm[1] };
+        var dead = /fatally failed|fatal error|Maximum call stack/i.test(m);
+        if (!dead) { try { pyodide.runPython('0', { globals: helper }); } catch (pe2) { dead = true; } }   // sonda de vida: o estouro de pilha chega como excecao comum e deixa o Pyodide morto
+        if (dead) hint = { k: 'dead' };   // Pyodide morreu (ex.: pilha estourada): a pagina recria a sessao
       } finally {
         try { if (g) g.destroy(); } catch (e) {}
       }
       flush();
-      self.postMessage({ t: 'done', id: cur, ok: ok });
+      self.postMessage({ t: 'done', id: cur, ok: ok, hint: hint });
     }
 
     self.onmessage = function (e) {

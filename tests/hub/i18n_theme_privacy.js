@@ -108,8 +108,13 @@ const L = require('./lib'); const fs = require('fs');
     const google = log.requests.filter(u => /googleapis|gstatic|google/.test(u)); const nonGet = log.requests.length; 
     L.rec('PRV-01 zero requisicao googleapis/gstatic', google.length === 0, `requisicoes totais=${log.requests.length}; google=${JSON.stringify(google)}; externas=${JSON.stringify(log.requests.filter(u => !u.startsWith(L.BASE)))}`);
     // PRV-08 busca em HTML + metodos
-    const found = []; for (const p of L.PAGES) { const h = fs.readFileSync(`${L.REPO}/${p}index.html`, 'utf8'); for (const t of ['<iframe', 'googletagmanager', 'gtag\\(', 'fbq\\(', 'src="[^"]*analytics', '\\bpix\\b', 'apoie', 'support']) if (new RegExp(t, 'i').test(h)) found.push(`${p}:${t}`); }
-    L.rec('PRV-08/HUB-02(parcial) sem iframe/analytics/pixel; sem PIX/apoie/support no HTML', found.length === 0, 'achados=' + JSON.stringify(found));
+    // Fase 6 (D5): PIX/apoie so existem na pagina hub/apoie/, na secao PIX da privacidade e como UM link de rodape (hub.nav.support) nas demais; qualquer outra mencao reprova.
+    const FOOT_LINK = /\n      <a href="[^"]*apoie\/"><span data-i="hub\.nav\.support">Support<\/span><\/a>/;
+    const found = []; for (const p of L.PAGES) { let h = fs.readFileSync(`${L.REPO}/${p}index.html`, 'utf8'); const isApoie = p === 'hub/apoie/';
+      if (!isApoie) { if (!FOOT_LINK.test(h)) found.push(`${p}:sem link de rodape Apoie`); h = h.replace(FOOT_LINK, ''); }
+      if (p === 'hub/privacidade/') h = h.replace(/<h2 data-i="hub\.priv\.s6\.h">[\s\S]*?(?=<h2 data-i="hub\.priv\.s4\.h">)/, '');
+      for (const t of ['<iframe', 'googletagmanager', 'gtag\\(', 'fbq\\(', 'src="[^"]*analytics', ...(isApoie ? [] : ['\\bpix\\b', 'apoie', 'support'])]) if (new RegExp(t, 'i').test(h)) found.push(`${p}:${t}`); }
+    L.rec('PRV-08/HUB-02(parcial) sem iframe/analytics/pixel; PIX/apoie/support so na pagina hub/apoie/, na secao PIX da privacidade e no link unico do rodape', found.length === 0, 'achados=' + JSON.stringify(found));
     await c.close(); }
   // CSP
   { const out = []; let allHave = true;
