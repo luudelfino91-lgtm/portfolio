@@ -1,0 +1,21 @@
+/* Página de apoio (PIX): só o que é próprio dela. Tokens do styles.css/hub.css. */
+.pix-card{margin-top:8px;padding:26px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg)}
+.pix-card h2{font-size:clamp(22px,2.8vw,28px);font-weight:700}
+.pix-grid{display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;margin-top:20px;align-items:start}
+.pix-qr{margin:0;display:flex;flex-direction:column;gap:10px;align-items:center;max-width:220px}
+/* Preto sobre branco fixo nos dois temas: a legibilidade do QR vale mais que o tema (a zona de silêncio está no próprio SVG) */
+.pix-qr img{display:block;width:196px;height:196px;border:1px solid var(--line-strong);border-radius:var(--r-md);background:#fff}
+.pix-qr figcaption{font-size:14px;color:var(--ink-2);text-align:center}
+.pix-data p{margin:0}
+.pix-label{font-size:14px;font-weight:600;color:var(--ink-2);margin-top:14px!important}
+.pix-label:first-child{margin-top:0!important}
+.pix-data code{display:block;margin-top:6px;font-family:var(--f-mono);font-size:14px;line-height:1.5;background:var(--surface-2);color:var(--ink);padding:10px 12px;border-radius:var(--r-md);overflow-wrap:anywhere;user-select:all;-webkit-user-select:all}
+.pix-data .btn{margin-top:16px}
+.pix-status{min-height:1.6em;margin-top:10px!important;font-size:15px;color:var(--ink)}
+.pix-card + .hub-prose{margin-top:8px}
+@media (max-width:640px){
+  .pix-card{padding:20px}
+  .pix-grid{grid-template-columns:minmax(0,1fr);gap:20px}
+  .pix-qr{max-width:none}
+  .pix-data .btn{width:100%}
+}

@@ -83,9 +83,9 @@ Caminhos (C1): `hub/index.html`, `hub/ferramentas/{index.html, csv/index.html, s
 
 | Task ID | Description | Assigned Agent | Dependencies | Expected Output | Acceptance Criteria | Status | Review Result |
 |---|---|---|---|---|---|---|---|
-| T-601 [P1] | Se D5 aprovado: registrar a política do que é exibido (chave, nome, mensagem) | product-manager | D5 aprovada | Registro no `decision-log.md` | Entrada contém o formato escolhido e a referência à aprovação escrita do Lucas | NOT STARTED | Pendente |
-| T-602 [P1] | Se D5 aprovado: página de apoio com QR estático, copia-e-cola e texto "contribuição voluntária" PT/EN | frontend-developer (portão: qa-engineer) | T-601 | Página | Botão copia o código para a área de transferência (teste automatizado); payload BR Code validado por decodificador e CRC16 com a chave aprovada. Leitura por app bancário real é verificação humana do Lucas, separada | NOT STARTED | Pendente |
-| T-603 [P1] | Se D5 aprovado: revisão de privacidade do PIX | security-auditor (portão: independent-reviewer) | T-602 | Checklist | PRV-16: nenhum dado do visitante coletado; chave exibida igual à aprovada | NOT STARTED | Pendente |
+| T-601 [P1] | Se D5 aprovado: registrar a política do que é exibido (chave, nome, mensagem) | product-manager | D5 aprovada | Registro no `decision-log.md` | Entrada contém o formato escolhido e a referência à aprovação escrita do Lucas | EM ANDAMENTO: política registrada; aguarda confirmação do Lucas da tradução EN e da exibição do nome (campo 59) na nota | Nota na D5 do decision-log |
+| T-602 [P1] | Se D5 aprovado: página de apoio com QR estático, copia-e-cola e texto "contribuição voluntária" PT/EN | frontend-developer (portão: qa-engineer) | T-601 | Página | Botão copia o código para a área de transferência (teste automatizado); payload BR Code validado por decodificador e CRC16 com a chave aprovada. Leitura por app bancário real é verificação humana do Lucas, separada | IMPLEMENTADO, não testado por QA | Evidência: `tests/hub/pix.js` (24 verificações, só Chrome; ver `docs/status/phase-06-status.md`). Leitura por app de banco real: verificação humana do Lucas, NÃO feita |
+| T-603 [P1] | Se D5 aprovado: revisão de privacidade do PIX | security-auditor (portão: independent-reviewer) | T-602 | Checklist | PRV-16: nenhum dado do visitante coletado; chave exibida igual à aprovada | NOT STARTED | Pendente: seção de privacidade do PIX escrita pelo frontend-developer; revisão do security-auditor e do independent-reviewer não feita |
 
 ## Fase 7: Endurecimento e release
 

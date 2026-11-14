@@ -1,0 +1,10 @@
+{
+  "_comment": "Registro unico do apoio voluntario por PIX (D5, Lucas Delfino, 2026-11-13). Fonte do QR (docs/tools/gen_pix_qr.py) e dos testes (tests/hub/pix.js). hub/apoie/index.html deve exibir exatamente estes valores. Qualquer mudanca exige nova aprovacao do Lucas.",
+  "chave_aleatoria": "4f5fccbd-8e7e-4092-9b22-cf55fc77f0f4",
+  "payload": "00020126580014BR.GOV.BCB.PIX01364f5fccbd-8e7e-4092-9b22-cf55fc77f0f45204000053039865802BR592463.574.817 LUCAS EDUARDO6009SAO PAULO62140510DycACOcHKI630419C2",
+  "favorecido_campo_59": "63.574.817 LUCAS EDUARDO",
+  "cidade_campo_60": "SAO PAULO",
+  "valor": null,
+  "finalidade": "intercambio",
+  "qr": { "arquivo": "hub/assets/img/pix-qr.svg", "correcao_de_erros": "M", "borda_modulos": 4 }
+}
