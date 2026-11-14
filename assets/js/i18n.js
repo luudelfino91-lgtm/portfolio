@@ -33,7 +33,7 @@
  "p.eb": "Portfólio",
 "i.go": "Clique para acender a luz",
 "i.sndon": "Som ligado",
-"i.sndoff": "Som desligado",
+"i.sndoff": "Ativar som",
 "m.eb": "Por que funciona",
 "m.1": "Passei por todas as cadeiras da operação antes de chegar ao BI.",
 "m.2": "É por isso que meus indicadores começam pela pergunta de quem está na ponta, e não pelo visual.",

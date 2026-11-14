@@ -23,7 +23,8 @@
         SND.ctx=new C(); SND.master=SND.ctx.createGain(); SND.master.gain.value=.16;
         var comp=SND.ctx.createDynamicsCompressor(); SND.master.connect(comp); comp.connect(SND.ctx.destination); }
       if(SND.ctx.state==="suspended") SND.ctx.resume();
-      return SND.ctx;
+      /* sem interação, o navegador deixa o áudio suspenso: aí a abertura roda em silêncio */
+      return SND.ctx.state==="running"?SND.ctx:null;
     }catch(e){ return null; }
   }
   function noise(ctx,dur){ var n=Math.ceil(ctx.sampleRate*dur), b=ctx.createBuffer(1,n,ctx.sampleRate), d=b.getChannelData(0);
@@ -208,11 +209,11 @@
     if(startStats) startStats();
     onScroll();
   }
-  function setSnd(){ var b=$("#introSnd"); if(b) b.setAttribute("aria-pressed",soundOn); }
+  function setSnd(){ var b=$("#introSnd"); if(b) b.setAttribute("aria-pressed",!!(soundOn&&SND.ctx&&SND.ctx.state==="running")); }
   function play(){
     var lamp=$("#lamp"), timers=[], state="wait", raf=0;
     if(lenis) lenis.stop();
-    setSnd();
+    ac(); setSnd();
     function at(ms,f){ timers.push(setTimeout(f,ms)); }
     function finish(fast){
       if(state==="done") return; state="done"; timers.forEach(clearTimeout); cancelAnimationFrame(raf);
@@ -247,9 +248,11 @@
       at(2450,reveal);
       at(3500,function(){ finish(false); });
     }
-    $("#introGo").addEventListener("click",function(e){ e.stopPropagation(); go(); });
-    $("#introSnd").addEventListener("click",function(e){ e.stopPropagation(); soundOn=!soundOn;
-      try{ localStorage.setItem("ld-sound",soundOn?"on":"off"); }catch(x){} setSnd(); if(soundOn) ac(); });
+    /* sem som liberado, o botão vira "Ativar som": o toque dele libera o áudio no navegador */
+    $("#introSnd").addEventListener("click",function(e){ e.stopPropagation();
+      var playing=soundOn&&SND.ctx&&SND.ctx.state==="running"; soundOn=!playing;
+      try{ localStorage.setItem("ld-sound",soundOn?"on":"off"); }catch(x){}
+      if(soundOn){ ac(); if(SND.ctx&&SND.ctx.resume) SND.ctx.resume().then(setSnd,setSnd); } setSnd(); });
     $("#introSkip").addEventListener("click",function(e){ e.stopPropagation(); finish(true); });
     intro.addEventListener("click",function(){ if(state==="wait") go(); else finish(true); });
     document.addEventListener("keydown",function k(e){
@@ -258,7 +261,8 @@
       if((e.key==="Enter"||e.key===" ")&&document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#introSnd,#introSkip")) return;
       if(e.key==="Enter"||e.key===" "){ e.preventDefault(); if(state==="wait") go(); else finish(true); }
     });
-    setTimeout(function(){ var g=$("#introGo"); if(g) try{ g.focus({preventScroll:true}); }catch(e){} },400);
+    /* começa sozinha; o som só toca se o navegador permitir (ou depois que a pessoa tocar no botão de som) */
+    at(450,go);
   }
 
   /* =================================================================
