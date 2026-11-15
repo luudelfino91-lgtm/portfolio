@@ -54,7 +54,10 @@
 .csv-lede{margin:-6px 0 14px}
 .sql-tool .sql-sec h2,.py-tool .sql-sec h2{font-size:clamp(18px,2vw,22px)}
 @media (max-width:640px){
+  .csv-tool .sc-cards{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px}
+  .csv-tool .sc-card{flex:0 0 auto;padding:10px 12px}
   .sql-tool .sql-editor,.py-tool .sql-editor{min-height:6.5em}
-  .sql-actions .btn{flex:1 1 calc(50% - 6px)}
-  .sql-actions .btn.btn-accent{flex-basis:100%}
+  .sql-actions:has(.btn-accent){position:sticky;bottom:0;z-index:5;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding:10px 0;background:var(--bg,#fff);border-top:1px solid var(--line,rgba(0,0,0,.1));-webkit-overflow-scrolling:touch}
+  .sql-actions:has(.btn-accent) .btn{flex:0 0 auto;white-space:nowrap}
+  .sql-actions:has(.btn-accent) .sql-timeout{flex:0 0 auto}
 }
