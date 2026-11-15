@@ -345,13 +345,13 @@ for n in sorted(os.listdir('/data')):
     for (const lang of ['en', 'pt']) {
       const { c, pg, log } = await open(br, SITE, lang, 'light'); const bad = [], info = [];
       for (const slug of SLUGS) {
-        await pg.check(`#pyPicker input[value="${slug}"]`); await pg.click('#pyExample');
+        await pg.check(`#pyPicker input[value="${slug}"]`); const pre0 = await pg.inputValue('#pyEditor'); await pg.click('#pyExample');   // copy diet: o editor ja abre (e troca de cenario) com o mesmo exemplo do botao
         const code = await pg.inputValue('#pyEditor'), st0 = await pg.textContent('#pyStatus');
         const hasComment = lang === 'pt' ? /^# [^\n]*(Receita|Custo|Entregas|Último|Nota)/.test(code) : /^# [^\n]*(Revenue|Cost|Deliveries|Latest|Average)/.test(code);
         await pg.click('#pyRun'); await pg.waitForTimeout(50); await idle(pg); const g = await grab(pg);
         const q = sqliteRun(slug, [EX_SQL[slug].q])[0], d = g.errVisible ? 'ERRO ' + g.errM : cmpFrame(g.out, q);
         info.push(`${slug}:${q.length} linhas`);
-        if (d || !hasComment || !/import pandas/.test(code) || !/merge/.test(code) || !/groupby/.test(code) || !/(example|exemplo)/i.test(st0)) bad.push(`${slug}: ${d} comentario=${hasComment} status="${st0}"`);
+        if (pre0 !== code) bad.push(`${slug}: exemplo pre-carregado difere do botao`); if (d || !hasComment || !/import pandas/.test(code) || !/merge/.test(code) || !/groupby/.test(code) || !/(example|exemplo)/i.test(st0)) bad.push(`${slug}: ${d} comentario=${hasComment} status="${st0}"`);
       }
       L.rec(`PD-07 (${lang}) botao "exemplo de pandas" por cenario: coloca no editor um codigo com merge + groupby (comentario no idioma da pagina), executa de verdade e o resultado = sqlite3 nos 5 cenarios`, bad.length === 0 && log.pageerrors.length === 0, bad.join('\n') || info.join(' '));
       await c.close();
@@ -663,11 +663,11 @@ except MemoryError:
     for (const lang of ['en', 'pt']) {
       const { c, pg } = await open(br, SITE, lang, 'light'); const seen = new Set();
       await pg.exposeFunction('__seen', s => seen.add(s)); await pg.evaluate(() => { new MutationObserver(() => window.__seen(document.getElementById('pyStatus').textContent)).observe(document.getElementById('pyStatus'), { childList: true, characterData: true, subtree: true }); });
-      const pre = await pg.evaluate(() => ({ note: document.getElementById('pyLoadNote').textContent, data: document.getElementById('pyDataNote').textContent, ex: document.getElementById('pyExample').textContent, exn: document.getElementById('pyExNote').textContent }));
+      const pre = await pg.evaluate(() => ({ note: document.getElementById('pyLoadNote').textContent, data: document.getElementById('pyDataNote').textContent, ex: document.getElementById('pyExample').textContent }));
       await run(pg, 'import numpy as np\nprint(np.__version__)'); const dl = [...seen].find(s => /(Downloading|Baixando)/.test(s));
       await run(pg, 'import scipy'); const g = await grab(pg);
-      L.rec(`PD-13 (${lang}) textos de pandas/numpy: aviso de download extra na nota (3 MB / 8 MB), status "${(dl || '').slice(0, 60)}" com pacote e tamanho, aviso de modulo ausente, botao e nota do exemplo, nota de dados cita pd.read_csv; nada em ingles na versao PT`,
-        (lang === 'en' ? /3 MB for numpy, about 8 MB for pandas/.test(pre.note) && /Downloading numpy \(about 3 MB\)/.test(dl || '') && /No module named 'scipy'/.test(g.warn) && /pandas example/.test(pre.ex) : /3 MB para o numpy, cerca de 8 MB para o pandas/.test(pre.note) && /Baixando numpy \(cerca de 3 MB\)/.test(dl || '') && /Nenhum módulo chamado 'scipy'/.test(g.warn) && /exemplo de pandas/.test(pre.ex) && !/Downloading|about|example/.test(pre.note + pre.ex + pre.exn + g.warn)) && /pd\.read_csv/.test(pre.data), JSON.stringify({ dl, warn: g.warn.slice(0, 90), ex: pre.ex }));
+      L.rec(`PD-13 (${lang}) textos de pandas/numpy: nota de download (~14 MB: Python 6 MB + pandas 8 MB) junto ao botao Executar, status "${(dl || '').slice(0, 60)}" com pacote e tamanho, aviso de modulo ausente, botao e nota do exemplo, nota de dados cita pd.read_csv; nada em ingles na versao PT`,
+        (lang === 'en' ? /about 14 MB \(Python 6 MB \+ pandas 8 MB\)/.test(pre.note) && /Downloading numpy \(about 3 MB\)/.test(dl || '') && /No module named 'scipy'/.test(g.warn) && /pandas example/.test(pre.ex) : /cerca de 14 MB \(Python 6 MB \+ pandas 8 MB\)/.test(pre.note) && /Baixando numpy \(cerca de 3 MB\)/.test(dl || '') && /Nenhum módulo chamado 'scipy'/.test(g.warn) && /exemplo de pandas/.test(pre.ex) && !/Downloading|about|example/.test(pre.note + pre.ex + g.warn)) && /pd\.read_csv/.test(pre.data), JSON.stringify({ dl, warn: g.warn.slice(0, 90), ex: pre.ex }));
       if (lang === 'en') { await pg.click('.lang button[data-lang="pt"]'); await pg.waitForTimeout(200); const w2 = await pg.evaluate(() => document.getElementById('pyWarn').textContent);
         L.rec('PD-13 trocar EN -> PT com o aviso de modulo ausente na tela: o aviso e retraduzido mantendo o nome do modulo', /Nenhum módulo chamado 'scipy'/.test(w2), w2.slice(0, 90)); }
       await c.close();

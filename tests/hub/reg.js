@@ -68,7 +68,7 @@ const { execSync } = require('child_process');
     const hubReq = log.requests.filter(u => /\/hub\//.test(u));
     const hubLinks = await pg.evaluate(() => [...document.querySelectorAll('a[href^="hub/"],a[href^="./hub/"],a[href*="/hub/"]')].map(a => a.href));
     const footerLinks = await pg.evaluate(() => [...document.querySelectorAll('footer a[href="hub/"]')].length);
-    L.rec('REG-70 portfolio sem requisicoes para /hub/; unico link para o Hub e o do rodape (aprovado)', hubReq.length === 0 && hubLinks.length === 1 && footerLinks === 1, JSON.stringify({ hubReq, hubLinks })); await c.close(); }
+    L.rec('REG-70 portfolio sem requisicoes para /hub/; links para o Hub: rodape + cartao do produto Hub na secao de produtos (ambos aprovados pelo dono)', hubReq.length === 0 && hubLinks.length === 2 && footerLinks === 1, JSON.stringify({ hubReq, hubLinks })); await c.close(); }
   await br.close(); srv.stop();
   process.exit(L.results.some(r => !r.ok) ? 1 : 0);
 })();

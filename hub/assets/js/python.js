@@ -78,6 +78,7 @@
       'df = (pesq\n      .merge(tickets.rename(columns={"id": "ticket_id"})[["ticket_id", "agente_id"]], on="ticket_id")\n      .merge(agentes.rename(columns={"id": "agente_id"})[["agente_id", "equipe"]], on="agente_id"))\n\n' +
       'res = df.groupby("equipe")["nota"].agg(respostas="count", nota_media="mean").sort_values("nota_media", ascending=False)\nprint(res.round(2))\n' }
   };
+  var autoVal = null;   // copy diet: o editor abre com o exemplo do cenario; troca de cenario/idioma refaz o exemplo enquanto o usuario nao editou
   function exampleFor(slug) { var e = EXAMPLES[slug]; return (window.Hub.lang === 'pt' ? e.pt : e.en) + e.code; }
 
   var frame = null, runId = 0, state = 'idle', engineReady = false;
@@ -282,6 +283,7 @@
     var slug = picker.get(), list = SC.bySlug[slug].tables.map(function (tb) { return '/data/' + tb + '.csv'; }).join(', ');
     dataFiles.textContent = t('hub.py.data.list', { list: list });
     dataNote.textContent = t('hub.py.data.note', { example: '/data/' + SC.bySlug[slug].tables[0] + '.csv' });
+    if (autoVal !== null && editor.value === autoVal && state === 'idle') { editor.value = autoVal = exampleFor(slug); }
   }
 
   runBtn.addEventListener('click', run);
@@ -289,7 +291,7 @@
   clearBtn.addEventListener('click', function () { clearOutput(); });
   exBtn.addEventListener('click', function () {
     if (state !== 'idle') return;
-    editor.value = exampleFor(picker.get()); editor.focus(); editor.setSelectionRange(0, 0); editor.scrollTop = 0;
+    editor.value = autoVal = exampleFor(picker.get()); editor.focus(); editor.setSelectionRange(0, 0); editor.scrollTop = 0;
     hideErr(); setStatus('hub.py.ex.loaded');
   });
   editor.addEventListener('keydown', function (e) { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); run(); } });
@@ -303,6 +305,7 @@
     renderData();
   });
   picker = SC.mount($('pyPicker'), { name: 'pyScenario', value: SC.defaultSlug, er: true, onChange: renderData });
+  autoVal = editor.value;   // o HTML traz o exemplo do cenario padrao em ingles
   renderData();
   setState('idle');
 })();
