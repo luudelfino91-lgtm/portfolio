@@ -68,6 +68,12 @@
   };
   var QUERIES = { 'loja-exemplo': VENDAS_QUERIES };
   Object.keys(OTHER_QUERIES).forEach(function (k) { QUERIES[k] = OTHER_QUERIES[k]; });
+  // Exemplo que abre no editor de cada cenario (o mesmo SQL das consultas de exemplo; Vendas: receita por categoria)
+  function exampleSql(slug) {
+    var list = QUERIES[slug] || [], id = slug === VENDAS ? 'grupo' : null, q = list[0];
+    list.forEach(function (x) { if (x.id === id) q = x; });
+    return q ? q.sql : 'SELECT 1;';
+  }
 
   // Exercícios guiados (T-307). A consulta de referência é a DEFINIÇÃO do resultado esperado: executada no Worker, num banco novo,
   // a cada verificação; só é mostrada depois do acerto ou de "Ver solução". Textos em hub.sql.ex.<id>.t/.q/.hint (PT/EN).
@@ -102,7 +108,8 @@
   var schema = [];              // do worker
   var res = null, stale = false;
   var err = null, statusKey = null, warns = [];
-  var edited = false;
+  var edited = false, autoVal = exampleSql(SC.defaultSlug), autoSlug = SC.defaultSlug;
+  var pendingRun = false;   // copy diet: Executar com o exemplo intocado e o cenario ainda nao carregado carrega o cenario e executa em seguida
   var readyMsg = 'hub.sql.status.ready';
   var ex = {};                  // por exercício: {li, ta, fb, ..., solved, fb:{code,vars,seq}, sol:'hidden'|'confirm'|'shown'}; só em memória
   var exSeq = 0, curEx = null, pendingEx = null, refocusEx = null, exBuilt = false;
@@ -466,6 +473,7 @@
   // ---------- executar ----------
   function execute() {
     if (engine !== 'ready' || busy) return;
+    if (editor.value === autoVal && !reload && (!sample.on || sample.slug !== autoSlug)) { pendingRun = true; loadSample(autoSlug); return; }
     busy = 'run'; stopShown = false; err = null; warns = [];
     curId = ++jobSeq;
     var secs = timeoutSecs();
@@ -500,7 +508,7 @@
       if (reload && reload.current && reload.current.sample) sample.on = false;
       restart({ kind: 'crash' }); return;
     }
-    if (m.code === 'sample') { pendingEx = null; err = { kind: 'sample', detail: m.message }; if (reload && reload.current && reload.current.sample) sample.on = false; }
+    if (m.code === 'sample') { pendingEx = null; pendingRun = false; err = { kind: 'sample', detail: m.message }; if (reload && reload.current && reload.current.sample) sample.on = false; }
     else { stale = !!res; err = { kind: 'sql', message: m.message, statement: m.statement || 1 }; }
     say(null);
     if (reload) { reload.failed.push(reload.current && reload.current.name); err = null; renderAll(); nextReload(); return; }
@@ -509,6 +517,7 @@
 
   // ---------- reiniciar o motor (terminate) ----------
   function restart(why) {
+    pendingRun = false;
     if (busy === 'verify' && curEx) { setFb(curEx, why.kind, { s: why.s }); if (document.activeElement === exStop) refocusEx = curEx; curEx = null; }
     clearTimers();
     var hadFocus = document.activeElement === stopBtn;
@@ -568,7 +577,7 @@
       worker.postMessage({ type: 'sample', id: job, slug: slug, sql: txt });
     }, function (e) {
       if (g !== gen || curId !== job) return;
-      busy = null; pendingEx = null; err = { kind: 'sample', detail: String(e && e.message || e) };
+      busy = null; pendingEx = null; pendingRun = false; err = { kind: 'sample', detail: String(e && e.message || e) };
       say(null); renderAll();
     });
   }
@@ -579,14 +588,15 @@
     sample.on = true; sample.slug = m.slug; sample.tables = m.tables;
     busy = null; err = null;
     if (m.replaced.length) warns.push({ key: 'hub.sql.warn.sample.replaced' });
-    if (!edited) editor.value = 'SELECT * FROM ' + m.tables[0] + ' LIMIT 10;';
+    if (!edited || editor.value === autoVal) { editor.value = autoVal = exampleSql(m.slug); autoSlug = m.slug; edited = false; }
     say('hub.sql.status.sample', { name: scName(m.slug), n: num(m.tables.length), rows: num(m.rows) });
     renderAll();
+    if (pendingRun) { pendingRun = false; execute(); }
     if (pendingEx) { var pid = pendingEx; pendingEx = null; verifyEx(pid); }
   }
 
   function resetDb() {
-    pendingEx = null; curEx = null;
+    pendingEx = null; pendingRun = false; curEx = null;
     clearTimers(); sample.on = false; sample.slug = null; sample.tables = []; reload = null; res = null; stale = false; schema = []; warns = []; err = null;
     readyMsg = 'hub.sql.status.reset';
     boot();
@@ -607,7 +617,7 @@
   retryBtn.addEventListener('click', function () { err = null; boot(); renderAll(); });
   timeoutSel.addEventListener('change', renderLimits);
 
-  picker = SC.mount($('sqlPicker'), { name: 'sqlScenario', value: SC.defaultSlug, er: true, onChange: function () { renderAll(); } });
+  picker = SC.mount($('sqlPicker'), { name: 'sqlScenario', value: SC.defaultSlug, er: true, onChange: function (slug) { if (!edited || editor.value === autoVal) { editor.value = autoVal = exampleSql(slug); autoSlug = slug; edited = false; } renderAll(); } });
   Hub.onLang.push(function () { renderAll(); });
   renderAll();
   boot();

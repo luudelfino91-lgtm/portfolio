@@ -46,37 +46,41 @@
     <section class="hub-hero hub-hero--sub" aria-labelledby="h1">
       <h1 id="h1" data-i="hub.tool.python.name">Python playground</h1>
     </section>
-    <p class="lede csv-lede" data-i="hub.py.lede">Write Python and run it in this browser tab. The code runs in an isolated frame that cannot reach the internet, this page or your other data.</p>
-    <p class="notice" id="pyPrivacy"><span data-i="hub.py.priv">Privacy: your code and the output never leave this browser. There is no file upload: Python only sees the sample tables of the scenario you choose. Nothing is sent to any server, and nothing is saved.</span></p>
+    <p class="lede csv-lede" data-i="hub.py.lede">Run Python with pandas in this tab, on the same sample data.</p>
 
     <div class="csv-tool py-tool" id="pyTool" data-state="idle" data-engine="none">
       <section class="sql-sec" aria-labelledby="pyEdH">
         <h2 id="pyEdH" data-i="hub.py.ed.h">Code</h2>
+        <div id="pyPicker"></div>
         <label class="sql-label" for="pyEditor" data-i="hub.py.ed.label">Python editor</label>
-        <textarea class="sql-editor" id="pyEditor" rows="10" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-describedby="pyEdHint pyLoadNote">print(1 + 1)</textarea>
-        <p class="csv-note" id="pyEdHint" data-i="hub.py.ed.hint">Press Ctrl+Enter (Cmd+Enter on a Mac) to run. The Tab key moves focus out of the editor.</p>
-        <p class="csv-note" id="pyLoadNote" data-i="hub.py.load.note">Python is not downloaded until you press Run. The first run downloads about 6 MB (again each time you open this page, because the isolated frame cannot reuse the browser cache) and takes a few seconds. If your code imports numpy or pandas, that Run also downloads the package files from this site: about 3 MB for numpy, about 8 MB for pandas (numpy included). Code that does not import them downloads nothing extra.</p>
+        <textarea class="sql-editor" id="pyEditor" rows="7" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-describedby="pyEdHint pyLoadNote"># Revenue per category (merge + groupby)
+import pandas as pd
+
+itens = pd.read_csv("/data/itens_pedido.csv")
+produtos = pd.read_csv("/data/produtos.csv")
+categorias = pd.read_csv("/data/categorias.csv")
+
+itens["receita"] = itens["quantidade"] * itens["preco_unitario"]
+df = (itens
+      .merge(produtos.rename(columns={"id": "produto_id"})[["produto_id", "categoria_id"]], on="produto_id")
+      .merge(categorias.rename(columns={"id": "categoria_id", "nome": "categoria"}), on="categoria_id"))
+
+res = df.groupby("categoria")["receita"].agg(itens="count", receita="sum").sort_values("receita", ascending=False)
+print(res.round(2))
+</textarea>
         <div class="sql-actions">
           <button class="btn btn-accent" id="pyRun" type="button"><span data-i="hub.py.run">Run</span></button>
           <button class="btn btn-ghost" id="pyStop" type="button" disabled><span data-i="hub.py.stop">Stop</span></button>
           <button class="btn btn-ghost" id="pyClear" type="button"><span data-i="hub.py.clear">Clear output</span></button>
+          <button class="btn btn-ghost" id="pyExample" type="button"><span data-i="hub.py.ex.btn">Restore the pandas example</span></button>
           <div class="csv-field sql-timeout">
             <label for="pyTimeout" data-i="hub.py.timeout">Time limit (seconds, 5 to 120)</label>
             <input class="py-num" id="pyTimeout" type="number" inputmode="numeric" min="5" max="120" step="1" value="30" aria-describedby="pyLimits">
           </div>
         </div>
-        <p class="csv-note" id="pyLimits" data-i="hub.py.limits">Limits: code up to 200 KB; output up to 2,000 lines or 256 KiB (the rest is discarded); memory up to 4 GiB (on phones the browser may close the tab sooner). Variables do not persist between runs; Stop and the time limit end the session and Python reloads on the next Run.</p>
-      </section>
-
-      <section class="sql-sec" aria-labelledby="pyDataH">
-        <h2 id="pyDataH" data-i="hub.py.data.h">Data</h2>
-        <div id="pyPicker"></div>
-        <p class="csv-status" id="pyDataFiles"></p>
-        <p class="csv-note" id="pyDataNote" data-i="hub.py.data.note">Each table is a CSV file in /data/ with a header row; read it with open() or the csv module (for example open("{example}")). An empty cell is a missing value (NULL). The files are copied from this site into Python when you press Run, and there is no way to add other files. numpy and pandas are available: pd.read_csv("{example}") loads a table into a DataFrame.</p>
-        <div class="sql-actions">
-          <button class="btn btn-ghost" id="pyExample" type="button" aria-describedby="pyExNote"><span data-i="hub.py.ex.btn">Load the pandas example for this scenario</span></button>
-        </div>
-        <p class="csv-note" id="pyExNote" data-i="hub.py.ex.note">The example joins tables with merge and summarizes with groupby. It replaces the text in the editor. Running it downloads numpy and pandas (about 8 MB).</p>
+        <p class="csv-note py-dl" id="pyLoadNote" data-i="hub.py.load.note">First run downloads about 14 MB (Python 6 MB + pandas 8 MB). Nothing loads until you press Run.</p>
+        <p class="csv-note" id="pyEdHint" data-i="hub.py.ed.hint">Ctrl+Enter (Cmd+Enter on a Mac) runs. Tab moves focus out of the editor.</p>
+        <p class="csv-note" id="pyLimits" data-i="hub.py.limits">Limits: 200 KB of code; 2,000 lines or 256 KiB of output; 4 GiB of memory. Variables do not persist between runs; Stop and the time limit end the session.</p>
       </section>
 
       <p class="csv-status" id="pyStatus" role="status" aria-live="polite"></p>
@@ -93,7 +97,14 @@
         <p class="csv-note" id="pyOutNone" data-i="hub.py.out.none" hidden>The program ran and printed nothing.</p>
         <pre class="py-out" id="pyOut" role="region" tabindex="0" aria-labelledby="pyOutH" hidden></pre>
       </section>
+
+      <section class="sql-sec" aria-labelledby="pyDataH">
+        <h2 id="pyDataH" data-i="hub.py.data.h">Data</h2>
+        <p class="csv-status" id="pyDataFiles"></p>
+        <p class="csv-note" id="pyDataNote" data-i="hub.py.data.note">Each table is a CSV file in /data/. Try pd.read_csv("{example}"). An empty cell is a missing value (NULL).</p>
+      </section>
     </div>
+    <p class="tool-priv" id="pyPrivacy"><span data-i="hub.py.priv">Your code and output never leave this browser.</span> <a href="../../privacidade/"><span data-i="hub.home.notice.link">Privacy details</span></a></p>
   </main>
 
   <footer>

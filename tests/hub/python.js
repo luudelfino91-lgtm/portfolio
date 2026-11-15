@@ -90,6 +90,7 @@ const nf = (n, lang) => new Intl.NumberFormat(lang === 'pt' ? 'pt-BR' : 'en-US')
     }
     const c = await L.ctx(br, { lang: 'en' }); const pg = await c.newPage(); const log = L.newLog(); L.watch(pg, log);
     await pg.goto(`${SITE}/${PAGE}`, { waitUntil: 'networkidle' }); served.length = 0;
+    await pg.fill('#pyEditor', 'print(1 + 1)');   // copy diet: o exemplo padrao importa pandas; PY-07 verifica o caminho SEM pacotes
     await pg.click('#pyRun'); await pg.waitForFunction(() => document.getElementById('pyTool').dataset.engine === 'loading');
     const stTxt = await pg.evaluate(() => document.getElementById('pyStatus').textContent); await idle(pg);
     const got = served.filter(u => /vendor\/pyodide\//.test(u)).map(u => u.split('/').pop());
@@ -103,7 +104,8 @@ const nf = (n, lang) => new Intl.NumberFormat(lang === 'pt' ? 'pt-BR' : 'en-US')
       for (const lang of ['pt', 'en']) {
         const { c, pg, log, dialogs } = await open(br, base, lang, 'light'); const tag = `(${label}, ${lang})`;
         let g = await grab(pg);
-        L.rec(`PY-01 ${tag} estado inicial: sem iframe, botao Executar habilitado, Parar desabilitado, editor com exemplo`, g.state === 'idle' && g.frames === 0 && !g.runDisabled && g.stopDisabled && /print/.test(await pg.inputValue('#pyEditor')), JSON.stringify(g));
+        L.rec(`PY-01 ${tag} estado inicial: sem iframe, botao Executar habilitado, Parar desabilitado, editor com exemplo`, g.state === 'idle' && g.frames === 0 && !g.runDisabled && g.stopDisabled && /pd\.read_csv\("\/data\/itens_pedido\.csv"\)/.test(await pg.inputValue('#pyEditor')), JSON.stringify(g));
+        await pg.fill('#pyEditor', 'print(1 + 1)');   // copy diet: o editor abre com o exemplo de pandas; PY-01 verifica print(1+1) -> "2" e o aviso de ~6 MB
         await pg.click('#pyRun'); await pg.waitForFunction(() => document.getElementById('pyTool').dataset.state !== 'idle');
         const loadTxt = await pg.evaluate(() => document.getElementById('pyStatus').textContent);
         const runDis = await pg.evaluate(() => document.getElementById('pyRun').disabled);
