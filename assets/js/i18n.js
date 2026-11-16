@@ -15,6 +15,8 @@
  "n.cert": "Certificações",
  "n.cont": "Contato",
  "a.theme": "Alternar tema claro/escuro",
+ "a.wa": "Conversar pelo WhatsApp",
+ "wa.tip": "Conversar pelo WhatsApp",
  "a.menu": "Abrir menu",
  "n.talk": "Vamos conversar",
  "h.status": "Aberto a vagas na Irlanda e remotas · São Paulo, SP",
