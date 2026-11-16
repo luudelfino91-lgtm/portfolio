@@ -6,7 +6,7 @@
    - Sem JS, o botão leva para a seção #contato.
    ===================================================================== */
 (function(){
-  var WA_NUMBER = "55XXXXXXXXXXX";
+  var WA_NUMBER = "5511963615242";
   var MSG = {
     en: "Hi Lucas! I saw your portfolio and would like to talk.",
     pt: "Olá, Lucas! Vi seu portfólio e gostaria de conversar."
