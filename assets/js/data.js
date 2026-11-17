@@ -49,6 +49,21 @@ const PROJECTS = [
      dax:"",
      resultado:"Um lugar para quem está começando em dados praticar sem barreira: abre, escolhe um cenário e escreve a primeira consulta."}},
 
+  {slug:"guia-visualizacao", lane:"produtos", domain:"Visualização de dados · Educação",
+   title:"Guia de Visualização", file:"Relatório Power BI · 7 páginas", mock:"bars",
+   lede:"Guia interativo e bilíngue para escolher o gráfico certo no Power BI, com filtros por objetivo, variáveis, tempo, categorias, valores e composição.",
+   side:"São 59 gráficos ilustrados, 12 casos de uso e uma aba de Storytelling com 8 tópicos, cada um com passos e exemplos de antes e depois. O modelo (.pbit) e os dados em CSV estão abertos no GitHub, sob licença CC BY 4.0.",
+   kpi:{v:"59", l:"gráficos no guia"}, tools:["Power BI","Power Query","DAX"], tags:["Bilíngue PT/EN","CC BY 4.0","Storytelling","Código aberto"],
+   report:"https://bit.ly/Guia_Visuais_Delfino", repo:GITHUB+"/Guia_Visualizacao", cover:IMG+"guia-visualizacao-capa.webp", draft:false,
+   gallery:[
+     {src:IMG+"guia-visualizacao-capa.webp", cap:"Guia: filtros por objetivo, variáveis, análise temporal, categorias, valores e composição, com 16 dos 59 gráficos nos Essenciais"}],
+   case:{
+     pergunta:"Como ajudar quem trabalha com dados a escolher o gráfico certo, sem depender de tentativa e erro?",
+     dados:["Oito tabelas em CSV: gráficos (59), objetivos, seleção, casos (12), ponte entre casos e gráficos, tópicos, passos e exemplos de Storytelling (8 tópicos).","Ilustrações próprias para cada gráfico, em português e em inglês.","Dados e imagens lidos do repositório público no GitHub; para atualizar o guia, basta editar os CSVs e atualizar o relatório."],
+     tecnicas:["Filtros em cascata por objetivo, variáveis, análise temporal, categorias, valores e composição.","Célula vazia no original significa \"tanto faz\": cada linha foi expandida para todas as opções aplicáveis, então um filtro nunca esconde um gráfico válido.","Galeria de cartões com o visual Card Browser (Microsoft, licença MIT) e botão Limpar filtros por favorito.","Aba de Storytelling com explicação curta, passos e exemplos originais de antes e depois, inspirados nas lições do livro Storytelling with Data.","Relatório em dois idiomas, com tema próprio do Power BI."],
+     dax:"",
+     resultado:"Um guia aberto, em português e inglês, que leva da pergunta (o que quero mostrar?) ao gráfico recomendado. Ponto ainda aberto: o leitor de detalhes mostra 4 das 5 linhas, e a quinta aparece ao rolar."}},
+
   {slug:"panorama-consorcios", lane:"autoral", domain:"Consórcios · Mercado financeiro",
    title:"Panorama Consórcios", file:"Estudo autoral · 4 páginas", mock:"area",
    lede:"Estudo autoral sobre o mercado brasileiro de consórcios, com dados públicos da ABAC e do BACEN de jan/2019 a mai/2026, contado em atos, como uma reportagem.",
