@@ -35,6 +35,18 @@ const EN = {
         tecnicas:["A data explorer with row and column counts, types and a preview of each table.","A SQL playground on the five sample databases, right in the page.","A Python playground in an isolated frame, with the scenario's tables as CSV files.","No tracking cookies and no third-party requests.","Bilingual (Portuguese and English), with light and dark themes, like the portfolio."],
         resultado:"A place for people starting out in data to practise with no barrier: open it, pick a scenario and write the first query."}
     },
+    "guia-visualizacao": {
+      domain:"Data visualization · Education", file:"Power BI report · 7 pages",
+      lede:"An interactive bilingual guide to choosing the right chart in Power BI, with filters for goal, variables, time, categories, values and composition.",
+      side:"59 illustrated charts, 12 use cases and a Storytelling tab with 8 topics, each with steps and before-and-after examples. The template (.pbit) and the CSV data are open on GitHub under a CC BY 4.0 licence.",
+      kpi:{v:"59", l:"charts in the guide"}, tags:["Bilingual PT/EN","CC BY 4.0","Storytelling","Open source"],
+      gallery:["The guide: filters for goal, variables, time analysis, categories, values and composition, showing 16 of the 59 charts under Essentials"],
+      case:{
+        pergunta:"How can people who work with data pick the right chart without trial and error?",
+        dados:["Eight CSV tables: charts (59), goals, selection, use cases (12), a bridge between cases and charts, and Storytelling topics, steps and examples (8 topics).","Original illustrations for every chart, in Portuguese and English.","Data and images are read from the public GitHub repository; to update the guide, edit the CSVs and refresh the report."],
+        tecnicas:["Cascading filters for goal, variables, time analysis, categories, values and composition.","An empty cell in the source means \"any\": each row was expanded to every applicable option, so a filter never hides a valid chart.","A card gallery built with the Card Browser visual (Microsoft, MIT licence) and a Clear filters button driven by a bookmark.","A Storytelling tab with a short explanation, steps and original before-and-after examples, inspired by the lessons of Storytelling with Data.","A two-language report with a custom Power BI theme."],
+        resultado:"An open guide, in Portuguese and English, that takes you from the question (what do I want to show?) to the recommended chart. One point is still open: the details reader shows 4 of 5 rows, and the fifth appears on scroll."}
+    },
     "panorama-consorcios": {
       domain:"Consortium market · Financial markets", file:"Independent study · 4 pages",
       lede:"An independent study of the Brazilian consortium market (a group-based savings and credit scheme used to buy cars, property and more), built on public ABAC and BACEN data from Jan 2019 to May 2026 and told in acts, like a news feature.",
