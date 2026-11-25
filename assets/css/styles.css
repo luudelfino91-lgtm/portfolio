@@ -98,8 +98,8 @@ p{margin:0}
 .hero{display:grid;grid-template-columns:1.35fr .9fr;gap:48px;align-items:center;padding-block:28px 20px}
 .hero .reveal>br{display:none}
 .hero .status{display:flex;width:fit-content;margin-bottom:12px}
-.hero h1{font-size:clamp(28px,3.5vw,44px);font-weight:700;margin-top:14px}
-.hero .lede{font-size:15.5px;color:var(--ink-2);max-width:58ch;margin-top:16px}
+.hero h1{font-size:clamp(26px,min(3.5vw,5.4vh),44px);font-weight:700;margin-top:14px}
+.hero .lede{font-size:15px;color:var(--ink-2);max-width:58ch;margin-top:16px}
 .hero .ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
 .status{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2)}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px color-mix(in srgb,var(--ok) 20%,transparent)}
@@ -110,14 +110,14 @@ p{margin:0}
 .id-meta{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-top:14px}
 .id-meta strong{display:block;font:600 20px/1.2 var(--f-display)}
 .id-meta span{font-size:13.5px;color:var(--ink-3)}
-.cert{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;width:74px;height:74px;border-radius:50%;background:var(--midnight);color:#fff;text-align:center;font:500 10px/1.2 var(--f-mono);letter-spacing:.04em}
-.cert b{font:700 17px/1 var(--f-display);letter-spacing:-.02em;color:#E7C3F0}
+.cert{flex:none;width:58px}
+.cert img{display:block;width:100%;height:auto}
 .stats{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);margin-block:8px 0}
 .stat{padding:14px 18px;border-left:1px solid var(--line)}
 .stat:first-child{border-left:0}
 .stat b{display:block;font:700 26px/1 var(--f-display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .stat span{display:block;font-size:12.5px;color:var(--ink-3);margin-top:6px;line-height:1.35}
-@media (min-width:901px){.id-card .portrait{max-width:250px;margin-inline:auto}}
+@media (min-width:901px){.id-card .portrait{max-width:min(250px,32vh);margin-inline:auto}}
 @media (max-width:900px){.hero{grid-template-columns:1fr;gap:36px;padding-block:28px 20px}.id-card{max-width:340px}.stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(5){grid-column:1/-1;border-left:0}.stat:nth-child(3){border-left:0}.stat:nth-child(n+3){border-top:1px solid var(--line)}}
 
 /* =========================================================
