@@ -344,7 +344,7 @@ Comandos executados em `/home/claude/portfolio` (resultados reais) [C]. **Busca 
 5. `git log -p --all` (excluindo imagens) filtrado pelos mesmos padrões do item 1. O repositório tem **2 commits**. **Resultado: nenhuma correspondência.**
 6. `.gitignore` [C] contém `.DS_Store`, `Thumbs.db`, `.vercel`, `node_modules/`, `*.pbix`. Não contém `.env`, `*.pem`, `*.key`, `*.csv` nem `*.xlsx`.
 
-**Dados pessoais públicos já existentes [C]:** o e-mail `lucasdelfino91@hotmail.com` em `index.html` (linha 205), links de LinkedIn e GitHub, e URLs de verificação de credenciais em `certificacoes.html` (por exemplo, link de PDF de certificado em S3 e links de verificação da Microsoft e de plataforma de cursos). São públicos por decisão do portfólio; o e-mail está exposto a coleta automática por robôs de spam (risco baixo, aceito pelo Lucas, nenhuma ação proposta).
+**Dados pessoais públicos já existentes [C]:** links de LinkedIn e GitHub, e URLs de verificação de credenciais em `certificacoes.html` (por exemplo, link de PDF de certificado em S3 e links de verificação da Microsoft e de plataforma de cursos). São públicos por decisão do portfólio. O e-mail foi retirado do site em 25/11/2026.
 
 **Limites desta busca:** é `grep` simples sobre texto; não detecta segredos em binários (imagens), segredos sem padrão conhecido, nem ofuscados; **não** substitui uma ferramenta dedicada (gitleaks, trufflehog) e o GitHub Secret Scanning do repositório **não foi consultado** (**NÃO VERIFICADO** se está ativo; é gratuito em repositório público [S]). Recomendação: o Lucas ativa o Secret Scanning e o push protection nas configurações do repositório (ação do Lucas, não integração externa de terceiros).
 
@@ -383,7 +383,7 @@ Se houver analytics: nenhuma medição dentro das ferramentas (nunca conteúdo, 
 
 **Texto de privacidade do Hub (Technical Writer redige; a verificar na implementação):** o que roda no navegador; o que é guardado localmente (tema, idioma, rascunho, progresso); que o GitHub, operador do Pages, pode registrar acessos [S, política do GitHub **NÃO VERIFICADA**]; que o portfólio atual carrega fontes do Google (SEC-14); e que links externos levam a sites com suas próprias políticas.
 
-**Coleta mínima:** o Hub não tem formulário, login nem contador. O `mailto:` do portfólio abre o cliente de e-mail do usuário; não há coleta pelo Hub. Não adicionar formulário de contato com serviço terceiro (já fora do escopo, D8).
+**Coleta mínima:** o Hub não tem formulário, login nem contador. O portfólio não expõe e-mail nem formulário de contato; não há coleta pelo Hub. Não adicionar formulário de contato com serviço terceiro (já fora do escopo, D8).
 
 ---
 

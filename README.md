@@ -54,4 +54,3 @@ Alternativa: **GitHub Pages** em *Settings → Pages → Deploy from branch → 
 ## Contato
 
 - LinkedIn: [/in/lucasdelfino-](https://www.linkedin.com/in/lucasdelfino-/)
-- E-mail: lucasdelfino91@hotmail.com
