@@ -73,7 +73,7 @@ html.intro-on body{overflow:hidden}
 .wrap{position:relative;z-index:1}
 
 /* ---------- Hero mais enxuto ---------- */
-.hero{padding-block:56px 36px}
+.hero{padding-block:28px 20px}
 .hero .lede{max-width:54ch}
 
 /* números com contagem */
@@ -221,7 +221,7 @@ html.lit .stats{animation:none}
 .m-stick .eyebrow{align-self:flex-start}
 #produtos{margin-top:-12vh}
 .m-src{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.m-txt{font:600 clamp(28px,4.4vw,56px)/1.16 var(--f-display);letter-spacing:-.025em;text-wrap:balance;margin:0}
+.m-txt{font:600 clamp(22px,2.9vw,36px)/1.2 var(--f-display);letter-spacing:-.025em;text-wrap:balance;margin:0}
 .m-txt .mw{display:inline-block;white-space:nowrap}
 .m-txt .mc{display:inline-block;opacity:.08;filter:blur(12px);transform:translateY(12px);will-change:opacity,filter,transform}
 .m-txt .em .mc{color:var(--plum)}
