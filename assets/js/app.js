@@ -179,7 +179,7 @@ function renderCase(slug){
       <div class="kpi"><b style="font-size:40px">${esc(p.kpi.v)}</b><span>${esc(p.kpi.l)}</span></div>
     </div>
     ${SHOW_DRAFT_NOTES&&p.draft?`<div class="draft"><b>Rascunho.</b> Texto-base gerado a partir do resumo do projeto. Revise os detalhes técnicos e desligue este aviso em SHOW_DRAFT_NOTES.</div>`:""}
-    <div class="frame" style="margin-top:28px"><div class="frame-bar"><div class="lights"><i></i><i></i><i></i><span class="mono">${esc(p.file)}</span></div><span class="live">${p.internal?t("internal"):(p.cover?t("published"):t("preview"))}</span></div>
+    <div class="frame" style="margin-top:28px"><div class="frame-bar"><div class="lights"><i></i><i></i><i></i><span class="mono">${esc(p.file)}</span></div><span class="live">${p.state?t(p.state):(p.internal?t("internal"):(p.cover?t("published"):t("preview")))}</span></div>
       <div class="frame-view">${c.video?caseVideo(c.video):(p.cover?`<img src="${esc(p.cover)}" data-slug="${p.slug}" alt="${esc(t("altShot",{t:p.title}))}">`:mockSVG(p))}</div></div>
     ${c.video?`<p class="cv-cap">${esc(c.video.cap)}</p>`:""}
     <div class="case-grid">
