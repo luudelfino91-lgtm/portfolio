@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Não lançado] — 2026-11-25
+### Alterado
+- Hero compacto: o cartão de apresentação e os quatro números cabem na primeira tela. O cargo passa a "BI Analyst & IA" e o selo circular do PL-300 sai do cartão.
 ### Adicionado
 - Faixa "Dados e IA aplicados" e dois cases: Radar Legislativo (pipeline de dados abertos da Câmara com IA e painel em Power BI) e Assistente de Cobrança (prova de conceito de chat com IA para operadores), em português e inglês.
 - Capa e galeria do Radar Legislativo a partir do painel real, sem as páginas que listam parlamentares individuais.
