@@ -97,7 +97,9 @@ function projectCard(p){
 function appLink(p){ const ext=/^https?:/.test(p.app); return `href="${esc(p.app)}"${ext?' target="_blank" rel="noopener"':''}`; }
 function productCard(p){
   const tags=p.tags.map(x=>`<span class="chip">${esc(x)}</span>`).join("");
-  const acts=`<div class="acts"><a class="btn btn-accent" ${appLink(p)}>${t("openApp")} <span class="arrow">${/^https?:/.test(p.app)?"↗":"→"}</span></a><a class="btn btn-ghost" href="#/case/${p.slug}">${t("viewCaseShort")} <span class="arrow">→</span></a></div>`;
+  /* Só desenha "Open app" se o projeto tem p.app (evita o link /undefined). */
+  const open=p.app?`<a class="btn btn-accent" ${appLink(p)}>${t("openApp")} <span class="arrow">${/^https?:/.test(p.app)?"↗":"→"}</span></a>`:"";
+  const acts=`<div class="acts">${open}<a class="btn ${open?"btn-ghost":"btn-accent"}" href="#/case/${p.slug}">${t("viewCaseShort")} <span class="arrow">→</span></a></div>`;
   if(p.slug==="pca10-lab"){
     const g=p.gallery||[];
     return `<article class="prod prod-lab fx" id="p-${p.slug}">
@@ -112,6 +114,15 @@ function productCard(p){
       <div class="tagrow" style="margin-top:22px">${tags}</div>
       ${acts}
     </article>`;
+  }
+  if(p.slug!=="community-hub"){ /* o terminal SQL abaixo é só do Community Hub */
+    return `<article class="prod prod-hub fx" id="p-${p.slug}">
+    <span class="kicker">${esc(p.domain)}</span>
+    <h3>${esc(p.title)}</h3>
+    <p>${esc(p.lede)}</p>
+    <div class="tagrow">${tags}</div>
+    ${acts}
+  </article>`;
   }
   return `<article class="prod prod-hub fx" id="p-${p.slug}">
     <span class="kicker">${esc(p.domain)}</span>
