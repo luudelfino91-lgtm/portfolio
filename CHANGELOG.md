@@ -1,5 +1,11 @@
 # Changelog
 
+## [Não lançado] — 2026-11-25
+### Adicionado
+- Faixa "Dados e IA aplicados" e dois cases: Radar Legislativo (pipeline de dados abertos da Câmara com IA e painel em Power BI) e Assistente de Cobrança (prova de conceito de chat com IA para operadores), em português e inglês.
+- Capa e galeria do Radar Legislativo a partir do painel real, sem as páginas que listam parlamentares individuais.
+- Link público do painel do Radar Legislativo no Power BI, e rótulo opcional por projeto (campo `state`, ex.: "Estudo de caso · repositório privado").
+
 ## [1.2.0] — 2026-10-05
 ### Adicionado
 - Projeto Agent Performance Report (trilha Relatórios de negócio), com link público do Power BI e case técnico em português e inglês.
