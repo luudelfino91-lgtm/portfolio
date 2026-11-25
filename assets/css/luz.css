@@ -73,7 +73,7 @@ html.intro-on body{overflow:hidden}
 .wrap{position:relative;z-index:1}
 
 /* ---------- Hero mais enxuto ---------- */
-.hero{padding-block:28px 20px}
+@media (max-width:900px){.hero{padding-block:28px 20px}}
 .hero .lede{max-width:54ch}
 
 /* números com contagem */
