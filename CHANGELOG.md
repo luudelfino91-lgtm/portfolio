@@ -4,7 +4,7 @@
 ### Adicionado
 - Faixa "Dados e IA aplicados" e dois cases: Radar Legislativo (pipeline de dados abertos da Câmara com IA e painel em Power BI) e Assistente de Cobrança (prova de conceito de chat com IA para operadores), em português e inglês.
 - Capa e galeria do Radar Legislativo a partir do painel real, sem as páginas que listam parlamentares individuais.
-- Rótulo "Estudo de caso · repositório privado" para projetos sem link público (campo `state`).
+- Link público do painel do Radar Legislativo no Power BI, e rótulo opcional por projeto (campo `state`, ex.: "Estudo de caso · repositório privado").
 
 ## [1.2.0] — 2026-10-05
 ### Adicionado
